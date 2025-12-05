@@ -11,6 +11,7 @@ export default function Profile() {
   const { user: currentUser } = useAuth();
   const queryClient = useQueryClient();
   const [relationForm, setRelationForm] = useState({ category: "", detail: "" });
+  const [editingRelation, setEditingRelation] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["profile", username],
@@ -54,7 +55,10 @@ export default function Profile() {
     mutationFn: async () => {
       await api.post(`/friends/${username}/relation`, relationForm);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile", username] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile", username] });
+      setEditingRelation(false);
+    },
   });
 
   if (isLoading) {
@@ -95,40 +99,67 @@ export default function Profile() {
       return (
         <div className="flex flex-wrap items-center gap-2">
           <button
-            onClick={() => removeFriend.mutate()}
+            onClick={() => {
+              const confirmed = window.confirm("¿Seguro que quieres quitar a esta persona de tus amigos?");
+              if (confirmed) removeFriend.mutate();
+            }}
             className="text-sm px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             Amigos ✓ (quitar)
           </button>
-          <select
-            value={relationForm.category}
-            onChange={(e) => setRelationForm((prev) => ({ ...prev, category: e.target.value }))}
-            className="text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1"
-          >
-            <option value="">Categoría</option>
-            <option value="amigo">Amigo/Amiga</option>
-            <option value="familia">Familia</option>
-            <option value="trabajo">Trabajo</option>
-            <option value="deporte">Deporte</option>
-            <option value="pareja">Pareja</option>
-            <option value="conocido">Conocido/a</option>
-            <option value="otro">Otro</option>
-          </select>
-          {relationForm.category === "familia" && (
-            <input
-              value={relationForm.detail}
-              onChange={(e) => setRelationForm((prev) => ({ ...prev, detail: e.target.value }))}
-              placeholder="Primo, madre, etc."
-              className="text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1"
-            />
-          )}
-          {relationForm.category && (
+          {!editingRelation && (
             <button
-              onClick={() => setRelation.mutate()}
+              onClick={() => setEditingRelation(true)}
               className="text-sm px-3 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500"
             >
-              Guardar relación
+              Editar relación
             </button>
+          )}
+          {editingRelation && (
+            <>
+              <select
+                value={relationForm.category}
+                onChange={(e) => setRelationForm((prev) => ({ ...prev, category: e.target.value }))}
+                className="text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1"
+              >
+                <option value="">Categoría</option>
+                <option value="amigo">Amigo/Amiga</option>
+                <option value="familia">Familia</option>
+                <option value="trabajo">Trabajo</option>
+                <option value="deporte">Deporte</option>
+                <option value="pareja">Pareja</option>
+                <option value="conocido">Conocido/a</option>
+                <option value="otro">Otro</option>
+              </select>
+              {relationForm.category === "familia" && (
+                <input
+                  value={relationForm.detail}
+                  onChange={(e) => setRelationForm((prev) => ({ ...prev, detail: e.target.value }))}
+                  placeholder="Primo, madre, etc."
+                  className="text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1"
+                />
+              )}
+              {relationForm.category && (
+                <button
+                  onClick={() => setRelation.mutate()}
+                  className="text-sm px-3 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500"
+                >
+                  Guardar relación
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setEditingRelation(false);
+                  setRelationForm({
+                    category: profile.relationCategory || "",
+                    detail: profile.relationDetail || "",
+                  });
+                }}
+                className="text-sm px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Cancelar
+              </button>
+            </>
           )}
         </div>
       );
@@ -136,7 +167,10 @@ export default function Profile() {
     if (friendStatus === "OUTGOING") {
       return (
         <button
-          onClick={() => removeFriend.mutate()}
+          onClick={() => {
+            const confirmed = window.confirm("¿Cancelar solicitud de amistad?");
+            if (confirmed) removeFriend.mutate();
+          }}
           className="text-sm px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           Solicitud enviada (cancelar)
@@ -177,7 +211,7 @@ export default function Profile() {
             {profile.email && <div className="text-sm text-slate-500">{profile.email}</div>}
             {profile.bio && <p className="text-slate-700 dark:text-slate-200 text-sm mt-2">{profile.bio}</p>}
             <div className="text-xs text-slate-500 mt-2">
-              {profile._count?.posts ?? 0} publicaciones • {profile.friendsCount ?? 0} amigos
+              {profile._count?.posts ?? 0} publicaciones · {profile.friendsCount ?? 0} amigos
             </div>
             {profile.relationCategory && (
               <div className="text-xs text-slate-500">
