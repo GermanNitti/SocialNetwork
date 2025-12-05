@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  username  String    @unique
+  email     String    @unique
+  bio       String?
+  password  String
+  avatar    String?
+  createdAt DateTime  @default(now())
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  reactions Reaction[]
+  requestedFriendships Friendship[] @relation("friendRequester")
+  receivedFriendships  Friendship[] @relation("friendAddressee")
+  notifications        Notification[]
+  messages             Message[]
+  conversations        ConversationParticipant[]
+  preferences          UserPreference?
+}
+
+model Post {
+  id        Int        @id @default(autoincrement())
+  content   String
+  image     String?
+  createdAt DateTime   @default(now())
+  authorId  Int
+  author    User       @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+  likes     Like[]
+  reactions Reaction[]
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  content   String
+  createdAt DateTime  @default(now())
+  authorId  Int
+  postId    Int
+  author    User      @relation(fields: [authorId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+enum ReactionType {
+  MACANUDO
+  MESSIRVE
+  JAJAJA
+  DE_UNA
+  QUE_BOLUDO
+  QUE_BAJON
+}
+
+model Reaction {
+  id        Int          @id @default(autoincrement())
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  userId    Int
+  postId    Int
+  user      User         @relation(fields: [userId], references: [id])
+  post      Post         @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+model Friendship {
+  id           Int               @id @default(autoincrement())
+  requesterId  Int
+  addresseeId  Int
+  status       FriendshipStatus  @default(PENDING)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  requester    User              @relation("friendRequester", fields: [requesterId], references: [id])
+  addressee    User              @relation("friendAddressee", fields: [addresseeId], references: [id])
+  relationCategory String?       // amigo, familia, trabajo, deporte, pareja, etc
+  relationDetail   String?       // primo, hermana, colega, etc
+
+  @@unique([requesterId, addresseeId])
+}
+
+enum NotificationType {
+  REACTION
+  MENTION
+  MESSAGE
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  type      NotificationType
+  data      Json
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  userId    Int
+  user      User             @relation(fields: [userId], references: [id])
+}
+
+model UserPreference {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  cardStyle   Json?
+  theme       String?  // "light" | "dark" | custom palette key
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Conversation {
+  id           Int                        @id @default(autoincrement())
+  isDirect     Boolean                    @default(true)
+  createdAt    DateTime                   @default(now())
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  userId         Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  content        String
+  createdAt      DateTime     @default(now())
+  senderId       Int
+  conversationId Int
+  sender         User         @relation(fields: [senderId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+}
