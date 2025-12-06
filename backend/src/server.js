@@ -10,11 +10,21 @@ const friendRoutes = require("./routes/friends");
 const notificationRoutes = require("./routes/notifications");
 const chatRoutes = require("./routes/chat");
 const preferenceRoutes = require("./routes/preferences");
+const squadRoutes = require("./routes/squads");
+const feedbackRoutes = require("./routes/feedback");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const FRONTEND_ORIGIN = process.env.FRONTEND_URL || "http://localhost:5173";
 
-app.use(cors());
+app.use(
+  cors({
+    origin: FRONTEND_ORIGIN,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
@@ -26,6 +36,8 @@ app.use("/api/friends", friendRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/preferences", preferenceRoutes);
+app.use("/api/squads", squadRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Social Network API" });

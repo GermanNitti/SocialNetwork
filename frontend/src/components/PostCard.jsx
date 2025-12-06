@@ -51,6 +51,11 @@ export default function PostCard({ post }) {
           {new Date(post.createdAt).toLocaleString()}
         </div>
       </div>
+      {post.type === "HELP_REQUEST" && (
+        <span className="inline-block text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-200 px-2 py-1 rounded-full">
+          AYUDA
+        </span>
+      )}
       <p className="text-slate-800 dark:text-slate-100 text-sm whitespace-pre-line">{post.content}</p>
       {post.image && (
         <img
@@ -59,6 +64,21 @@ export default function PostCard({ post }) {
           className="w-full rounded-xl border border-slate-200 dark:border-slate-800 object-contain max-h-96 bg-slate-50 dark:bg-slate-800 cursor-pointer"
           onClick={() => open(`${mediaBase}/${post.image}`, "Imagen")}
         />
+      )}
+      {post.tags && post.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className="px-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+      {post.squad && (
+        <div className="text-xs text-slate-500">Publicado en: {post.squad.name}</div>
       )}
       <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
         {REACTION_ORDER.map((key) => (

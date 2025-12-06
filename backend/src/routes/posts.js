@@ -49,6 +49,27 @@ const findMentions = (text = "") => {
   return [...new Set(matches.map((m) => m.slice(1)))];
 };
 
+const serializePost = (post, userId) => ({
+  id: post.id,
+  content: post.content,
+  image: post.image,
+  createdAt: post.createdAt,
+  author: sanitizeUser(post.author),
+  likedBy: post.likes.map((like) => like.userId),
+  comments: post.comments.map((comment) => ({
+    id: comment.id,
+    content: comment.content,
+    createdAt: comment.createdAt,
+    author: sanitizeUser(comment.author),
+  })),
+  _count: post._count,
+  reactions: summarizeReactions(post.reactions),
+  userReaction: post.reactions.find((r) => r.userId === userId)?.type || null,
+  tags: post.tags,
+  type: post.type,
+  squad: post.squad ? { id: post.squad.id, name: post.squad.name } : null,
+});
+
 router.get("/", requireAuth, async (req, res) => {
   const { take = 20, skip = 0 } = req.query;
   const posts = await prisma.post.findMany({
@@ -64,32 +85,67 @@ router.get("/", requireAuth, async (req, res) => {
         orderBy: { createdAt: "desc" },
         include: { author: true },
       },
+      squad: true,
     },
   });
 
-  res.json(
-    posts.map((post) => ({
-      id: post.id,
-      content: post.content,
-      image: post.image,
-      createdAt: post.createdAt,
-      author: sanitizeUser(post.author),
-      likedBy: post.likes.map((like) => like.userId),
-      comments: post.comments.map((comment) => ({
-        id: comment.id,
-        content: comment.content,
-        createdAt: comment.createdAt,
-        author: sanitizeUser(comment.author),
-      })),
-      _count: post._count,
-      reactions: summarizeReactions(post.reactions),
-      userReaction: post.reactions.find((r) => r.userId === req.userId)?.type || null,
-    }))
-  );
+  res.json(posts.map((post) => serializePost(post, req.userId)));
+});
+
+router.get("/feed/personal", requireAuth, async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    include: {
+      squadMemberships: { select: { squadId: true } },
+    },
+  });
+  const interests = user?.interests || [];
+  const squadIds = (user?.squadMemberships || []).map((m) => m.squadId);
+
+  const candidates = await prisma.post.findMany({
+    where: {
+      OR: [
+        squadIds.length > 0 ? { squadId: { in: squadIds } } : undefined,
+        interests.length > 0 ? { tags: { hasSome: interests } } : undefined,
+      ].filter(Boolean),
+    },
+    orderBy: { createdAt: "desc" },
+    include: {
+      author: true,
+      _count: { select: { likes: true, comments: true } },
+      likes: { select: { userId: true } },
+      reactions: true,
+      comments: {
+        orderBy: { createdAt: "desc" },
+        include: { author: true },
+      },
+      squad: true,
+    },
+  });
+
+  const interestSet = new Set(interests);
+  const squadSet = new Set(squadIds);
+
+  const scored = candidates.map((p) => {
+    const inSquad = p.squadId && squadSet.has(p.squadId);
+    const hasInterest = (p.tags || []).some((t) => interestSet.has(t));
+    let score = 0;
+    if (inSquad && hasInterest) score = 3;
+    else if (inSquad) score = 2;
+    else if (hasInterest) score = 1;
+    return { post: p, score };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.post.createdAt) - new Date(a.post.createdAt);
+  });
+
+  res.json(scored.map(({ post }) => serializePost(post, req.userId)));
 });
 
 router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) => {
-  const { content } = req.body;
+  const { content, tags = [], type = "NORMAL", squadId, projectId } = req.body;
   if (!content) {
     return res.status(400).json({ message: "El contenido es obligatorio" });
   }
@@ -98,15 +154,33 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
     ? path.join("uploads/posts", req.file.filename).replace(/\\/g, "/")
     : null;
 
+  if (squadId) {
+    const squadExists = await prisma.squad.findUnique({ where: { id: Number(squadId) } });
+    if (!squadExists) return res.status(400).json({ message: "Squad no encontrado" });
+  }
+
+  if (projectId) {
+    const projectExists = await prisma.project.findUnique({ where: { id: Number(projectId) } });
+    if (!projectExists) return res.status(400).json({ message: "Proyecto no encontrado" });
+  }
+
   const post = await prisma.post.create({
     data: {
       content,
       image: imagePath,
       authorId: req.userId,
+      tags,
+      type,
+      squadId: squadId ? Number(squadId) : undefined,
+      projectId: projectId ? Number(projectId) : undefined,
     },
     include: {
       author: true,
       _count: { select: { likes: true, comments: true } },
+      likes: { select: { userId: true } },
+      reactions: true,
+      comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+      squad: true,
     },
   });
 
@@ -129,18 +203,7 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
     );
   }
 
-  res.status(201).json({
-    id: post.id,
-    content: post.content,
-    image: post.image,
-    createdAt: post.createdAt,
-    author: sanitizeUser(post.author),
-    likedBy: [],
-    comments: [],
-    _count: post._count,
-    reactions: summarizeReactions([]),
-    userReaction: null,
-  });
+  res.status(201).json(serializePost(post, req.userId));
 });
 
 router.get("/:id", requireAuth, async (req, res) => {
@@ -157,6 +220,7 @@ router.get("/:id", requireAuth, async (req, res) => {
       likes: { select: { userId: true } },
       reactions: true,
       comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+      squad: true,
     },
   });
 

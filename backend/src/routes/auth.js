@@ -42,6 +42,19 @@ router.post("/register", async (req, res) => {
     },
   });
 
+  // Badge para fundadores (primeros N usuarios)
+  const totalUsers = await prisma.user.count();
+  if (totalUsers <= 200) {
+    const founderBadge = await prisma.badge.findUnique({ where: { code: "FOUNDER_2025" } });
+    if (founderBadge) {
+      await prisma.userBadge.upsert({
+        where: { userId_badgeId: { userId: user.id, badgeId: founderBadge.id } },
+        update: {},
+        create: { userId: user.id, badgeId: founderBadge.id },
+      });
+    }
+  }
+
   const token = createToken(user.id);
   res.status(201).json({ token, user: sanitizeUser(user) });
 });

@@ -84,8 +84,13 @@ router.get("/:username", optionalAuth, async (req, res) => {
       email: true,
       bio: true,
       avatar: true,
+      location: true,
+      interests: true,
       createdAt: true,
       _count: { select: { posts: true } },
+      userBadges: {
+        include: { badge: true },
+      },
     },
   });
 
@@ -141,6 +146,13 @@ router.get("/:username", optionalAuth, async (req, res) => {
       friendshipStatus,
       relationCategory: friendship?.relationCategory || null,
       relationDetail: friendship?.relationDetail || null,
+      badges:
+        user.userBadges?.map((ub) => ({
+          code: ub.badge.code,
+          name: ub.badge.name,
+          description: ub.badge.description,
+          icon: ub.badge.icon,
+        })) || [],
     },
     posts: posts.map((post) => ({
       id: post.id,
@@ -202,6 +214,92 @@ router.put("/me/avatar", requireAuth, uploadAvatar.single("avatar"), async (req,
   });
 
   res.json({ user: sanitizeUser(updated) });
+});
+
+router.put("/me/interests", requireAuth, async (req, res) => {
+  const { interests } = req.body;
+  if (!Array.isArray(interests)) {
+    return res.status(400).json({ message: "interests debe ser un array de strings" });
+  }
+  const updated = await prisma.user.update({
+    where: { id: req.userId },
+    data: { interests },
+  });
+  res.json({ user: sanitizeUser(updated) });
+});
+
+router.put("/me/location", requireAuth, async (req, res) => {
+  const { location } = req.body;
+  if (!location || typeof location !== "string") {
+    return res.status(400).json({ message: "location es obligatorio" });
+  }
+  const updated = await prisma.user.update({
+    where: { id: req.userId },
+    data: { location },
+  });
+  res.json({ user: sanitizeUser(updated) });
+});
+
+router.get("/me/projects", requireAuth, async (req, res) => {
+  const projects = await prisma.project.findMany({
+    where: { userId: req.userId },
+    orderBy: { id: "desc" },
+  });
+  res.json(projects);
+});
+
+router.post("/me/projects", requireAuth, async (req, res) => {
+  const { title, description, category, targetDate, visibility, needsHelp } = req.body;
+  if (!title) return res.status(400).json({ message: "title es obligatorio" });
+  const project = await prisma.project.create({
+    data: {
+      userId: req.userId,
+      title,
+      description,
+      category,
+      targetDate: targetDate ? new Date(targetDate) : undefined,
+      visibility,
+      needsHelp,
+    },
+  });
+  res.status(201).json(project);
+});
+
+router.put("/me/projects/:projectId", requireAuth, async (req, res) => {
+  const projectId = Number(req.params.projectId);
+  if (Number.isNaN(projectId)) return res.status(400).json({ message: "ID inválido" });
+
+  const existing = await prisma.project.findUnique({ where: { id: projectId } });
+  if (!existing || existing.userId !== req.userId) {
+    return res.status(404).json({ message: "Proyecto no encontrado" });
+  }
+
+  const { title, description, category, targetDate, visibility, needsHelp } = req.body;
+  const updated = await prisma.project.update({
+    where: { id: projectId },
+    data: {
+      title,
+      description,
+      category,
+      targetDate: targetDate ? new Date(targetDate) : null,
+      visibility,
+      needsHelp,
+    },
+  });
+  res.json(updated);
+});
+
+router.delete("/me/projects/:projectId", requireAuth, async (req, res) => {
+  const projectId = Number(req.params.projectId);
+  if (Number.isNaN(projectId)) return res.status(400).json({ message: "ID inválido" });
+
+  const existing = await prisma.project.findUnique({ where: { id: projectId } });
+  if (!existing || existing.userId !== req.userId) {
+    return res.status(404).json({ message: "Proyecto no encontrado" });
+  }
+
+  await prisma.project.delete({ where: { id: projectId } });
+  res.json({ ok: true });
 });
 
 module.exports = router;

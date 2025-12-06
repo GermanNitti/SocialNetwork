@@ -3,6 +3,16 @@ const { PrismaClient, ShopCategory } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.badge.upsert({
+    where: { code: "FOUNDER_2025" },
+    update: {},
+    create: {
+      code: "FOUNDER_2025",
+      name: "Fundador 2025",
+      description: "Uno de los primeros en creer en Macanudo",
+    },
+  });
+
   const themes = [
     {
       key: "nature",

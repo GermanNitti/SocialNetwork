@@ -10,6 +10,9 @@ import Register from "./pages/Register";
 import Chat from "./pages/Chat";
 import Settings from "./pages/Settings";
 import Lightbox from "./components/Lightbox";
+import Squads from "./pages/Squads";
+import SquadDetail from "./pages/SquadDetail";
+import FeedbackPage from "./pages/Feedback";
 
 function App() {
   const { user, loading } = useAuth();
@@ -66,6 +69,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/squads"
+            element={
+              <ProtectedRoute>
+                <Squads />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/squads/:id"
+            element={
+              <ProtectedRoute>
+                <SquadDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/feedback"
+            element={
+              <ProtectedRoute>
+                <FeedbackPage />
               </ProtectedRoute>
             }
           />

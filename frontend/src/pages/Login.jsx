@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import SplashLogo from "../components/SplashLogo";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,17 +18,20 @@ export default function Login() {
     setError(null);
     try {
       await login(identifier, password);
-      navigate("/feed");
+      setShowSplash(true);
+      setTimeout(() => {
+        navigate("/feed");
+      }, 3000);
     } catch (err) {
       setError(err.response?.data?.message || "Error al iniciar sesión");
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <SplashLogo visible={showSplash} />
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-md relative z-10">
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 mb-1">Bienvenido</h1>
         <p className="text-sm text-slate-500 mb-6">Inicia sesión para ver el feed.</p>
         {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</div>}
@@ -54,7 +59,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || showSplash}
             className="w-full bg-indigo-600 text-white font-semibold py-2 rounded-lg hover:bg-indigo-500 disabled:opacity-50"
           >
             {loading ? "Entrando..." : "Entrar"}
@@ -70,3 +75,6 @@ export default function Login() {
     </div>
   );
 }
+
+
+

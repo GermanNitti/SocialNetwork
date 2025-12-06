@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import api from "../api/client";
+import SplashLogo from "../components/SplashLogo";
 
 const AuthContext = createContext(null);
+const SPLASH_DURATION = 3000;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
 
   useEffect(() => {
     const initialize = async () => {
@@ -14,10 +17,14 @@ export function AuthProvider({ children }) {
         setLoading(false);
         return;
       }
+      // Mostrar el splash apenas detectamos token para evitar ver el feed antes del efecto
+      setShowSplash(true);
       try {
         const { data } = await api.get("/auth/me");
         setUser(data.user);
+        setTimeout(() => setShowSplash(false), SPLASH_DURATION);
       } catch (error) {
+        setShowSplash(false);
         logout();
       } finally {
         setLoading(false);
@@ -51,6 +58,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    setShowSplash(false);
   };
 
   const value = useMemo(
@@ -62,11 +70,18 @@ export function AuthProvider({ children }) {
       register,
       logout,
       setUser,
+      showSplash,
+      setShowSplash,
     }),
-    [user, token, loading]
+    [user, token, loading, showSplash]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <SplashLogo visible={showSplash} />
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

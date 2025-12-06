@@ -12,6 +12,18 @@ export default function Profile() {
   const queryClient = useQueryClient();
   const [relationForm, setRelationForm] = useState({ category: "", detail: "" });
   const [editingRelation, setEditingRelation] = useState(false);
+  const [interestsDraft, setInterestsDraft] = useState([]);
+  const [newInterest, setNewInterest] = useState("");
+  const [locationDraft, setLocationDraft] = useState("");
+  const [projectForm, setProjectForm] = useState({
+    title: "",
+    description: "",
+    category: "OTRO",
+    targetDate: "",
+    visibility: "PUBLIC",
+    needsHelp: false,
+  });
+  const [editingProject, setEditingProject] = useState(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["profile", username],
@@ -20,6 +32,22 @@ export default function Profile() {
       return data;
     },
   });
+  const { data: myProjects } = useQuery({
+    queryKey: ["my-projects"],
+    queryFn: async () => {
+      const { data } = await api.get("/users/me/projects");
+      return data;
+    },
+    enabled: currentUser?.username === username,
+  });
+  const { data: mySquads } = useQuery({
+    queryKey: ["my-squads"],
+    queryFn: async () => {
+      const { data } = await api.get("/squads");
+      return data;
+    },
+    enabled: currentUser?.username === username,
+  });
 
   useEffect(() => {
     if (data?.user) {
@@ -27,6 +55,8 @@ export default function Profile() {
         category: data.user.relationCategory || "",
         detail: data.user.relationDetail || "",
       });
+      setInterestsDraft(data.user.interests || []);
+      setLocationDraft(data.user.location || "");
     }
   }, [data]);
 
@@ -60,6 +90,68 @@ export default function Profile() {
       setEditingRelation(false);
     },
   });
+  const updateInterests = useMutation({
+    mutationFn: async (interests) => api.put("/users/me/interests", { interests }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile", username] }),
+  });
+  const updateLocation = useMutation({
+    mutationFn: async (location) => api.put("/users/me/location", { location }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile", username] }),
+  });
+  const createProject = useMutation({
+    mutationFn: async (payload) => api.post("/users/me/projects", payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-projects"] });
+      setProjectForm({
+        title: "",
+        description: "",
+        category: "OTRO",
+        targetDate: "",
+        visibility: "PUBLIC",
+        needsHelp: false,
+      });
+    },
+  });
+  const updateProject = useMutation({
+    mutationFn: async ({ id, ...rest }) => api.put(`/users/me/projects/${id}`, rest),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-projects"] });
+      setEditingProject(null);
+      setProjectForm({
+        title: "",
+        description: "",
+        category: "OTRO",
+        targetDate: "",
+        visibility: "PUBLIC",
+        needsHelp: false,
+      });
+    },
+  });
+  const deleteProject = useMutation({
+    mutationFn: async (id) => api.delete(`/users/me/projects/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-projects"] }),
+  });
+  const helpPost = useMutation({
+    mutationFn: async (project) => {
+      const tagsMap = {
+        SALUD: ["salud"],
+        CREATIVO: ["creativo"],
+        PERSONAL: ["personal"],
+        ESTUDIO: ["estudio"],
+        OTRO: ["ayuda"],
+      };
+      const tags = tagsMap[project.category] || ["ayuda"];
+      const content = `Estoy buscando ayuda para este proyecto: ${project.title}${project.description ? `\\n${project.description}` : ""}`;
+      const { data } = await api.post("/posts", {
+        content,
+        type: "HELP_REQUEST",
+        projectId: project.id,
+        tags,
+      });
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
+  });
 
   if (isLoading) {
     return (
@@ -82,6 +174,11 @@ export default function Profile() {
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
   const relationCategory = profile.relationCategory || "";
   const relationDetail = profile.relationDetail || "";
+  const isOwnProfile = currentUser?.username === profile.username;
+  const isOwner = isOwnProfile;
+  const projectCategories = ["PERSONAL", "CREATIVO", "SALUD", "ESTUDIO", "OTRO"];
+  const projectVisibilities = ["PUBLIC", "FRIENDS", "PRIVATE"];
+  const formatDate = (val) => (val ? new Date(val).toLocaleDateString() : "");
 
   const friendStatus = profile.friendshipStatus;
   const renderFriendAction = () => {
@@ -208,6 +305,28 @@ export default function Profile() {
               {renderFriendAction()}
             </div>
             <div className="text-sm text-slate-500">@{profile.username}</div>
+            {isOwner && (
+              <div className="mt-1">
+                <Link
+                  to="/feedback"
+                  className="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-800"
+                >
+                  Ir al muro del creador
+                </Link>
+              </div>
+            )}
+            {profile.badges && profile.badges.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {profile.badges.map((b) => (
+                  <span
+                    key={b.code}
+                    className="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800"
+                  >
+                    {b.name}
+                  </span>
+                ))}
+              </div>
+            )}
             {profile.email && <div className="text-sm text-slate-500">{profile.email}</div>}
             {profile.bio && <p className="text-slate-700 dark:text-slate-200 text-sm mt-2">{profile.bio}</p>}
             <div className="text-xs text-slate-500 mt-2">
@@ -218,9 +337,293 @@ export default function Profile() {
                 Relación: {profile.relationCategory} {profile.relationDetail ? `(${profile.relationDetail})` : ""}
               </div>
             )}
+            {isOwner && (
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Intereses</h2>
+                  <button
+                    onClick={() => updateInterests.mutateAsync(interestsDraft)}
+                    className="text-xs px-3 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-50"
+                    disabled={updateInterests.isPending}
+                  >
+                    {updateInterests.isPending ? "Guardando..." : "Guardar intereses"}
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {interestsDraft.map((tag, idx) => (
+                    <span
+                      key={`${tag}-${idx}`}
+                      className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200"
+                    >
+                      #{tag}
+                      <button
+                        onClick={() =>
+                          setInterestsDraft((prev) => prev.filter((_, i) => i !== idx))
+                        }
+                        className="text-slate-500 hover:text-red-500"
+                        type="button"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    value={newInterest}
+                    onChange={(e) => setNewInterest(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (newInterest.trim()) {
+                          setInterestsDraft((prev) => [...prev, newInterest.trim()]);
+                          setNewInterest("");
+                        }
+                      }
+                    }}
+                    className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-200"
+                    placeholder="Agregar interés y Enter"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    value={locationDraft}
+                    onChange={(e) => setLocationDraft(e.target.value)}
+                    className="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm flex-1 text-slate-800 dark:text-slate-100"
+                    placeholder="Ciudad / zona"
+                  />
+                  <button
+                    onClick={() => updateLocation.mutateAsync(locationDraft)}
+                    className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 disabled:opacity-50"
+                    disabled={updateLocation.isPending}
+                  >
+                    {updateLocation.isPending ? "Guardando..." : "Guardar ubicación"}
+                  </button>
+                </div>
+              </div>
+            )}
+            {!isOwner && profile.interests?.length > 0 && (
+              <div className="mt-3">
+                <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Intereses</h2>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {profile.interests.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+                {profile.location && (
+                  <div className="text-xs text-slate-500 mt-2">Ubicación: {profile.location}</div>
+                )}
+              </div>
+            )}
+            {isOwner && mySquads && (
+              <div className="mt-4">
+                <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Mis squads</h2>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {mySquads.filter((s) => s.joined).map((s) => (
+                    <Link
+                      key={s.id}
+                      to={`/squads/${s.id}`}
+                      className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
+                    >
+                      {s.name}
+                    </Link>
+                  ))}
+                  {mySquads.filter((s) => s.joined).length === 0 && (
+                    <div className="text-xs text-slate-500">Aún no te uniste a squads.</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+      {isOwner && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Proyectos y metas</h2>
+            <button
+              onClick={() => {
+                setEditingProject(null);
+                setProjectForm({
+                  title: "",
+                  description: "",
+                  category: "OTRO",
+                  targetDate: "",
+                  visibility: "PUBLIC",
+                  needsHelp: false,
+                });
+              }}
+              className="px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500"
+            >
+              Agregar proyecto
+            </button>
+          </div>
+          <div className="grid gap-3">
+            {myProjects?.map((p) => (
+              <div
+                key={p.id}
+                className="border border-slate-200 dark:border-slate-800 rounded-xl p-3 bg-slate-50 dark:bg-slate-800/50"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold text-slate-900 dark:text-slate-100">{p.title}</div>
+                  <span className="text-xs px-2 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                    {p.category}
+                  </span>
+                  {p.needsHelp && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200">
+                      Pide ayuda
+                    </span>
+                  )}
+                  <div className="ml-auto flex items-center gap-2 text-xs text-slate-500">
+                    {p.targetDate && <span>Objetivo: {formatDate(p.targetDate)}</span>}
+                    <span>Visibilidad: {p.visibility}</span>
+                  </div>
+                </div>
+                {p.description && (
+                  <p className="text-sm text-slate-700 dark:text-slate-200 mt-1">{p.description}</p>
+                )}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => {
+                      setEditingProject(p.id);
+                      setProjectForm({
+                        title: p.title,
+                        description: p.description || "",
+                        category: p.category,
+                        targetDate: p.targetDate ? p.targetDate.split("T")[0] : "",
+                        visibility: p.visibility,
+                        needsHelp: p.needsHelp,
+                      });
+                    }}
+                    className="text-xs px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => deleteProject.mutate(p.id)}
+                    className="text-xs px-3 py-1 rounded-lg border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200"
+                  >
+                    Eliminar
+                  </button>
+                  <button
+                    onClick={() => helpPost.mutate(p)}
+                    className="text-xs px-3 py-1 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+                  >
+                    Pedir ayuda a la comunidad
+                  </button>
+                </div>
+              </div>
+            ))}
+            {(!myProjects || myProjects.length === 0) && (
+              <div className="text-sm text-slate-500">Aún no tienes proyectos. ¡Crea el primero!</div>
+            )}
+          </div>
+          <div className="border-t border-slate-200 dark:border-slate-800 pt-4 space-y-3">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Título *</label>
+                <input
+                  value={projectForm.title}
+                  onChange={(e) => setProjectForm((p) => ({ ...p, title: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                  placeholder="Nuevo proyecto"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Categoría</label>
+                <select
+                  value={projectForm.category}
+                  onChange={(e) => setProjectForm((p) => ({ ...p, category: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                >
+                  {projectCategories.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Descripción</label>
+              <textarea
+                value={projectForm.description}
+                onChange={(e) => setProjectForm((p) => ({ ...p, description: e.target.value }))}
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                rows={3}
+                placeholder="Detalles adicionales"
+              />
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Fecha objetivo</label>
+                <input
+                  type="date"
+                  value={projectForm.targetDate}
+                  onChange={(e) => setProjectForm((p) => ({ ...p, targetDate: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Visibilidad</label>
+                <select
+                  value={projectForm.visibility}
+                  onChange={(e) => setProjectForm((p) => ({ ...p, visibility: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                >
+                  {projectVisibilities.map((v) => (
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 mt-6">
+                <input
+                  type="checkbox"
+                  checked={projectForm.needsHelp}
+                  onChange={(e) => setProjectForm((p) => ({ ...p, needsHelp: e.target.checked }))}
+                />
+                Necesito ayuda de la comunidad
+              </label>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() =>
+                  editingProject
+                    ? updateProject.mutate({ id: editingProject, ...projectForm })
+                    : createProject.mutate(projectForm)
+                }
+                className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 disabled:opacity-50"
+                disabled={!projectForm.title}
+              >
+                {editingProject ? "Actualizar proyecto" : "Crear proyecto"}
+              </button>
+              {editingProject && (
+                <button
+                  onClick={() => {
+                    setEditingProject(null);
+                    setProjectForm({
+                      title: "",
+                      description: "",
+                      category: "OTRO",
+                      targetDate: "",
+                      visibility: "PUBLIC",
+                      needsHelp: false,
+                    });
+                  }}
+                  className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm"
+                >
+                  Cancelar
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="space-y-4">
         {posts.length === 0 && (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center text-slate-500">

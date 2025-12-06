@@ -78,6 +78,9 @@ export default function NavBar() {
             <Link to="/shop" className={navLink(location.pathname === "/shop")}>
               Tienda
             </Link>
+            <Link to="/squads" className={navLink(location.pathname.startsWith("/squads"))}>
+              Squads
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2 ml-auto">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import SplashLogo from "../components/SplashLogo";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Register() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -24,7 +26,10 @@ export default function Register() {
     setLoading(true);
     try {
       await register(form);
-      navigate("/feed");
+      setShowSplash(true);
+      setTimeout(() => {
+        navigate("/feed");
+      }, 3000);
     } catch (err) {
       setError(err.response?.data?.message || "Error al registrarse");
     } finally {
@@ -33,8 +38,9 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <SplashLogo visible={showSplash} />
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-md relative z-10">
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 mb-1">Crear cuenta</h1>
         <p className="text-sm text-slate-500 mb-6">Únete y comparte tus ideas.</p>
         {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</div>}
@@ -87,7 +93,7 @@ export default function Register() {
           </div>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || showSplash}
             className="w-full bg-indigo-600 text-white font-semibold py-2 rounded-lg hover:bg-indigo-500 disabled:opacity-50"
           >
             {loading ? "Creando cuenta..." : "Registrarme"}
@@ -103,3 +109,5 @@ export default function Register() {
     </div>
   );
 }
+
+
