@@ -22,6 +22,7 @@ model User {
   interests String[]  @default([])
   password  String
   avatar    String?
+  hasCompletedOnboarding Boolean @default(false)
   themeId   Int?
   customThemeSettings Json?
   points    Int       @default(0)
@@ -47,6 +48,16 @@ model User {
   theme                Theme?     @relation(fields: [themeId], references: [id])
   userItems            UserItem[]
   interactions         UserInteraction[]
+  profileVideoUrl          String?
+  profileVideoThumbnailUrl String?
+  useVideoAvatar           Boolean @default(false)
+  coverImageUrl            String?
+  coverVideoUrl            String?
+  termStats               UserTermStats[]
+  relationsAsUser1        UserRelation[] @relation("UserRelationUser1")
+  relationsAsUser2        UserRelation[] @relation("UserRelationUser2")
+  ambiguousReferencesAuthored AmbiguousReference[] @relation("AmbiguousReferenceAuthor")
+  ambiguousReferenceCandidates AmbiguousReferenceCandidate[] @relation("AmbiguousReferenceTarget")
 }
 
 model Post {
@@ -65,6 +76,7 @@ model Post {
   squad     Squad?     @relation(fields: [squadId], references: [id])
   projectId Int?
   project   Project?   @relation(fields: [projectId], references: [id])
+  ambiguousReferences AmbiguousReference[] @relation("PostAmbiguousReferences")
 }
 
 model Comment {
@@ -281,6 +293,7 @@ model Project {
   targetDate  DateTime?
   visibility  ProjectVisibility @default(PUBLIC)
   needsHelp   Boolean           @default(false)
+  progress    Int               @default(0)
 
   user   User  @relation(fields: [userId], references: [id])
   posts  Post[]
@@ -337,6 +350,85 @@ model FeedbackVote {
   feedback Feedback @relation(fields: [feedbackId], references: [id])
 
   @@id([userId, feedbackId])
+}
+
+model Hashtag {
+  id         Int      @id @default(autoincrement())
+  canonical  String   @unique
+  display    String
+  useCount   Int      @default(0)
+  lastUsedAt DateTime @default(now())
+}
+
+model TermGlobal {
+  id          Int      @id @default(autoincrement())
+  term        String
+  normalized  String   @unique
+  totalCount  Int      @default(0)
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+}
+
+model TermTopicStats {
+  id             Int    @id @default(autoincrement())
+  termNormalized String
+  tag            String
+  count          Int    @default(0)
+
+  @@unique([termNormalized, tag])
+}
+
+model UserTermStats {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  term         String
+  normalized   String
+  isProperName Boolean  @default(false)
+  count        Int      @default(0)
+  lastSeenAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, normalized])
+  @@index([userId, normalized])
+}
+
+model UserRelation {
+  id                Int      @id @default(autoincrement())
+  user1Id           Int
+  user2Id           Int
+  score             Float    @default(0)
+  lastInteractionAt DateTime @default(now())
+
+  user1 User @relation("UserRelationUser1", fields: [user1Id], references: [id])
+  user2 User @relation("UserRelationUser2", fields: [user2Id], references: [id])
+
+  @@unique([user1Id, user2Id])
+}
+
+model AmbiguousReference {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  authorId  Int
+  label     String
+  sentiment String
+  kind      String
+  createdAt DateTime @default(now())
+
+  post   Post @relation("PostAmbiguousReferences", fields: [postId], references: [id])
+  author User @relation("AmbiguousReferenceAuthor", fields: [authorId], references: [id])
+
+  candidates AmbiguousReferenceCandidate[]
+}
+
+model AmbiguousReferenceCandidate {
+  id           Int      @id @default(autoincrement())
+  referenceId  Int
+  targetUserId Int
+  confidence   Float    @default(0)
+
+  reference AmbiguousReference @relation(fields: [referenceId], references: [id])
+  target    User               @relation("AmbiguousReferenceTarget", fields: [targetUserId], references: [id])
 }
 
 model Conversation {

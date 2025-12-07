@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_BASE_URL } from "../api/client";
 import api from "../api/client";
 import Avatar from "./Avatar";
+import { formatTextWithHashtags } from "../utils/formatTextWithHashtags";
 import { useAuth } from "../context/AuthContext";
 import { REACTIONS, REACTION_ORDER } from "../constants/reactions";
 import useCardStyle from "../hooks/useCardStyle";
 import { useLightbox } from "../context/LightboxContext";
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, showHelpHighlight = false }) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [comment, setComment] = useState("");
+  const commentInputRef = useRef(null);
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
   const currentReaction = post.userReaction;
   const { style } = useCardStyle();
@@ -38,7 +40,9 @@ export default function PostCard({ post }) {
 
   return (
     <article
-      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-3"
+      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-3 ${
+        showHelpHighlight || post.type === "HELP_REQUEST" ? "ring-2 ring-amber-400/60" : ""
+      }`}
       style={style}
     >
       <div className="flex gap-3 items-center">
@@ -53,10 +57,12 @@ export default function PostCard({ post }) {
       </div>
       {post.type === "HELP_REQUEST" && (
         <span className="inline-block text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-200 px-2 py-1 rounded-full">
-          AYUDA
+          {showHelpHighlight ? "Pidiendo una mano" : "AYUDA"}
         </span>
       )}
-      <p className="text-slate-800 dark:text-slate-100 text-sm whitespace-pre-line">{post.content}</p>
+      <p className="text-slate-800 dark:text-slate-100 text-sm whitespace-pre-line">
+        {formatTextWithHashtags(post.content)}
+      </p>
       {post.image && (
         <img
           src={`${mediaBase}/${post.image}`}
@@ -107,7 +113,9 @@ export default function PostCard({ post }) {
             <Avatar user={c.author} size={32} />
             <div className="bg-slate-50 dark:bg-slate-800 rounded-xl px-3 py-2 flex-1">
               <div className="font-semibold text-slate-800 dark:text-slate-100">{c.author?.name}</div>
-              <p className="text-slate-700 dark:text-slate-200">{c.content}</p>
+              <p className="text-slate-700 dark:text-slate-200">
+                {formatTextWithHashtags(c.content)}
+              </p>
             </div>
           </div>
         ))}
@@ -115,6 +123,7 @@ export default function PostCard({ post }) {
           <input
             value={comment}
             onChange={(e) => setComment(e.target.value)}
+            ref={commentInputRef}
             className="flex-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:border-indigo-400 focus:outline-none"
             placeholder="Escribe un comentario..."
           />
@@ -126,6 +135,16 @@ export default function PostCard({ post }) {
             {commenting ? "Enviando..." : "Comentar"}
           </button>
         </div>
+        {showHelpHighlight && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => commentInputRef.current?.focus()}
+              className="px-3 py-2 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 text-xs font-semibold"
+            >
+              Comentar y dar una mano
+            </button>
+          </div>
+        )}
       </div>
     </article>
   );

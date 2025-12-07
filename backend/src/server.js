@@ -12,6 +12,7 @@ const chatRoutes = require("./routes/chat");
 const preferenceRoutes = require("./routes/preferences");
 const squadRoutes = require("./routes/squads");
 const feedbackRoutes = require("./routes/feedback");
+const hashtagRoutes = require("./routes/hashtags");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -38,6 +39,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/preferences", preferenceRoutes);
 app.use("/api/squads", squadRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/hashtags", hashtagRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Social Network API" });

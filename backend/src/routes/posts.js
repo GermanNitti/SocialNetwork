@@ -4,6 +4,13 @@ const path = require("path");
 const prisma = require("../prisma");
 const { requireAuth } = require("../middleware/auth");
 const { notify } = require("../utils/notify");
+const { extractHashtagsObjects, normalizeHashtag } = require("../utils/hashtags");
+const { detectTopicsFromText } = require("../utils/topicDetection");
+const { analyzePostWithAI } = require("../services/aiPostAnalyzer");
+const { updateTermStatsFromPost } = require("../utils/termStatsUpdater");
+const { registerUserInteraction } = require("../utils/userRelations");
+const { createAmbiguousReferenceFromAI } = require("../utils/ambiguousReferencesAI");
+const { GROQ_ENABLED } = require("../services/aiClient");
 
 const router = express.Router();
 
@@ -71,25 +78,41 @@ const serializePost = (post, userId) => ({
 });
 
 router.get("/", requireAuth, async (req, res) => {
-  const { take = 20, skip = 0 } = req.query;
-  const posts = await prisma.post.findMany({
-    take: Number(take),
-    skip: Number(skip),
-    orderBy: { createdAt: "desc" },
-    include: {
-      author: true,
-      _count: { select: { likes: true, comments: true } },
-      likes: { select: { userId: true } },
-      reactions: true,
-      comments: {
-        orderBy: { createdAt: "desc" },
-        include: { author: true },
-      },
-      squad: true,
-    },
-  });
+  const { take = 20, skip = 0, tag: tagParam } = req.query;
 
-  res.json(posts.map((post) => serializePost(post, req.userId)));
+  const where = {};
+  if (tagParam) {
+    const canonicalTag = normalizeHashtag(tagParam);
+    if (canonicalTag) {
+      where.tags = { has: canonicalTag };
+    }
+  }
+
+  try {
+    const posts = await prisma.post.findMany({
+      take: Number(take),
+      skip: Number(skip),
+      orderBy: { createdAt: "desc" },
+      where,
+      include: {
+        author: true,
+        _count: { select: { likes: true, comments: true } },
+        likes: { select: { userId: true } },
+        reactions: true,
+        comments: {
+          orderBy: { createdAt: "desc" },
+          include: { author: true },
+        },
+        squad: true,
+      },
+    });
+
+    res.json(posts.map((post) => serializePost(post, req.userId)));
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error cargando posts" });
+  }
 });
 
 router.get("/feed/personal", requireAuth, async (req, res) => {
@@ -99,14 +122,15 @@ router.get("/feed/personal", requireAuth, async (req, res) => {
       squadMemberships: { select: { squadId: true } },
     },
   });
-  const interests = user?.interests || [];
+  const interests = (user?.interests || []).map((i) => normalizeHashtag(i) || i);
+  const interestsCanonical = interests.map((i) => normalizeHashtag(i) || i);
   const squadIds = (user?.squadMemberships || []).map((m) => m.squadId);
 
   const candidates = await prisma.post.findMany({
     where: {
       OR: [
         squadIds.length > 0 ? { squadId: { in: squadIds } } : undefined,
-        interests.length > 0 ? { tags: { hasSome: interests } } : undefined,
+        interestsCanonical.length > 0 ? { tags: { hasSome: interestsCanonical } } : undefined,
       ].filter(Boolean),
     },
     orderBy: { createdAt: "desc" },
@@ -123,7 +147,7 @@ router.get("/feed/personal", requireAuth, async (req, res) => {
     },
   });
 
-  const interestSet = new Set(interests);
+  const interestSet = new Set(interestsCanonical);
   const squadSet = new Set(squadIds);
 
   const scored = candidates.map((p) => {
@@ -144,66 +168,205 @@ router.get("/feed/personal", requireAuth, async (req, res) => {
   res.json(scored.map(({ post }) => serializePost(post, req.userId)));
 });
 
-router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) => {
-  const { content, tags = [], type = "NORMAL", squadId, projectId } = req.body;
-  if (!content) {
-    return res.status(400).json({ message: "El contenido es obligatorio" });
+// Feed de pedidos de ayuda personalizados para el usuario
+router.get("/feed/help", requireAuth, async (req, res) => {
+  const userId = req.userId;
+  const take = parseInt(req.query.take, 10) || 20;
+  const skip = parseInt(req.query.skip, 10) || 0;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        squadMemberships: true,
+      },
+    });
+
+    const squadIds = user?.squadMemberships?.map((m) => m.squadId) || [];
+    const interests = user?.interests || [];
+
+    const posts = await prisma.post.findMany({
+      where: {
+        type: "HELP_REQUEST",
+        OR: [
+          squadIds.length > 0 ? { squadId: { in: squadIds } } : undefined,
+          interests.length > 0 ? { tags: { hasSome: interests } } : undefined,
+        ].filter(Boolean),
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: {
+        author: true,
+        _count: { select: { likes: true, comments: true } },
+        likes: { select: { userId: true } },
+        reactions: true,
+        comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+        squad: true,
+      },
+    });
+
+    res.json(posts.map((p) => serializePost(p, userId)));
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error loading help feed" });
   }
+});
 
-  const imagePath = req.file
-    ? path.join("uploads/posts", req.file.filename).replace(/\\/g, "/")
-    : null;
+router.get("/project/:projectId", requireAuth, async (req, res) => {
+  const projectId = Number(req.params.projectId);
+  if (Number.isNaN(projectId)) return res.status(400).json({ message: "ID inválido" });
 
-  if (squadId) {
-    const squadExists = await prisma.squad.findUnique({ where: { id: Number(squadId) } });
-    if (!squadExists) return res.status(400).json({ message: "Squad no encontrado" });
-  }
-
-  if (projectId) {
-    const projectExists = await prisma.project.findUnique({ where: { id: Number(projectId) } });
-    if (!projectExists) return res.status(400).json({ message: "Proyecto no encontrado" });
-  }
-
-  const post = await prisma.post.create({
-    data: {
-      content,
-      image: imagePath,
-      authorId: req.userId,
-      tags,
-      type,
-      squadId: squadId ? Number(squadId) : undefined,
-      projectId: projectId ? Number(projectId) : undefined,
-    },
+  const posts = await prisma.post.findMany({
+    where: { projectId },
+    orderBy: { createdAt: "desc" },
     include: {
       author: true,
       _count: { select: { likes: true, comments: true } },
       likes: { select: { userId: true } },
       reactions: true,
-      comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+      comments: {
+        orderBy: { createdAt: "desc" },
+        include: { author: true },
+      },
       squad: true,
     },
   });
 
-  const mentionUsernames = findMentions(content);
-  if (mentionUsernames.length > 0) {
-    const mentioned = await prisma.user.findMany({
-      where: { username: { in: mentionUsernames } },
-      select: { id: true },
+  res.json(posts.map((post) => serializePost(post, req.userId)));
+});
+
+router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) => {
+  try {
+    const { content, tags: bodyTags, type, squadId, projectId } = req.body;
+
+    if (!content) {
+      return res.status(400).json({ message: "El contenido es obligatorio" });
+    }
+
+    const imagePath = req.file
+      ? path.join("uploads/posts", req.file.filename).replace(/\\/g, "/")
+      : null;
+
+    if (squadId) {
+      const squadExists = await prisma.squad.findUnique({ where: { id: Number(squadId) } });
+      if (!squadExists) return res.status(400).json({ message: "Squad no encontrado" });
+    }
+
+    if (projectId) {
+      const projectExists = await prisma.project.findUnique({ where: { id: Number(projectId) } });
+      if (!projectExists) return res.status(400).json({ message: "Proyecto no encontrado" });
+    }
+
+    // 1) Tags explícitos
+    const explicitTags = Array.isArray(bodyTags) ? bodyTags : [];
+    // 2) Hashtags escritos
+    const hashtagObjects = extractHashtagsObjects(content);
+    const canonicalFromHashtags = hashtagObjects.map((h) => h.canonical);
+    // 3) Diccionario simple
+    const dictTopics = typeof detectTopicsFromText === "function" ? detectTopicsFromText(content) : [];
+    // 4) IA (Groq)
+    let aiAnalysis = {
+      topics: [],
+      extra_tags: [],
+      implicit_reference: { present: false, kind: "none", target_is_person: false },
+    };
+
+    if (GROQ_ENABLED) {
+      // Forzamos Groq para afinar el prompt y evaluar su cobertura,
+      // sin depender de heurísticas locales
+      aiAnalysis = await analyzePostWithAI(content);
+    } else if (!GROQ_ENABLED && typeof detectTopicsFromText === "function") {
+      aiAnalysis.topics = dictTopics;
+    }
+
+    const aiTopics = aiAnalysis.topics || [];
+    const extraTagsAI = aiAnalysis.extra_tags || [];
+
+    // 5) Unir tags
+    const allCanonicalTags = Array.from(
+      new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics, ...extraTagsAI])
+    );
+
+    // 6) Crear post
+    const post = await prisma.post.create({
+      data: {
+        content,
+        tags: allCanonicalTags,
+        type: type || "NORMAL",
+        squadId: squadId ? Number(squadId) : null,
+        projectId: projectId ? Number(projectId) : null,
+        authorId: req.userId,
+        image: imagePath,
+      },
+      include: {
+        author: true,
+        _count: { select: { likes: true, comments: true } },
+        likes: { select: { userId: true } },
+        reactions: true,
+        comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+        squad: true,
+      },
     });
-    await Promise.all(
-      mentioned
-        .filter((u) => u.id !== req.userId)
-        .map((u) =>
-          notify({
-            userId: u.id,
-            type: "MENTION",
-            data: { postId: post.id, by: req.userId },
+
+    // 7) Notifica menciones
+    const mentionUsernames = findMentions(content);
+    if (mentionUsernames.length > 0) {
+      const mentioned = await prisma.user.findMany({
+        where: { username: { in: mentionUsernames } },
+        select: { id: true },
+      });
+      await Promise.all(
+        mentioned
+          .filter((u) => u.id !== req.userId)
+          .map((u) =>
+            notify({
+              userId: u.id,
+              type: "MENTION",
+              data: { postId: post.id, by: req.userId },
+            })
+          )
+      );
+    }
+
+    // 8) Stats de términos (global, por tag, por usuario)
+    await updateTermStatsFromPost(prisma, post);
+
+    // 9) Referencia implícita
+    if (aiAnalysis.implicit_reference?.present) {
+      await createAmbiguousReferenceFromAI(prisma, post, aiAnalysis.implicit_reference);
+    }
+
+    // 10) Stats de hashtags
+    if (hashtagObjects.length > 0 && prisma.hashtag?.upsert) {
+      await Promise.all(
+        hashtagObjects.map((h) =>
+          prisma.hashtag.upsert({
+            where: { canonical: h.canonical },
+            update: {
+              useCount: { increment: 1 },
+              lastUsedAt: new Date(),
+              display: h.raw,
+            },
+            create: {
+              canonical: h.canonical,
+              display: h.raw,
+              useCount: 1,
+              lastUsedAt: new Date(),
+            },
           })
         )
-    );
-  }
+      );
+    }
 
-  res.status(201).json(serializePost(post, req.userId));
+    const responsePost = serializePost(post, req.userId);
+    res.json(responsePost);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error creando post" });
+  }
 });
 
 router.get("/:id", requireAuth, async (req, res) => {
@@ -253,6 +416,12 @@ router.post("/:id/like", requireAuth, async (req, res) => {
     return res.status(400).json({ message: "ID inválido" });
   }
 
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { id: true, authorId: true },
+  });
+  if (!post) return res.status(404).json({ error: "Post no encontrado" });
+
   const existing = await prisma.like.findUnique({
     where: { userId_postId: { userId: req.userId, postId } },
   });
@@ -266,6 +435,8 @@ router.post("/:id/like", requireAuth, async (req, res) => {
         postId,
       },
     });
+    // incrementar cercanía
+    await registerUserInteraction(prisma, req.userId, post.authorId, "like");
   }
 
   const likesCount = await prisma.like.count({ where: { postId } });
@@ -347,6 +518,12 @@ router.post("/:id/comments", requireAuth, async (req, res) => {
     return res.status(400).json({ message: "El comentario es obligatorio" });
   }
 
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { id: true, authorId: true },
+  });
+  if (!post) return res.status(404).json({ error: "Post no encontrado" });
+
   const comment = await prisma.comment.create({
     data: {
       content,
@@ -357,13 +534,14 @@ router.post("/:id/comments", requireAuth, async (req, res) => {
   });
 
   // Notifica al autor del post
-  const post = await prisma.post.findUnique({ where: { id: postId } });
   if (post && post.authorId !== req.userId) {
     await notify({
       userId: post.authorId,
       type: "REACTION",
       data: { kind: "COMMENT", postId, by: req.userId },
     });
+    // incrementar cercanía
+    await registerUserInteraction(prisma, req.userId, post.authorId, "comment");
   }
 
   // Notifica menciones en el comentario

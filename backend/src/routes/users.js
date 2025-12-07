@@ -14,7 +14,47 @@ const avatarStorage = multer.diskStorage({
   },
 });
 
+const profileVideoStorage = multer.diskStorage({
+  destination: path.join(__dirname, "../../uploads/profile_videos"),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `profile-video-${req.userId}-${Date.now()}${ext}`);
+  },
+});
+
+const coverStorage = multer.diskStorage({
+  destination: path.join(__dirname, "../../uploads/covers"),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `cover-${req.userId}-${Date.now()}${ext}`);
+  },
+});
+
 const uploadAvatar = multer({ storage: avatarStorage });
+const uploadProfileVideo = multer({
+  storage: profileVideoStorage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+  fileFilter: (req, file, cb) => {
+    const allowed = ["video/mp4", "video/webm"];
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error("Tipo de video inválido"));
+    }
+    cb(null, true);
+  },
+});
+
+const uploadCover = multer({ storage: coverStorage });
+const uploadCoverVideo = multer({
+  storage: coverStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ["video/mp4", "video/webm"];
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error("Tipo de video inválido"));
+    }
+    cb(null, true);
+  },
+});
 
 const sanitizeUser = (user) => {
   if (!user) return null;
@@ -86,6 +126,12 @@ router.get("/:username", optionalAuth, async (req, res) => {
       avatar: true,
       location: true,
       interests: true,
+      hasCompletedOnboarding: true,
+      profileVideoUrl: true,
+      profileVideoThumbnailUrl: true,
+      useVideoAvatar: true,
+      coverImageUrl: true,
+      coverVideoUrl: true,
       createdAt: true,
       _count: { select: { posts: true } },
       userBadges: {
@@ -109,6 +155,7 @@ router.get("/:username", optionalAuth, async (req, res) => {
       },
       reactions: true,
       comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+      squad: true,
     },
   });
 
@@ -216,6 +263,87 @@ router.put("/me/avatar", requireAuth, uploadAvatar.single("avatar"), async (req,
   res.json({ user: sanitizeUser(updated) });
 });
 
+router.put("/me/profile-video", requireAuth, uploadProfileVideo.single("profileVideo"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No se adjuntó archivo de video" });
+  }
+  try {
+    const rawStart = Number(req.body.start);
+    const rawEnd = Number(req.body.end);
+    const rawLength = Number(req.body.length);
+    const start = Number.isFinite(rawStart) && rawStart >= 0 ? rawStart : 0;
+    const desiredLength = Number.isFinite(rawLength)
+      ? rawLength
+      : Number.isFinite(rawEnd)
+        ? rawEnd - start
+        : 3;
+    const clipLength = Math.min(5, Math.max(3, desiredLength || 3));
+    const computedEnd = Number.isFinite(rawEnd) ? rawEnd : start + clipLength;
+    const end = Math.min(start + 5, computedEnd);
+    const videoPath = path.join("uploads/profile_videos", req.file.filename).replace(/\\/g, "/");
+    const finalPath = end ? `${videoPath}#t=${Math.max(0, start)},${Math.max(0, end)}` : videoPath;
+    const updated = await prisma.user.update({
+      where: { id: req.userId },
+      data: { profileVideoUrl: finalPath, useVideoAvatar: true },
+    });
+    res.json({ user: sanitizeUser(updated) });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ message: "Error al subir video de perfil" });
+  }
+});
+
+router.put("/me/avatar-mode", requireAuth, async (req, res) => {
+  const { useVideoAvatar } = req.body;
+  const user = await prisma.user.findUnique({ where: { id: req.userId } });
+  if (useVideoAvatar && !user.profileVideoUrl) {
+    return res.status(400).json({ message: "No tienes video de perfil para activar el modo video" });
+  }
+  const updated = await prisma.user.update({
+    where: { id: req.userId },
+    data: { useVideoAvatar: !!useVideoAvatar },
+  });
+  res.json({ user: sanitizeUser(updated) });
+});
+
+router.put("/me/cover", requireAuth, uploadCover.single("coverImage"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No se adjuntó archivo de portada" });
+  }
+  const coverPath = path.join("uploads/covers", req.file.filename).replace(/\\/g, "/");
+  const updated = await prisma.user.update({
+    where: { id: req.userId },
+    data: { coverImageUrl: coverPath },
+  });
+  res.json({ user: sanitizeUser(updated) });
+});
+
+router.put("/me/cover-video", requireAuth, uploadCoverVideo.single("coverVideo"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No se adjuntó archivo de video de portada" });
+  }
+  const rawStart = Number(req.body.start);
+  const rawEnd = Number(req.body.end);
+  const rawLength = Number(req.body.length);
+  const start = Number.isFinite(rawStart) && rawStart >= 0 ? rawStart : 0;
+  const desiredLength = Number.isFinite(rawLength)
+    ? rawLength
+    : Number.isFinite(rawEnd)
+      ? rawEnd - start
+      : 3;
+  const clipLength = Math.min(5, Math.max(3, desiredLength || 3));
+  const computedEnd = Number.isFinite(rawEnd) ? rawEnd : start + clipLength;
+  const end = Math.min(start + 5, computedEnd);
+  const coverPath = path.join("uploads/covers", req.file.filename).replace(/\\/g, "/");
+  const finalPath = end ? `${coverPath}#t=${Math.max(0, start)},${Math.max(0, end)}` : coverPath;
+  const updated = await prisma.user.update({
+    where: { id: req.userId },
+    data: { coverVideoUrl: finalPath },
+  });
+  res.json({ user: sanitizeUser(updated) });
+});
+
 router.put("/me/interests", requireAuth, async (req, res) => {
   const { interests } = req.body;
   if (!Array.isArray(interests)) {
@@ -238,6 +366,21 @@ router.put("/me/location", requireAuth, async (req, res) => {
     data: { location },
   });
   res.json({ user: sanitizeUser(updated) });
+});
+
+// Marca el onboarding como completado
+router.put("/me/onboarding", requireAuth, async (req, res) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data: { hasCompletedOnboarding: true },
+    });
+    res.json(sanitizeUser(user));
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error updating onboarding state" });
+  }
 });
 
 router.get("/me/projects", requireAuth, async (req, res) => {
@@ -300,6 +443,124 @@ router.delete("/me/projects/:projectId", requireAuth, async (req, res) => {
 
   await prisma.project.delete({ where: { id: projectId } });
   res.json({ ok: true });
+});
+
+router.put("/me/projects/:projectId/progress", requireAuth, async (req, res) => {
+  const userId = req.userId;
+  const projectId = parseInt(req.params.projectId, 10);
+  const { progress } = req.body;
+
+  try {
+    const project = await prisma.project.update({
+      where: { id: projectId, userId },
+      data: { progress: Math.min(100, Math.max(0, progress || 0)) },
+    });
+    res.json(project);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error updating project progress" });
+  }
+});
+
+router.get("/me/projects/overview", requireAuth, async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const projects = await prisma.project.findMany({
+      where: { userId },
+      include: {
+        posts: {
+          select: {
+            id: true,
+            type: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    const mapped = projects.map((p) => {
+      const helpRequests = p.posts.filter((po) => po.type === "HELP_REQUEST");
+      const updates = p.posts.filter((po) => po.type === "PROJECT_UPDATE");
+      const lastUpdateAt = p.posts.length
+        ? p.posts.reduce((max, po) => (po.createdAt > max ? po.createdAt : max), p.posts[0].createdAt)
+        : null;
+
+      return {
+        ...p,
+        postsCount: p.posts.length,
+        helpRequestsCount: helpRequests.length,
+        updatesCount: updates.length,
+        lastUpdateAt,
+      };
+    });
+
+    res.json(mapped);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error loading projects overview" });
+  }
+});
+
+router.get("/me/suggested", requireAuth, async (req, res) => {
+  const userId = req.userId;
+  const limit = parseInt(req.query.limit, 10) || 10;
+
+  try {
+    const me = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { squadMemberships: true },
+    });
+
+    const myInterests = me?.interests || [];
+    const mySquadIds = me?.squadMemberships?.map((m) => m.squadId) || [];
+
+    const others = await prisma.user.findMany({
+      where: {
+        id: { not: userId },
+        OR: [
+          myInterests.length ? { interests: { hasSome: myInterests } } : undefined,
+          mySquadIds.length
+            ? {
+                squadMemberships: {
+                  some: { squadId: { in: mySquadIds } },
+                },
+              }
+            : undefined,
+        ].filter(Boolean),
+      },
+      take: limit * 3,
+      include: {
+        squadMemberships: true,
+      },
+    });
+
+    const scored = others.map((u) => {
+      const sharedInterests = (u.interests || []).filter((i) => myInterests.includes(i));
+      const sharedSquads = (u.squadMemberships || []).filter((m) => mySquadIds.includes(m.squadId));
+      const score = sharedInterests.length * 2 + sharedSquads.length * 3;
+
+      return {
+        id: u.id,
+        username: u.username,
+        name: u.name,
+        avatar: u.avatar,
+        sharedInterests,
+        sharedSquadsCount: sharedSquads.length,
+        score,
+      };
+    });
+
+    const sorted = scored.sort((a, b) => b.score - a.score).slice(0, limit);
+
+    res.json(sorted);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error loading suggested users" });
+  }
 });
 
 module.exports = router;

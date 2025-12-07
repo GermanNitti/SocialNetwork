@@ -3,12 +3,18 @@ import { createContext, useContext, useMemo, useState } from "react";
 const LightboxContext = createContext(null);
 
 export function LightboxProvider({ children }) {
-  const [image, setImage] = useState(null);
+  const [media, setMedia] = useState(null);
 
-  const open = (src, alt = "") => setImage({ src, alt });
-  const close = () => setImage(null);
+  const open = (src, alt = "", options = {}) => {
+    if (typeof src === "object" && src !== null) {
+      setMedia(src);
+    } else {
+      setMedia({ src, alt, isVideo: options.isVideo || false });
+    }
+  };
+  const close = () => setMedia(null);
 
-  const value = useMemo(() => ({ image, open, close }), [image]);
+  const value = useMemo(() => ({ media, open, close }), [media]);
 
   return <LightboxContext.Provider value={value}>{children}</LightboxContext.Provider>;
 }

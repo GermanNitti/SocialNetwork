@@ -81,6 +81,9 @@ export default function NavBar() {
             <Link to="/squads" className={navLink(location.pathname.startsWith("/squads"))}>
               Squads
             </Link>
+            <Link to="/feedback" className={navLink(location.pathname === "/feedback")}>
+              Ideas para Macanudo
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2 ml-auto">
