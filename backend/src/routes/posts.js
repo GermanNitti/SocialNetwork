@@ -73,6 +73,7 @@ const serializePost = (post, userId) => ({
   reactions: summarizeReactions(post.reactions),
   userReaction: post.reactions.find((r) => r.userId === userId)?.type || null,
   tags: post.tags,
+  hashtags: post.hashtags || [],
   type: post.type,
   squad: post.squad ? { id: post.squad.id, name: post.squad.name } : null,
 });
@@ -282,11 +283,11 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
     }
 
     const aiTopics = aiAnalysis.topics || [];
-    const extraTagsAI = aiAnalysis.extra_tags || [];
+    const aiHashtags = aiAnalysis.hashtags || [];
 
     // 5) Unir tags
     const allCanonicalTags = Array.from(
-      new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics, ...extraTagsAI])
+      new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics])
     );
 
     // 6) Crear post
@@ -294,6 +295,7 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
       data: {
         content,
         tags: allCanonicalTags,
+        hashtags: aiHashtags,
         type: type || "NORMAL",
         squadId: squadId ? Number(squadId) : null,
         projectId: projectId ? Number(projectId) : null,

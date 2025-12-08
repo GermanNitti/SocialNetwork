@@ -71,6 +71,7 @@ model Post {
   likes     Like[]
   reactions Reaction[]
   tags      String[]   @default([])
+  hashtags  String[]   @default([])
   type      PostType   @default(NORMAL)
   squadId   Int?
   squad     Squad?     @relation(fields: [squadId], references: [id])
