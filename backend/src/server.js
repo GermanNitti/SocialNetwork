@@ -16,7 +16,10 @@ const hashtagRoutes = require("./routes/hashtags");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const FRONTEND_ORIGIN = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_ORIGIN = (process.env.FRONTEND_URL || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
 app.use(
   cors({
@@ -41,8 +44,18 @@ app.use("/api/squads", squadRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/hashtags", hashtagRoutes);
 
-app.get("/", (req, res) => {
+// Servir frontend construido (Vite build)
+const clientDist = path.join(__dirname, "../../frontend/dist");
+app.use(express.static(clientDist));
+
+app.get("/api", (req, res) => {
   res.json({ message: "Social Network API" });
+});
+
+// Fallback SPA: cualquier ruta que no sea /api o /uploads devuelve index.html
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) return next();
+  res.sendFile(path.join(clientDist, "index.html"));
 });
 
 app.use((err, req, res, next) => {

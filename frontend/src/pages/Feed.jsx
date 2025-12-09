@@ -21,9 +21,18 @@ export default function Feed() {
               ? "/posts"
               : "/posts";
       const { data } = await api.get(endpoint);
-      return data;
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.posts)
+          ? data.posts
+          : [];
+      if (!Array.isArray(list)) {
+        console.warn("[Feed] Respuesta inesperada en", endpoint, data);
+      }
+      return list;
     },
   });
+  const posts = Array.isArray(data) ? data : [];
 
   return (
     <div className="max-w-6xl mx-auto px-4 space-y-4">
@@ -40,13 +49,13 @@ export default function Feed() {
               Cargando publicaciones...
             </div>
           )}
-          {!isLoading && (!data || data.length === 0) && (
+          {!isLoading && posts.length === 0 && (
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center text-slate-500">
               Aún no hay publicaciones. ¡Crea la primera!
             </div>
           )}
           {!isLoading &&
-            data?.map((post) => (
+            posts.map((post) => (
               <PostCard key={post.id} post={post} showHelpHighlight={mode === "help"} />
             ))}
         </section>

@@ -7,13 +7,27 @@ export default function NotificationBell({ label = "Notificaciones", iconOnly = 
   const { data } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const { data } = await api.get("/notifications");
-      return data || [];
+      try {
+        const { data } = await api.get("/notifications");
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.notifications)
+            ? data.notifications
+            : [];
+        if (!Array.isArray(list)) {
+          console.warn("[NotificationBell] Respuesta inesperada de /notifications", data);
+        }
+        return list;
+      } catch (err) {
+        console.warn("[NotificationBell] Error cargando notificaciones", err);
+        return [];
+      }
     },
     refetchInterval: 15000,
   });
 
-  const unread = (data || []).filter((n) => !n.readAt).length;
+  const safeNotifications = Array.isArray(data) ? data : [];
+  const unread = safeNotifications.filter((n) => !n.readAt).length;
 
   const markRead = async () => {
     await api.post("/notifications/read");

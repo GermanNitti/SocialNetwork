@@ -12,13 +12,33 @@ export default function FriendRequests({ iconOnly = false }) {
   const { data } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
-      const { data } = await api.get("/friends");
-      return data || [];
+      try {
+        const { data } = await api.get("/friends");
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.requests)
+            ? data.requests
+            : Array.isArray(data?.friendRequests)
+              ? data.friendRequests
+              : [];
+        if (!Array.isArray(list)) {
+          // fallback defensivo para evitar crasheos si la API no responde con array
+          console.warn("[FriendRequests] Respuesta inesperada de /friends", data);
+        }
+        return list;
+      } catch (err) {
+        console.warn("[FriendRequests] Error cargando solicitudes", err);
+        return [];
+      }
     },
     refetchInterval: 15000,
   });
 
-  const incoming = (data || []).filter((f) => f.status === "PENDING" && f.direction === "INCOMING");
+  const safeRequests = Array.isArray(data) ? data : [];
+  const incoming = safeRequests.filter(
+    (f) =>
+      (f.status === "PENDING" || f.status === "PENDIENTE") && f.direction === "INCOMING"
+  );
   const badge = incoming.length;
 
   const accept = useMutation({
