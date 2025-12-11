@@ -56,6 +56,15 @@ const findMentions = (text = "") => {
   return [...new Set(matches.map((m) => m.slice(1)))];
 };
 
+const mapComment = (comment, userId) => ({
+  id: comment.id,
+  content: comment.content,
+  createdAt: comment.createdAt,
+  author: sanitizeUser(comment.author),
+  reactions: summarizeReactions(comment.reactions || []),
+  userReaction: comment.reactions?.find((r) => r.userId === userId)?.type || null,
+});
+
 const serializePost = (post, userId) => ({
   id: post.id,
   content: post.content,
@@ -63,12 +72,7 @@ const serializePost = (post, userId) => ({
   createdAt: post.createdAt,
   author: sanitizeUser(post.author),
   likedBy: post.likes.map((like) => like.userId),
-  comments: post.comments.map((comment) => ({
-    id: comment.id,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    author: sanitizeUser(comment.author),
-  })),
+  comments: post.comments.map((comment) => mapComment(comment, userId)),
   _count: post._count,
   reactions: summarizeReactions(post.reactions),
   userReaction: post.reactions.find((r) => r.userId === userId)?.type || null,
@@ -101,8 +105,11 @@ router.get("/", requireAuth, async (req, res) => {
         likes: { select: { userId: true } },
         reactions: true,
         comments: {
-          orderBy: { createdAt: "desc" },
-          include: { author: true },
+          orderBy: { createdAt: "asc" },
+          include: {
+            author: true,
+            reactions: true,
+          },
         },
         squad: true,
       },
@@ -141,7 +148,7 @@ router.get("/feed/personal", requireAuth, async (req, res) => {
       likes: { select: { userId: true } },
       reactions: true,
       comments: {
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "asc" },
         include: { author: true },
       },
       squad: true,
@@ -202,7 +209,7 @@ router.get("/feed/help", requireAuth, async (req, res) => {
         _count: { select: { likes: true, comments: true } },
         likes: { select: { userId: true } },
         reactions: true,
-        comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+        comments: { orderBy: { createdAt: "asc" }, include: { author: true } },
         squad: true,
       },
     });
@@ -227,10 +234,10 @@ router.get("/project/:projectId", requireAuth, async (req, res) => {
       _count: { select: { likes: true, comments: true } },
       likes: { select: { userId: true } },
       reactions: true,
-      comments: {
-        orderBy: { createdAt: "desc" },
-        include: { author: true },
-      },
+        comments: {
+          orderBy: { createdAt: "asc" },
+          include: { author: true },
+        },
       squad: true,
     },
   });
@@ -307,7 +314,7 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
         _count: { select: { likes: true, comments: true } },
         likes: { select: { userId: true } },
         reactions: true,
-        comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+        comments: { orderBy: { createdAt: "desc" }, include: { author: true, reactions: true } },
         squad: true,
       },
     });
@@ -371,6 +378,57 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
   }
 });
 
+// Editar post (sólo autor)
+router.put("/:id", requireAuth, async (req, res) => {
+  const postId = Number(req.params.id);
+  if (Number.isNaN(postId)) return res.status(400).json({ message: "ID inválido" });
+
+  const existing = await prisma.post.findUnique({ where: { id: postId } });
+  if (!existing) return res.status(404).json({ message: "Post no encontrado" });
+  if (existing.authorId !== req.userId) return res.status(403).json({ message: "No autorizado" });
+
+  const { content } = req.body;
+  if (!content || !content.trim()) return res.status(400).json({ message: "El contenido es obligatorio" });
+
+  // Recalcular tags/hashtags con la misma lógica que creación
+  const explicitTags = Array.isArray(req.body.tags) ? req.body.tags : [];
+  const hashtagObjects = extractHashtagsObjects(content);
+  const canonicalFromHashtags = hashtagObjects.map((h) => h.canonical);
+  const dictTopics = typeof detectTopicsFromText === "function" ? detectTopicsFromText(content) : [];
+  let aiAnalysis = {
+    topics: [],
+    extra_tags: [],
+    implicit_reference: { present: false, kind: "none", target_is_person: false },
+  };
+  if (GROQ_ENABLED) {
+    aiAnalysis = await analyzePostWithAI(content);
+  } else if (!GROQ_ENABLED && typeof detectTopicsFromText === "function") {
+    aiAnalysis.topics = dictTopics;
+  }
+  const aiTopics = aiAnalysis.topics || [];
+  const aiHashtags = aiAnalysis.hashtags || [];
+
+  const allCanonicalTags = Array.from(
+    new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics])
+  );
+
+  const post = await prisma.post.update({
+    where: { id: postId },
+    data: { content, tags: allCanonicalTags, hashtags: aiHashtags },
+    include: {
+      author: true,
+      _count: { select: { likes: true, comments: true } },
+      likes: { select: { userId: true } },
+      reactions: true,
+      comments: { orderBy: { createdAt: "asc" }, include: { author: true, reactions: true } },
+      squad: true,
+    },
+  });
+
+  const responsePost = serializePost(post, req.userId);
+  res.json(responsePost);
+});
+
 router.get("/:id", requireAuth, async (req, res) => {
   const postId = Number(req.params.id);
   if (Number.isNaN(postId)) {
@@ -384,7 +442,7 @@ router.get("/:id", requireAuth, async (req, res) => {
       _count: { select: { likes: true, comments: true } },
       likes: { select: { userId: true } },
       reactions: true,
-      comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+      comments: { orderBy: { createdAt: "desc" }, include: { author: true, reactions: true } },
       squad: true,
     },
   });
@@ -497,16 +555,11 @@ router.get("/:id/comments", async (req, res) => {
   const comments = await prisma.comment.findMany({
     where: { postId },
     orderBy: { createdAt: "asc" },
-    include: { author: true },
+    include: { author: true, reactions: true },
   });
 
   res.json(
-    comments.map((comment) => ({
-      id: comment.id,
-      content: comment.content,
-      createdAt: comment.createdAt,
-      author: sanitizeUser(comment.author),
-    }))
+    comments.map((comment) => mapComment(comment, req.userId))
   );
 });
 
@@ -571,6 +624,78 @@ router.post("/:id/comments", requireAuth, async (req, res) => {
     content: comment.content,
     createdAt: comment.createdAt,
     author: sanitizeUser(comment.author),
+    reactions: summarizeReactions([]),
+    userReaction: null,
+  });
+});
+
+// Editar comentario (sólo autor)
+router.put("/:postId/comments/:commentId", requireAuth, async (req, res) => {
+  const postId = Number(req.params.postId);
+  const commentId = Number(req.params.commentId);
+  if (Number.isNaN(postId) || Number.isNaN(commentId)) {
+    return res.status(400).json({ message: "ID inválido" });
+  }
+  const { content } = req.body;
+  if (!content || !content.trim()) {
+    return res.status(400).json({ message: "El contenido es obligatorio" });
+  }
+
+  const existing = await prisma.comment.findUnique({ where: { id: commentId } });
+  if (!existing || existing.postId !== postId) {
+    return res.status(404).json({ message: "Comentario no encontrado" });
+  }
+  if (existing.authorId !== req.userId) {
+    return res.status(403).json({ message: "No autorizado" });
+  }
+
+  const updated = await prisma.comment.update({
+    where: { id: commentId },
+    data: { content },
+    include: { author: true, reactions: true },
+  });
+
+  res.json(mapComment(updated, req.userId));
+});
+
+// Reacciones en comentarios
+router.post("/:postId/comments/:commentId/reactions", requireAuth, async (req, res) => {
+  const postId = Number(req.params.postId);
+  const commentId = Number(req.params.commentId);
+  const { type } = req.body;
+  if (Number.isNaN(postId) || Number.isNaN(commentId)) {
+    return res.status(400).json({ message: "ID inválido" });
+  }
+  if (!type || !REACTIONS[type]) {
+    return res.status(400).json({ message: "Reacción inválida" });
+  }
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+    select: { id: true, postId: true, authorId: true },
+  });
+  if (!comment || comment.postId !== postId) {
+    return res.status(404).json({ message: "Comentario no encontrado" });
+  }
+
+  const existing = await prisma.commentReaction.findUnique({
+    where: { userId_commentId: { userId: req.userId, commentId } },
+  });
+
+  if (existing && existing.type === type) {
+    await prisma.commentReaction.delete({ where: { id: existing.id } });
+  } else if (existing) {
+    await prisma.commentReaction.update({ where: { id: existing.id }, data: { type } });
+  } else {
+    await prisma.commentReaction.create({
+      data: { userId: req.userId, commentId, type },
+    });
+  }
+
+  const reactions = await prisma.commentReaction.findMany({ where: { commentId } });
+  res.json({
+    reactions: summarizeReactions(reactions),
+    userReaction: reactions.find((r) => r.userId === req.userId)?.type || null,
   });
 });
 

@@ -1,5 +1,6 @@
 ﻿const { callGroqChat, GROQ_ENABLED } = require("./aiClient");
 const TOPICS = require("../config/topics");
+const TAG_CATEGORIES = require("../config/tagCategories");
 const { normalizeHashtag } = require("../utils/hashtags");
 
 function buildTopicsCatalog() {
@@ -15,6 +16,20 @@ function buildTopicsCatalog() {
 
 function normalizeText(str = "") {
   return normalizeHashtag(str);
+}
+
+function countWords(str = "") {
+  return str
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+}
+
+function cleanTag(tag = "") {
+  if (!tag) return "";
+  let t = String(tag).trim();
+  if (t.startsWith("#")) t = t.slice(1);
+  return t;
 }
 
 function contentMatchesTopic(content, topic) {
@@ -51,96 +66,55 @@ async function analyzePostWithAI(content) {
   const topicsCatalog = buildTopicsCatalog();
 
   const systemPrompt = `
-Sos un modelo que analiza posts cortos en español de una red social argentina llamada "Macanudo".
+Actuás como un clasificador de hashtags para una red social argentina.
+Tu tarea:
+- Leer el texto del post.
+- Leer una lista de categorías con reglas (idea_principal, cuando_usar, no_usar_cuando, subtags).
+- Elegir SOLO los hashtags que tengan sentido según el CONTEXTO y la INTENCIÓN. Nunca etiquetes por una palabra suelta.
+- Devolver un JSON con máximo 5 hashtags ordenados por relevancia.
 
-TENÉS QUE HACER TRES COSAS:
+REGLAS:
+1) Usá únicamente los tags o subtags provistos en "categories". No inventes otros.
+2) No uses un hashtag si cae en "no_usar_cuando", aunque aparezca la palabra.
+3) Si algo no encaja bien, es mejor no etiquetar.
+4) Entendés lunfardo argentino (guita, bondi, mardel, etc.) y lugares ambiguos (Mar del Plata ≠ dinero).
+5) No uses roles familiares/relacionales como hashtag genérico (#primo, #novio, etc.); usa la categoría apropiada (familia, amor, amigos) si aplica.
 
-1) Marcar a qué TEMAS del catálogo pertenece el post ("topics").
-   - Sé MUY CONSERVADOR.
-   - Si el post no trata claramente de un tema del catálogo, dejá "topics": [].
-
-2) Generar una lista corta de "hashtags" pensados como etiquetas útiles para agrupar contenido.
-   - "hashtags" es un array de palabras SIN el símbolo "#".
-   - Luego el sistema les va a agregar "#" adelante.
-   - Un buen hashtag es algo que una persona podría usar para buscar ese tipo de post.
-   - Ejemplos de buenos hashtags:
-     - "F1", "MaxVerstappen", "verstappencrash", "ImolaCrash"
-     - "amor", "pasteleria", "enamorada"
-     - "mate", "tardemates"
-   - NO uses palabras genéricas de rol familiar/relacional como hashtags, por ejemplo:
-     - "primo", "prima", "hermano", "hermana", "amigo", "amiga", "novio", "novia"
-   - En esos casos, buscá conceptos más generales:
-     - "familia", "amor", "amistad", etc.
-   - No conviertas automáticamente cada sustantivo en hashtag.
-   - Preferí temas, personas, lugares, actividades, emociones claras.
-
-3) Detectar si el post hace referencia implícita a alguien o algo sin nombrarlo directo
-   (ej: "el más hermoso del mundo", "mi amorcito", etc.).
-
-Respondé SIEMPRE SOLO un JSON válido, sin texto extra.
+FORMATO DE RESPUESTA (solo JSON):
+{
+  "hashtags": [
+    { "tag": "#viajes", "reason": "breve razón", "confidence": 0.0-1.0 }
+  ]
+}
 `;
 
   const userPayload = {
     post_text: content,
-    language: "es",
-    topics_catalog: topicsCatalog,
+    categories: TAG_CATEGORIES,
   };
 
   const userPrompt = `
-Analizá este post y devolveme un JSON con esta forma EXACTA:
-
+Analizá el post y devolvé SOLO este JSON:
 {
-  "topics": ["id1", "id2"],
-  "hashtags": ["tag1", "tag2"],
-  "implicit_reference": {
-    "present": true | false,
-    "kind": "none" | "romantic" | "friend" | "family" | "pet" | "group" | "brand" | "place" | "other",
-    "target_is_person": true | false
-  }
+  "hashtags": [
+    { "tag": "#tag1", "reason": "por qué aplica", "confidence": 0.0-1.0 }
+  ]
 }
 
 Reglas:
-- "topics" sólo puede contener "id" que estén en "topics_catalog".
-- Si el post no encaja claramente en ningún tema, usá "topics": [].
-- "hashtags":
-  - Son palabras SIN "#".
-  - Máximo 3 a 6 por post.
-  - Deben ser útiles para agrupar contenido similar (temas, personas, lugares, actividades, emociones).
-  - NO uses hashtags que sean solo un rol familiar/relacional:
-    "primo", "prima", "hermano", "hermana", "amigo", "amiga", "novio", "novia"
-    En esos casos usá algo como "amor", "familia", "amistad".
-  - No inventes hashtags muy raros salvo que tengan sentido para el contexto.
-
-- "implicit_reference.present" es true si el post habla de alguien/entidad sin nombrarlo directamente.
-- Si no hay referencia implícita relevante, dejá:
-  { "present": false, "kind": "none", "target_is_person": false }
-
-Ejemplos de cómo razonar (NO los devuelvas, son solo guía):
-
-1) Post: "aca tomando mates con mi primo"
-   - El tema principal es mate, no el primo.
-   - topics: ["mate"]
-   - hashtags posibles: ["mate", "mates", "tardemates"]
-   - NO: "primo"
-
-2) Post: "Tremendo palo el que se pegó Verstappen hoy en la carrera de Imola"
-   - Tema: fórmula 1.
-   - topics: ["formula1"]
-   - hashtags posibles: ["MaxVerstappen", "F1", "verstappencrash", "F1Crash", "ImolaCrash"]
-
-3) Post: "haciendo un budin para mi novio"
-   - Tema: cocina/pastelería (si existe en el catálogo) y amor.
-   - topics: [] si no hay tema de cocina en el catálogo.
-   - hashtags posibles: ["amor", "pasteleria", "enamorada"]
-   - NO: "novio"
-
-Ahora analizá este post real:
+- Usa solo tags/subtags que figuran en "categories".
+- Sigue idea_principal / cuando_usar / no_usar_cuando de cada categoría.
+- Si aparece "Mar del Plata", "Mardel", "MDQ", "La Feliz": es viaje/lugar, preferí #viajes, #mardelplata, #argentina, NO #finanzas.
+- Si aparece "plata" o "guita" como dinero y el foco es dinero, usá #finanzas (y subtags si corresponde).
+- Si la ciudad es "La Plata" (ciudad), tratala como lugar argentino, no como dinero.
+- No etiquetes por una palabra suelta; debe coincidir la intención/tema.
+- Máximo 5 hashtags, ordenados por relevancia.
 
 Post:
 """${content}"""
 
-Catálogo de temas:
-${JSON.stringify(topicsCatalog, null, 2)}
+Categories:
+${JSON.stringify(TAG_CATEGORIES, null, 2)}
 `;
 
   let raw;
@@ -153,7 +127,7 @@ ${JSON.stringify(topicsCatalog, null, 2)}
     console.error("[aiPostAnalyzer] Error llamando a Groq:", err);
     return {
       topics: [],
-      hashtags: [],
+      hashtags: fallbackHashtagsFromText(content),
       implicit_reference: { present: false, kind: "none", target_is_person: false },
     };
   }
@@ -161,10 +135,19 @@ ${JSON.stringify(topicsCatalog, null, 2)}
   try {
     const parsed = JSON.parse(raw);
 
-    let topics = Array.isArray(parsed.topics) ? parsed.topics : [];
-    let hashtags = Array.isArray(parsed.hashtags) ? parsed.hashtags : [];
-    const implicit_reference =
-      parsed.implicit_reference || { present: false, kind: "none", target_is_person: false };
+    let hashtagsRaw = [];
+    if (Array.isArray(parsed.hashtags)) {
+      hashtagsRaw = parsed.hashtags.map((h) => (typeof h === "string" ? { tag: h } : h));
+    }
+    let hashtags = hashtagsRaw
+      .map((h) => (typeof h === "string" ? h : h.tag))
+      .filter((h) => typeof h === "string" && h.trim())
+      .map(cleanTag);
+    // No usamos topics en este enfoque; quedarán vacíos para no romper compatibilidad
+    let topics = [];
+    const implicit_reference = { present: false, kind: "none", target_is_person: false };
+
+    const contentNorm = normalizeText(content);
 
     // Filtro extra: sólo topics con evidencia en el texto
     const topicsById = {};
@@ -178,9 +161,29 @@ ${JSON.stringify(topicsCatalog, null, 2)}
 
     // Limpiar y normalizar hashtags:
     hashtags = hashtags
-      .map((h) => (typeof h === "string" ? h.trim() : ""))
+      .map((h) => cleanTag(h))
       .filter(Boolean)
       .filter((h, idx, arr) => arr.indexOf(h) === idx);
+
+    // Si hay tags específicos, eliminamos el genérico "general"
+    if (hashtags.length > 1) {
+      hashtags = hashtags.filter((h) => normalizeText(h) !== "general");
+    }
+
+    // Limpiar y normalizar hashtags sin bloquear casos de una sola palabra
+    hashtags = hashtags.filter((h) => {
+      const hNorm = normalizeText(h);
+      if (!hNorm) return false;
+      // Si aparece en el texto, válido
+      if (contentNorm && contentNorm.includes(hNorm)) return true;
+      // Si es parte del catálogo (Groq lo eligió) también lo admitimos
+      return true;
+    });
+
+    // Fallback: si Groq no devolvió nada, intenta heurística y si no, hashtag genérico
+    if (hashtags.length === 0) {
+      hashtags = fallbackHashtagsFromText(content);
+    }
 
     // Filtro anti roles familiares/relacionales
     const bannedRel = new Set(["primo", "prima", "hermano", "hermana", "amigo", "amiga", "novio", "novia"]);
@@ -191,10 +194,30 @@ ${JSON.stringify(topicsCatalog, null, 2)}
     console.error("[aiPostAnalyzer] Error parseando JSON de Groq:", err, raw);
     return {
       topics: [],
-      hashtags: [],
+      hashtags: fallbackHashtagsFromText(content),
       implicit_reference: { present: false, kind: "none", target_is_person: false },
     };
   }
+}
+
+// Heurística mínima para que nunca devolvamos 0 hashtags
+function fallbackHashtagsFromText(text = "") {
+  const t = (text || "").toLowerCase();
+  const add = (tag) => [cleanTag(tag)];
+  if (/mar\s+del\s+plata|mardel|mdq|la\s+feliz/.test(t)) return add("mardelplata");
+  if (/plata|guita|dinero|sueldo|inflaci[óo]n|precio/.test(t)) return add("finanzas");
+  if (/viaje|viajar|viajando|vacaciones|turismo/.test(t)) return add("viajes");
+  if (/macbook|mac\b|imac|iphone|ipad|airpods|apple/.test(t)) return add("tech");
+  if (/cafe|caf[eé]|mate|birra|cerveza|vino|trago|coctel|bebida/.test(t)) return add("bebidas");
+  if (/comida|cena|almuerzo|desayuno|receta|cocinar|hambre|pizza|empanada|asado/.test(t))
+    return add("comida");
+  if (/musica|canci[óo]n|album|banda|spotify|concierto|recital/.test(t)) return add("musica");
+  if (/futbol|partido|gol|mundial|basquet|basket|tenis|gym|gimnasio|correr|entrenar/.test(t))
+    return add("deporte");
+  if (/jaja|jajaja|meme|chiste|gracioso/.test(t)) return add("humor");
+  if (/amor|novio|novia|pareja|cita/.test(t)) return add("amor");
+  // Último recurso: elegimos una etiqueta neutra para no devolver vacío
+  return [cleanTag("general")];
 }
 
 module.exports = {

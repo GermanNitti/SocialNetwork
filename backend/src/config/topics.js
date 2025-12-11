@@ -39,5 +39,20 @@ module.exports = {
     ],
   },
 
+  apple: {
+    canonicalTag: "apple",
+    keywords: [
+      "apple",
+      "mac",
+      "macbook",
+      "imac",
+      "iphone",
+      "ipad",
+      "ios",
+      "airpods",
+      "macos",
+    ],
+  },
+
   // agregá más: futbol, fotografia, gaming, musica, etc.
 };

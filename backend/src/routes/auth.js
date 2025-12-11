@@ -17,14 +17,19 @@ function sanitizeUser(user) {
 
 router.post("/register", async (req, res) => {
   const { name, username, email, password } = req.body;
+  const cleanUsername = (username || "").trim().toLowerCase();
+  const cleanEmail = (email || "").trim().toLowerCase();
 
-  if (!name || !username || !email || !password) {
+  if (!name || !cleanUsername || !cleanEmail || !password) {
     return res.status(400).json({ message: "Faltan campos obligatorios" });
   }
 
   const existing = await prisma.user.findFirst({
     where: {
-      OR: [{ email }, { username }],
+      OR: [
+        { email: { equals: cleanEmail, mode: "insensitive" } },
+        { username: { equals: cleanUsername, mode: "insensitive" } },
+      ],
     },
   });
 
@@ -36,8 +41,8 @@ router.post("/register", async (req, res) => {
   const user = await prisma.user.create({
     data: {
       name,
-      username,
-      email,
+      username: cleanUsername,
+      email: cleanEmail,
       password: hashedPassword,
     },
   });
@@ -61,14 +66,18 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { identifier, password } = req.body;
+  const cleanIdentifier = (identifier || "").trim().toLowerCase();
 
-  if (!identifier || !password) {
+  if (!cleanIdentifier || !password) {
     return res.status(400).json({ message: "Faltan credenciales" });
   }
 
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{ email: identifier }, { username: identifier }],
+      OR: [
+        { email: { equals: cleanIdentifier, mode: "insensitive" } },
+        { username: { equals: cleanIdentifier, mode: "insensitive" } },
+      ],
     },
   });
 

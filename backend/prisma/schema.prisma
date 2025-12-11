@@ -34,6 +34,7 @@ model User {
   comments  Comment[]
   likes     Like[]
   reactions Reaction[]
+  commentReactions CommentReaction[]
   requestedFriendships Friendship[] @relation("friendRequester")
   receivedFriendships  Friendship[] @relation("friendAddressee")
   notifications        Notification[]
@@ -88,6 +89,7 @@ model Comment {
   postId    Int
   author    User      @relation(fields: [authorId], references: [id])
   post      Post      @relation(fields: [postId], references: [id])
+  reactions CommentReaction[]
 }
 
 model Like {
@@ -126,6 +128,18 @@ model Reaction {
   post      Post         @relation(fields: [postId], references: [id])
 
   @@unique([userId, postId])
+}
+
+model CommentReaction {
+  id        Int          @id @default(autoincrement())
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  userId    Int
+  commentId Int
+  user      User         @relation(fields: [userId], references: [id])
+  comment   Comment      @relation(fields: [commentId], references: [id])
+
+  @@unique([userId, commentId])
 }
 
 enum FriendshipStatus {

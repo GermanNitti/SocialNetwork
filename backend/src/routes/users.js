@@ -154,7 +154,7 @@ router.get("/:username", optionalAuth, async (req, res) => {
         select: { userId: true },
       },
       reactions: true,
-      comments: { orderBy: { createdAt: "desc" }, include: { author: true } },
+      comments: { orderBy: { createdAt: "asc" }, include: { author: true } },
       squad: true,
     },
   });
