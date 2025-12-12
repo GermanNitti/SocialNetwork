@@ -28,9 +28,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
+    <div className="min-h-screen">
       {user && <NavBar />}
-      <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {user && !user.hasCompletedOnboarding ? (
           <OnboardingWizard />
         ) : (
