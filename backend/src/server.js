@@ -1,8 +1,10 @@
 require("dotenv").config();
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const postRoutes = require("./routes/posts");
@@ -16,6 +18,7 @@ const hashtagRoutes = require("./routes/hashtags");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
 const FRONTEND_ORIGIN = (process.env.FRONTEND_URL || "http://localhost:5173")
   .split(",")
   .map((o) => o.trim())
@@ -29,8 +32,10 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(morgan("dev"));
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api/auth", authRoutes);
@@ -44,28 +49,41 @@ app.use("/api/squads", squadRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/hashtags", hashtagRoutes);
 
-// Servir frontend construido (Vite build)
+// -------------------------
+// Servir frontend SOLO si existe el build
+// -------------------------
 const clientDist = path.join(__dirname, "../../frontend/dist");
-app.use(express.static(clientDist));
 
-app.get("/api", (req, res) => {
-  res.json({ message: "Social Network API" });
-});
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
 
-// Fallback SPA: cualquier ruta que no sea /api o /uploads devuelve index.html
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) return next();
-  res.sendFile(path.join(clientDist, "index.html"));
-});
+  // Salud simple para probar API
+  app.get("/api", (req, res) => {
+    res.json({ message: "Social Network API" });
+  });
 
+  // Fallback SPA: cualquier ruta que no sea /api o /uploads devuelve index.html
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
+      return next();
+    }
+    return res.sendFile(path.join(clientDist, "index.html"));
+  });
+} else {
+  // En Render no existe frontend/dist, así evitamos el 500
+  app.get("/api", (req, res) => {
+    res.json({ message: "Social Network API (sin frontend embebido)" });
+  });
+}
+
+// -------------------------
+// Manejo de errores
+// -------------------------
 app.use((err, req, res, next) => {
-  // Basic error handler to avoid uncaught promise rejections reaching the client raw
-  // eslint-disable-next-line no-console
   console.error(err);
   res.status(500).json({ message: "Error interno del servidor" });
 });
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`API escuchando en http://localhost:${PORT}`);
 });
