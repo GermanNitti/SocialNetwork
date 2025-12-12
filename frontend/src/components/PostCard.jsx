@@ -423,21 +423,34 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
         </div>
 
         {/* Input y acciones adicionales (fuera del hover) */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-300">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <span>💬</span>
-              <span>{commentCount}</span>
-            </span>
-            {commentCount > 0 && (
-              <motion.span
-                animate={{ y: [0, 6, 0] }}
-                transition={{ repeat: Infinity, duration: 1.1, ease: "easeInOut" }}
-                className="text-slate-400"
-              >
-                ⬇️
-              </motion.span>
-            )}
+          <div className="space-y-3">
+          <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-300 md:hidden">
+            <button
+              type="button"
+              onClick={() => setShowComments((prev) => !prev)}
+              className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-100 shadow-sm"
+            >
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-600 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h6m-9 8l4-3h8l4 3V4a1 1 0 00-1-1H4a1 1 0 00-1 1v16z" />
+                </svg>
+              </span>
+              <span className="font-semibold text-sm">Comentarios</span>
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-[12px] font-bold text-indigo-700 dark:text-indigo-200">
+                {commentCount}
+              </span>
+              {commentCount > 0 && (
+                <motion.span
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.1, ease: "easeInOut" }}
+                  className="text-indigo-500"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 15a.75.75 0 01-.53-.22l-5-5a.75.75 0 011.06-1.06L10 13.19l4.47-4.47a.75.75 0 111.06 1.06l-5 5A.75.75 0 0110 15z" clipRule="evenodd" />
+                  </svg>
+                </motion.span>
+              )}
+            </button>
           </div>
           <div className="flex gap-2 items-start">
             <textarea

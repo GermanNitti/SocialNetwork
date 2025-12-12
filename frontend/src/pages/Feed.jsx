@@ -5,6 +5,7 @@ import PostComposer from "../components/PostComposer";
 import PostCard from "../components/PostCard";
 import { FeedTabs } from "../components/feed/FeedTabs";
 import { RightSidebar } from "../components/layout/RightSidebar";
+import UserSearch from "../components/UserSearch";
 
 export default function Feed() {
   const [mode, setMode] = useState("forYou"); // forYou | squads | help | explore
@@ -36,6 +37,10 @@ export default function Feed() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 space-y-4">
+      <div id="search" className="md:hidden pt-2">
+        <UserSearch />
+      </div>
+
       <div id="composer" className="pt-2">
         <PostComposer />
       </div>
