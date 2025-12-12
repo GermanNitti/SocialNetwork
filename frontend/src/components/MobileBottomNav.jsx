@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function MobileBottomNav({ activeTab, onChange }) {
   const location = useLocation();
   const current = activeTab || "home";
+  const btnRefs = useRef({});
+
+  const handleClick = (id) => (e) => {
+    onChange?.(id);
+    const btn = e.currentTarget;
+    btn.classList.remove("animate-ripple");
+    void btn.offsetWidth; // force reflow
+    btn.classList.add("animate-ripple");
+    setTimeout(() => btn.classList.remove("animate-ripple"), 700);
+  };
 
   const navItems = [
     {
@@ -65,24 +75,53 @@ export default function MobileBottomNav({ activeTab, onChange }) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-slate-800 bg-slate-950/95 px-2 backdrop-blur md:hidden">
-      {navItems.map((item) => {
-        const active = current === item.id;
-        return (
-          <button
-            key={item.id}
-            onClick={() => onChange?.(item.id)}
-            className={`flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold transition ${
-              active
-                ? "text-indigo-300"
-                : "text-slate-400 hover:text-indigo-200"
-            }`}
-          >
-            <span className="h-6 w-6">{item.icon}</span>
-            <span className="whitespace-nowrap">{item.title}</span>
-          </button>
-        );
-      })}
-    </nav>
+    <>
+      <style>{`
+        @keyframes rippleEffect {
+          0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.55); transform: translate(-50%, -50%) scale(0); }
+          100% { box-shadow: 0 0 0 16px rgba(99, 102, 241, 0); transform: translate(-50%, -50%) scale(2); }
+        }
+        @keyframes iconBounce {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.15); }
+        }
+        .nav-button {
+          position: relative;
+          overflow: hidden;
+        }
+        .nav-button.animate-ripple::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          animation: rippleEffect 0.7s ease-out;
+          pointer-events: none;
+        }
+        .nav-button.animate-ripple .icon-container {
+          animation: iconBounce 0.6s ease-out;
+        }
+      `}</style>
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-slate-800 bg-slate-950/95 px-2 backdrop-blur md:hidden">
+        {navItems.map((item) => {
+          const active = current === item.id;
+          return (
+            <button
+              key={item.id}
+              ref={(el) => (btnRefs.current[item.id] = el)}
+              onClick={handleClick(item.id)}
+              className={`nav-button relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold transition ${
+                active ? "text-indigo-300" : "text-slate-400 hover:text-indigo-200"
+              }`}
+            >
+              <span className="icon-container h-6 w-6">{item.icon}</span>
+              <span className="whitespace-nowrap">{item.title}</span>
+            </button>
+          );
+        })}
+      </nav>
+    </>
   );
 }

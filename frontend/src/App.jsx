@@ -18,11 +18,14 @@ import TagFeed from "./pages/TagFeed";
 import MobileBottomNav from "./components/MobileBottomNav";
 import MobileHeader from "./components/MobileHeader";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import UserSearch from "./components/UserSearch";
 
 function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const resolveTab = () => {
     if (location.pathname.startsWith("/chat")) return "chat";
@@ -38,27 +41,34 @@ function App() {
     switch (tab) {
       case "home":
         navigate("/feed");
+        setMobileSearchOpen(false);
         break;
       case "chat":
         navigate("/chat");
+        setMobileSearchOpen(false);
         break;
       case "shop":
         navigate("/shop");
+        setMobileSearchOpen(false);
         break;
       case "squads":
         navigate("/squads");
+        setMobileSearchOpen(false);
         break;
       case "ideas":
         navigate("/feedback");
+        setMobileSearchOpen(false);
         break;
       case "search":
-        navigate("/feed#search");
+        setMobileSearchOpen(true);
         break;
       case "profile":
         if (user?.username) navigate(`/profile/${user.username}`);
+        setMobileSearchOpen(false);
         break;
       default:
         navigate("/feed");
+        setMobileSearchOpen(false);
     }
   };
 
@@ -167,6 +177,24 @@ function App() {
       <Lightbox />
       {user && (
         <MobileBottomNav activeTab={resolveTab()} onChange={handleTabChange} />
+      )}
+      {user && mobileSearchOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-sm md:hidden">
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-3 text-slate-100">
+              <span className="font-semibold">Buscar personas</span>
+              <button
+                onClick={() => setMobileSearchOpen(false)}
+                className="px-3 py-1 rounded-full bg-slate-800 text-sm"
+              >
+                Cerrar
+              </button>
+            </div>
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 shadow-lg animate-[fadeIn_0.2s_ease]">
+              <UserSearch />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
