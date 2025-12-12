@@ -35,13 +35,13 @@ export default function Feed() {
   const posts = Array.isArray(data) ? data : [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 space-y-4">
+    <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 space-y-4">
       <div id="composer" className="pt-2">
         <PostComposer />
       </div>
 
-      <div className="grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 pb-16">
-        <section className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 pb-16">
+        <section className="space-y-4 w-full">
           <FeedTabs active={mode} onChange={setMode} />
 
           {isLoading && (
@@ -60,7 +60,7 @@ export default function Feed() {
             ))}
         </section>
 
-        <aside className="hidden md:block">
+        <aside className="hidden lg:block">
           <RightSidebar />
         </aside>
       </div>
