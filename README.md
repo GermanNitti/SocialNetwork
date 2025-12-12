@@ -11,7 +11,7 @@ Red social simple con: registro/login JWT + bcrypt, subida de avatar con multer,
 Copia `.env.example` a `.env` (raiz o al menos `backend/.env` y `frontend/.env`) y ajusta credenciales:
 ```
 PORT=4000
-DATABASE_URL="postgresql://postgres:Tergiversar24.@localhost:5432/socialnetwork?schema=public"
+DATABASE_URL="postgresql://postgres:"tuclave123".@localhost:5432/redecita?schema=public"
 JWT_SECRET="cambia-esta-clave-super-secreta"
 VITE_API_URL="http://localhost:4000/api"
 ```
