@@ -1,0 +1,780 @@
+1. Cambiar el enfoque: de “palabra” a “intención + contexto”
+
+En tu prompt a Groq, en vez de que cada categoría sea solo una lista de palabras, que sea algo así:
+
+Idea principal del hashtag.
+
+Cuándo usarlo (intenciones típicas).
+
+Cuándo NO usarlo (errores comunes / excepciones).
+
+Ejemplos positivos y negativos.
+
+Así Groq razona semánticamente, no por coincidencia literal.
+
+Ejemplo con #finanzas y el caso plata
+{
+  "tag": "#finanzas",
+  "idea_principal": "El post habla principalmente de dinero, economía personal o del país.",
+  "cuando_usar": [
+    "Se habla de ahorrar, invertir, gastar o administrar dinero",
+    "Se menciona que falta plata, deudas, sueldos, precios, inflación",
+    "Se habla de que le robaron o perdió plata (problemas de dinero)"
+  ],
+  "no_usar_cuando": [
+    "La palabra 'plata' es parte de un lugar (Mar del Plata, La Plata)",
+    "La palabra 'plata' aparece pero el foco real es un viaje, una anécdota o un recuerdo y no la situación económica"
+  ],
+  "subtags": {
+    "#ahorro": "Solo si la intención principal es guardar o acumular dinero, objetivos, metas de ahorro.",
+    "#gastos": "Cuando el foco es gastar/consumir, compras, derroche, cuentas.",
+    "#deudas": "Cuando el foco son deudas, pagos pendientes, tarjetas hasta las manos, etc."
+  }
+}
+
+
+Con eso, Groq puede:
+
+“Me robaron plata en el bondi” → #finanzas, #inseguridad (si lo agregás), NO #ahorro.
+
+“Me fui a Mar del Plata con la familia” → #viajes, #argentina, #marDelPlata, #verano, NO #finanzas.
+
+La clave es que en el prompt le digas algo tipo:
+
+“No uses un hashtag solo porque aparece una palabra suelta. Usalo solo si el tema principal del post coincide con la definición de la etiqueta.”
+
+2. Revisión de TODAS las categorías con contexto lógico
+
+Te dejo cada grupo con:
+
+Idea principal
+
+Cuándo usar
+
+Cuándo no usar / cuidado
+
+No repito todas las palabras que ya listaste, las doy como “subtemas típicos” (ya las tenés bien).
+
+#comida / #food
+
+Idea: El foco es la comida que se come o se prepara.
+
+Usar cuando: Se habla de desayunos, almuerzos, recetas, salidas a comer, delivery, comidas caseras, etc.
+
+No usar cuando: La comida es apenas un detalle dentro de otra cosa (ej: “estudiando para el parcial, comiendo una tostada” → foco = estudio).
+
+#bebidas / #drinks
+
+Idea: El foco son las bebidas (café, mate, tragos, gaseosas, alcohol, etc.).
+
+Usar cuando: El post es sobre tomar algo, salir a un bar, mostrar un trago, un nuevo café, foto de la birra.
+
+No usar cuando: La bebida es totalmente secundaria (“charlando de la vida con un café en la mano” → capaz va más a #reflexión).
+
+#salud / #health
+
+Idea: Salud física y mental, cuidado del cuerpo, bienestar.
+
+Usar cuando: Se habla de enfermedades, médicos, terapia, gimnasio por salud, nutrición, sueño, salud mental.
+
+No usar cuando: Se menciona “me duele la panza de la risa” o cosas figuradas graciosas → eso es #humor.
+
+#deporte / #sports
+
+Idea: Actividad física como competencia, entrenamiento o pasión deportiva.
+
+Usar cuando: Partidos, entrenamientos, Mundial, equipo favorito, resultados.
+
+No usar cuando: La actividad física es secundaria a otra cosa (ej: “fui a correr solo para despejarme por una ruptura amorosa” → foco quizás #amor / #reflexión).
+
+#música / #music
+
+Idea: Música como tema central.
+
+Usar cuando: Canciones, playlists, artistas, conciertos, opiniones musicales.
+
+No usar cuando: La música solo acompaña algo (ej: “estudiando con música de fondo” → foco #educación).
+
+#entretenimiento / #entertainment
+
+Idea: Consumir contenido para entretenerse (pelis, series, TV, plataformas).
+
+Usar cuando: “Maratón de Netflix”, “fuimos al cine”, “viendo tal serie”.
+
+No usar cuando: El foco real es social (ej: juntada con amigos donde la peli es excusa → más #amigos / #fiesta).
+
+#videojuegos / #gaming
+
+Idea: Gaming como actividad principal.
+
+Usar cuando: Se habla del juego en sí, partidas, rankings, consolas, Twitch.
+
+No usar cuando: Solo se menciona como excusa (“llego tarde porque me colgué jugando” y el post es sobre otra cosa).
+
+#tecnología / #tech
+
+Idea: Dispositivos, apps, innovación, problemas/alegrías tech.
+
+Usar cuando: Se habla de celulares, PCs, bugs, nueva app, IA, 5G, etc.
+
+No usar cuando: Los dispositivos solo aparecen porque es una foto cualquiera (“selfie tomada con mi iPhone” → no es #tech).
+
+#redes / #socialmedia / #redessociales
+
+Idea: Plataformas sociales y creación de contenido.
+
+Usar cuando: Estrategias de redes, crecimiento, viralidad, reels, streamings, influencers.
+
+No usar cuando: Simplemente se dice “subí esto a Instagram” pero el foco es otra cosa (paisaje, reflexión, etc.).
+
+#moda / #fashion
+
+Idea: Ropa, estilo, look, tendencias.
+
+Usar cuando: Outfit del día, compras de ropa, zapatillas nuevas, desfiles, estilo personal.
+
+No usar cuando: La ropa es circunstancial (“nuevo trabajo, acá con camisa” → foco en #trabajo).
+
+#belleza / #beauty
+
+Idea: Cuidado personal estético.
+
+Usar cuando: Maquillaje, skincare, peluquería, uñas, tratamientos, spa.
+
+No usar cuando: Se habla de belleza metafórica o filosófica (“la belleza de la vida” → eso va a #reflexión).
+
+#viajes / #travel
+
+Idea: Viajar como experiencia principal.
+
+Usar cuando: Planear, hacer o recordar viajes, vacaciones, turismo, mochilas, vuelos, hoteles.
+
+Cuidado con: Ciudades que son también palabras comunes.
+
+“Me fui a Mar del Plata con la familia” → #viajes, #argentina, #marDelPlata, #verano.
+
+“No tengo plata para viajar” → #finanzas, #viajes solo si el foco sigue siendo el viaje frustrado.
+
+No usar cuando: El viaje es mínimo contexto (ej: “en el taxi pensando en la vida” → foco #reflexión).
+
+#argentina
+
+Idea: Identidad o contexto argentino como parte relevante del post.
+
+Usar cuando: Se menciona una ciudad o provincia argentina y eso importa: cultura, política, costumbres, lugares, “aguante Argentina”.
+
+No usar cuando: Solo se menciona de pasada pero el foco es un tema universal que no depende de la ubicación.
+
+#buenosaires / #bsas / #caba
+
+Idea: Vida, lugares o experiencias específicas de Buenos Aires / CABA.
+
+Usar cuando: Se habla de barrios porteños, el Obelisco, el Bondi, el subte, vida porteña.
+
+No usar cuando: Alguien de BSAS habla de algo genérico donde la ciudad no aporta nada al contenido.
+
+#educación / #education
+
+Idea: Estudio, aprendizaje formal e informal.
+
+Usar cuando: Facultad, escuela, exámenes, cursos, estudiar, profes, parciales, finales.
+
+No usar cuando: El estudio es anécdota y el foco es otra cosa (ej: “no me entra nada en la cabeza, estoy destruido” → podría ser más #saludMental / #reflexión).
+
+#trabajo / #work
+
+Idea: Mundo laboral, carrera, proyectos profesionales.
+
+Usar cuando: Empleo, entrevistas, reuniones, colegas, jefes, productividad laboral.
+
+No usar cuando: El trabajo es contexto pero el foco es otra emoción (ej: “odio mi vida” por burnout → quizás #saludMental / #reflexión además de #trabajo).
+
+#finanzas / #finance ✅ (el conflictivo)
+
+Idea: Dinero, economía personal o general.
+
+Usar cuando:
+
+Se habla de plata/guita/dinero como tema central (ahorrar, gastar, cobrar, precios, inflación).
+
+Se mencionan deudas, préstamos, tarjetas, aumento de sueldo.
+
+Se habla de que le robaron o perdieron plata → sigue siendo problema financiero.
+
+No usar cuando:
+
+“Plata” es parte de un lugar: Mar del Plata, La Plata.
+
+El dinero es secundario a otra cosa (un chiste, un recuerdo, un viaje).
+
+Subtags lógicos (si querés refinar):
+
+#ahorro → meta: guardar plata, juntar para algo.
+
+#gastos → compras, consumismo, “me fundí”.
+
+#deudas → tarjetas, cuotas, no llegar a fin de mes.
+
+#inversiones → crypto, bolsa, plazos fijos, etc.
+
+#auto / #car
+
+Idea: Autos como tema principal.
+
+Usar cuando: Compra/venta, arreglos, mecánica, viajes en auto, opiniones de modelos.
+
+No usar cuando: El auto es detalle (“en el auto camino al psicólogo” → foco #salud / #reflexión).
+
+#moto / #motorcycle
+
+Igual lógica que #auto, pero orientado a motos, bikers, delivery en moto, viajes en moto.
+
+#bicicleta / #bike
+
+Igual lógica: bici como protagonista (salidas en bici, MTB, ciclovías).
+
+#transporte / #transport
+
+Idea: Medios de transporte como parte relevante de la experiencia.
+
+Usar cuando: Quejas del bondi, del subte, trenes, aviones, taxis, apps tipo Uber.
+
+No usar cuando: Es un simple medio de fondo.
+
+#hogar / #home
+
+Idea: Vivienda y vida en casa.
+
+Usar cuando: Mudanzas, alquileres, decoraciones, limpieza, arreglos, jardinería.
+
+No usar cuando: “En casa pensando en la vida” y el foco es la reflexión.
+
+#mascotas / #pets
+
+Idea: Animales de compañía.
+
+Usar cuando: Fotos o historias de perros, gatos, adopciones, vet, juegos.
+
+No usar cuando: Se usan animales solo como metáforas (“me siento un perro”).
+
+#naturaleza / #nature
+
+Idea: Contacto con la naturaleza.
+
+Usar cuando: Campo, montaña, playa (foco paisaje), camping, trekking, flora, fauna.
+
+No usar cuando: La naturaleza es fondo casual en una foto de amigos/fiesta (ahí pesa más #amigos / #fiesta).
+
+#fotografía / #photography
+
+Idea: La foto como arte o hobby.
+
+Usar cuando: Se habla de cámaras, lentes, edición, composición, foto como objetivo.
+
+No usar cuando: Es solo una foto que ilustra otra cosa sin hablar de la foto en sí.
+
+#arte / #art
+
+Idea: Creación artística.
+
+Usar cuando: Dibujos, pinturas, diseño, ilustraciones, murales, arte digital.
+
+No usar cuando: Se habla de “el arte de vivir” en tono filosófico → #reflexión.
+
+#libros / #books
+
+Idea: Lectura y literatura.
+
+Usar cuando: Libros, autores, reseñas, citas literarias, recomendaciones.
+
+No usar cuando: Una frase suelta que parece quote de libro pero es reflexión personal → mejor #reflexión.
+
+#cine / #movies
+
+Idea: Películas y su mundo.
+
+Usar cuando: Ir al cine, hablar de una peli, crítica, premios, estrenos.
+
+No usar cuando: Solo se menciona “viendo una peli con amigos” y el foco es la juntada → #amigos / #fiesta.
+
+#series / #tvseries
+
+Idea: Series y maratones.
+
+Usar cuando: Hablás de temporadas, episodios, personajes, finales, spoilers.
+
+No usar cuando: La serie es ruido de fondo.
+
+#fiesta / #party
+
+Idea: Salir, festejar, joda.
+
+Usar cuando: Cumpleaños, boliche, previas, bar, baile, noche con tragos y amigos.
+
+No usar cuando: Es un brindis tranqui en casa cuyo foco es familia o pareja.
+
+#amor / #love
+
+Idea: Relación afectiva romántica.
+
+Usar cuando: Parejas, citas, relaciones, rupturas amorosas, relaciones serias.
+
+No usar cuando: Amor genérico por cosas (“amo la pizza”) → mejor #comida / #lifestyle.
+
+#familia / #family
+
+Idea: Vínculos familiares.
+
+Usar cuando: Reuniones familiares, abuelos, hijos, padres, asados familiares.
+
+No usar cuando: Se menciona de pasada (“mi vieja me trajo un café pero…” y el foco es otra cosa).
+
+#amigos / #friends
+
+Idea: Vínculos de amistad.
+
+Usar cuando: Juntadas, anécdotas con amigos, valor de la amistad.
+
+No usar cuando: Gente random en boliche sin que la amistad sea el tema.
+
+#lifestyle / #estilodeVida
+
+Idea: Cómo vive la persona, su rutina y forma de encarar la vida.
+
+Usar cuando: Post de “mi día a día”, hábitos, cambios de vida, rutinas, momentos cotidianos.
+
+No usar cuando: El tema está claramente mejor representado por otra etiqueta más específica.
+
+#humor / #funny
+
+Idea: El objetivo es hacer reír.
+
+Usar cuando: Memes, chistes, comentarios irónicos, situaciones ridículas contadas con intención humorística.
+
+No usar cuando: Hay “jaja” pero el tema es serio (ej: trauma, salud mental, duelo) y el humor es defensivo.
+
+#noticias / #news
+
+Idea: Información sobre hechos de la realidad.
+
+Usar cuando: Se comenta una noticia, un hecho actual, política, economía, sucesos.
+
+No usar cuando: Es opinión personal sin referencia a nada actual (más #reflexión).
+
+#clima / #weather
+
+Idea: El tiempo atmosférico como tema.
+
+Usar cuando: Se habla de lluvia, calor, frío, tormentas, pronósticos.
+
+No usar cuando: El clima se menciona de pasada (“día de lluvia ideal para leer” → foco puede ser #libros / #reflexión).
+
+#motivación / #motivation
+
+Idea: Post para levantar, impulsar, inspirar acción.
+
+Usar cuando: Frases motivacionales, logros, hablar de disciplina, metas, superación.
+
+No usar cuando: Es una reflexión más existencial o neutral.
+
+#reflexión / #thoughts
+
+Idea: Pensamientos profundos, procesar cosas, aprendizajes.
+
+Usar cuando: Textos largos, introspectivos, lecciones de vida, filosofía personal.
+
+No usar cuando: Es una simple descripción de lo que pasó sin profundidad.
+
+Días de la semana (#domingo, #lunes, #viernes, #sábado)
+
+Idea: El clima emocional y típico del día.
+
+Usar cuando:
+
+#domingo → vibe dominguero, asado, relax, fútbol.
+
+#lunes → arranque de semana, paja, café del lunes, volver a la rutina.
+
+#viernes → comienzo del finde, planes, after office.
+
+#sábado → salidas, día libre, planes de sábado.
+
+No usar cuando: El día solo está en el timestamp o se nombra sin que importe al contenido.
+
+Estaciones (#verano / #summer, #invierno / #winter)
+
+Idea: La estación como parte de la experiencia.
+
+Usar cuando: Se habla de calor, playa, helado, pileta → #verano. O frío, nieve, mantas, chocolate caliente → #invierno.
+
+No usar cuando: Fecha de calendario sin relevancia en lo que se cuenta.
+
+3. Cómo meter todo esto en Groq (idea rápida)
+
+Podés armar algo así:
+
+Le pasás a Groq:
+
+El texto del post.
+
+Una lista de categorías, donde cada una tiene:
+
+tag
+
+idea_principal
+
+cuando_usar
+
+no_usar_cuando
+
+subtags (opcional)
+
+Y le pedís:
+
+“Devolveme un JSON con los hashtags que correspondan, usando solo los que coinciden con el tema principal o secundario fuerte del post, siguiendo estrictamente las descripciones que te paso.”
+
+
+
+
+
+
+
+
+
+1. Prompt para Groq (en español)
+
+Usalo como system o como prompt principal del modelo:
+
+Actuás como un clasificador de hashtags para una red social argentina.
+
+Tu tarea es:
+- Leer el texto de un post.
+- Leer una lista de categorías con sus reglas.
+- Elegir SOLO los hashtags que tengan sentido según el CONTEXTO y la INTENCIÓN del mensaje, no solo por palabras sueltas.
+- Devolver un JSON con los hashtags más relevantes.
+
+REGLAS GENERALES
+
+1. No asignes un hashtag solo porque aparece una palabra similar.
+   - Mirá siempre el tema principal del post.
+   - Podés agregar algún tema secundario fuerte, pero nunca algo tangencial.
+
+2. Usá estrictamente las definiciones de cada categoría:
+   - "idea_principal": de qué trata realmente ese hashtag.
+   - "cuando_usar": situaciones donde ese hashtag es adecuado.
+   - "no_usar_cuando": casos donde, aunque la palabra aparezca, NO corresponde usarlo.
+   - "subtags": hashtags más específicos que solo se usan si la intención coincide muy claramente.
+
+3. No inventes hashtags que no estén en la lista de categorías ni en sus subtags.
+   - Si algo no encaja bien, es mejor NO etiquetar que etiquetar mal.
+
+4. Argentina / lenguaje:
+   - Entendés lunfardo y expresiones argentinas (plata, guita, bondi, finde, mardel, etc.).
+   - Prestá especial atención a nombres de lugares que incluyen palabras ambiguas (“Mar del Plata”, “La Plata”).
+
+5. Límite de hashtags:
+   - Devolvé entre 1 y 5 hashtags como máximo.
+   - Ordenados de más relevante a menos relevante.
+
+FORMATO DE ENTRADA
+
+Recibís un JSON con este formato:
+
+{
+  "post_text": "TEXTO DEL POST",
+  "categories": [
+    {
+      "tag": "#finanzas",
+      "idea_principal": "...",
+      "cuando_usar": ["...", "..."],
+      "no_usar_cuando": ["...", "..."],
+      "subtags": {
+        "#ahorro": "...",
+        "#gastos": "...",
+        "#deudas": "..."
+      }
+    },
+    {
+      "tag": "#viajes",
+      "idea_principal": "...",
+      "cuando_usar": ["..."],
+      "no_usar_cuando": ["..."],
+      "subtags": {
+        "#playa": "...",
+        "#montaña": "...",
+        "#citybreak": "..."
+      }
+    },
+    ...
+  ]
+}
+
+FORMATO DE SALIDA
+
+Devolvés EXCLUSIVAMENTE un JSON con este formato:
+
+{
+  "hashtags": [
+    {
+      "tag": "#finanzas",
+      "reason": "Breve explicación de por qué este hashtag encaja con el post.",
+      "confidence": 0.0-1.0
+    },
+    {
+      "tag": "#ahorro",
+      "reason": "…",
+      "confidence": 0.0-1.0
+    }
+  ]
+}
+
+- "hashtags" es una lista.
+- "tag" puede ser una categoría o un subtag.
+- "confidence" es un número entre 0 y 1 (puede ser aproximado).
+- No agregues otros campos.
+
+REGLAS ESPECIALES PARA CASOS AMBIGUOS
+
+1) Palabra "plata" (dinero) vs "Mar del Plata" / "La Plata" (lugares)
+
+- Si aparece "Mar del Plata", "Mardel", "MDQ", "La Feliz":
+  - Interpretalo como ciudad turística en Argentina.
+  - Esto favorece hashtags de viaje / ciudad (ej: #viajes, #argentina, #mardelplata, #vacaciones, #verano).
+  - NO uses subtags de dinero como #ahorro solo por ver la palabra "Plata" dentro del nombre del lugar.
+
+- Si aparece "La Plata" en contexto de ciudad (universidad, ciudad, ir a La Plata, etc.):
+  - Tratálo como ciudad, no como dinero.
+
+- Si aparece "plata" o "guita" SIN ser parte de un nombre de ciudad:
+  - Interpretalo como dinero y evaluá si el foco del texto es financiero según las reglas de #finanzas.
+
+2) Posts de ejemplo (criterio que debés seguir):
+
+- "Me robaron plata en el bondi":
+  - Foco en problema de dinero + inseguridad.
+  - Puede ir #finanzas, pero NO #ahorro.
+  - NUNCA lo etiquetes como ciudad.
+
+- "Me fui a Mar del Plata con la familia, qué feliz que soy":
+  - Foco en viaje / vacaciones.
+  - Usar hashtags de viaje/lugar (#viajes, #argentina, #mardelplata, #familia, #verano según definiciones).
+  - NO #finanzas, NO #ahorro (a menos que el texto hable explícitamente de gastos o dinero).
+
+- "Estoy ahorrando plata para comprarme un auto":
+  - Foco en finanzas personales y ahorro.
+  - #finanzas y #ahorro están bien, posiblemente #auto si la categoría existe y sus reglas lo permiten.
+
+AL CLASIFICAR
+
+1. Leé el post completo y resumí mentalmente:
+   - ¿De qué trata?
+   - ¿Qué emoción o tema central domina?
+   - ¿Qué temas secundarios aparecen con fuerza?
+
+2. Para cada categoría:
+   - Si el post coincide claramente con la "idea_principal" y con al menos una condición de "cuando_usar" → el hashtag es candidato.
+   - Si cae en algún caso de "no_usar_cuando" → descartalo aunque haya palabras parecidas.
+
+3. Para los subtags:
+   - Úsalos solo si la intención del post calza muy bien con la definición del subtag.
+   - Ejemplo: #ahorro solo si el objetivo principal es guardar dinero, no simplemente “tener plata” o “perder plata”.
+
+4. Elegí los mejores 1 a 5 hashtags y ordenalos por relevancia.
+
+Recordá: preferí NINGÚN hashtag antes que un hashtag incorrecto.
+
+2. Ejemplo de categorías (4 ejemplo: finanzas, viajes, argentina, humor)
+
+Esto iría en el campo "categories" del JSON que le mandás a Groq.
+
+[
+  {
+    "tag": "#finanzas",
+    "idea_principal": "El post habla principalmente de dinero, economía personal o del país.",
+    "cuando_usar": [
+      "Se habla de ahorrar, invertir, gastar o administrar dinero",
+      "Se menciona que falta plata, deudas, sueldos, precios, inflación",
+      "Se habla de que le robaron o perdió plata, como problema de dinero"
+    ],
+    "no_usar_cuando": [
+      "La palabra 'Plata' aparece solo como parte de un nombre de lugar (Mar del Plata, La Plata)",
+      "Se menciona dinero por arriba pero el foco real del post es un viaje, una relación, una reflexión, etc."
+    ],
+    "subtags": {
+      "#ahorro": "Usar solo cuando el objetivo principal del post es guardar o juntar dinero para algo (ej: metas de ahorro, alcancías, plazos fijos personales).",
+      "#gastos": "Usar cuando el foco son compras, consumismo, pagar cuentas, 'me fundí', 'gasté todo'.",
+      "#deudas": "Usar cuando se habla de préstamos, tarjetas al límite, deudas que no se pueden pagar.",
+      "#inversiones": "Usar cuando se habla de invertir en bolsa, crypto, inmuebles, etc."
+    }
+  },
+  {
+    "tag": "#viajes",
+    "idea_principal": "El post trata sobre viajar, hacer turismo o planear/recordar un viaje.",
+    "cuando_usar": [
+      "Se cuenta un viaje pasado, presente o futuro",
+      "Se mencionan vacaciones, turismo, mochileo, vuelos, hoteles",
+      "Se habla de la experiencia de conocer lugares nuevos"
+    ],
+    "no_usar_cuando": [
+      "El viaje es un detalle menor y el foco del post está en otro tema (ej: reflexión personal, trabajo, estudio)"
+    ],
+    "subtags": {
+      "#playa": "Usar si el post se enfoca en la playa, el mar, la arena, tomar sol en la costa.",
+      "#montaña": "Usar si el foco del viaje son montañas, trekking, nieve, paisajes serranos o cordilleranos.",
+      "#citybreak": "Usar si el post trata de escapadas urbanas a ciudades (museos, bares, cultura ciudadana).",
+      "#mardelplata": "Usar cuando el viaje es específicamente a Mar del Plata (MDQ, La Feliz) y eso es relevante.",
+      "#lafeliz": "Usar en tono coloquial cuando se habla de Mar del Plata usando el apodo 'La Feliz'."
+    }
+  },
+  {
+    "tag": "#argentina",
+    "idea_principal": "El post resalta que algo pasa en Argentina o tiene que ver con ciudades, cultura o identidad argentina.",
+    "cuando_usar": [
+      "Se menciona explícitamente Argentina o una ciudad/provincia argentina como parte importante del contenido",
+      "Se habla de costumbres argentinas, lugares turísticos argentinos, política o economía del país",
+      "El post muestra orgullo o crítica sobre el país"
+    ],
+    "no_usar_cuando": [
+      "El lugar (Argentina o sus ciudades) se menciona solo como detalle sin relevancia para el tema del post"
+    ],
+    "subtags": {
+      "#buenosaires": "Usar cuando el contenido gira en torno a Buenos Aires/CABA (barrios, vida porteña, lugares icónicos).",
+      "#costaargentina": "Usar cuando el post habla de la costa argentina en general (no solo una ciudad específica)."
+    }
+  },
+  {
+    "tag": "#humor",
+    "idea_principal": "El objetivo del post es hacer reír o compartir algo gracioso.",
+    "cuando_usar": [
+      "El tono del post es claramente cómico, irónico o de meme",
+      "Se comparten chistes, memes, capturas graciosas, situaciones ridículas",
+      "El texto incluye señales claras de humor (emojis, jaja, tono absurdo) y el tema no es principalmente dramático o doloroso"
+    ],
+    "no_usar_cuando": [
+      "El post trata temas sensibles (duelo, trauma, salud mental grave, violencia) aunque tenga algún 'jaja' defensivo",
+      "El humor es mínimo y el foco principal es serio o reflexivo"
+    ],
+    "subtags": {
+      "#meme": "Usar cuando el formato del contenido es explícitamente un meme (imagen/recuadro típico de meme).",
+      "#chiste": "Usar cuando el contenido es un chiste o una anécdota graciosa contada en texto."
+    }
+  }
+]
+
+
+En tu implementación real, extendés este array con TODAS tus categorías (#comida, #música, #trabajo, etc.) siguiendo esta misma lógica.
+
+3. Ejemplo de uso completo
+Input que le mandarías al modelo
+{
+  "post_text": "Me fui a Mar del Plata con la familia, por fin vacaciones después de laburar todo el año. No me importa la plata que gasté, la felicidad no tiene precio.",
+  "categories": [
+    {
+      "tag": "#finanzas",
+      "idea_principal": "El post habla principalmente de dinero, economía personal o del país.",
+      "cuando_usar": [
+        "Se habla de ahorrar, invertir, gastar o administrar dinero",
+        "Se menciona que falta plata, deudas, sueldos, precios, inflación",
+        "Se habla de que le robaron o perdió plata, como problema de dinero"
+      ],
+      "no_usar_cuando": [
+        "La palabra 'Plata' aparece solo como parte de un nombre de lugar (Mar del Plata, La Plata)",
+        "Se menciona dinero por arriba pero el foco real del post es un viaje, una relación, una reflexión, etc."
+      ],
+      "subtags": {
+        "#ahorro": "Usar solo cuando el objetivo principal del post es guardar o juntar dinero para algo (ej: metas de ahorro, alcancías, plazos fijos personales).",
+        "#gastos": "Usar cuando el foco son compras, consumismo, pagar cuentas, 'me fundí', 'gasté todo'.",
+        "#deudas": "Usar cuando se habla de préstamos, tarjetas al límite, deudas que no se pueden pagar.",
+        "#inversiones": "Usar cuando se habla de invertir en bolsa, crypto, inmuebles, etc."
+      }
+    },
+    {
+      "tag": "#viajes",
+      "idea_principal": "El post trata sobre viajar, hacer turismo o planear/recordar un viaje.",
+      "cuando_usar": [
+        "Se cuenta un viaje pasado, presente o futuro",
+        "Se mencionan vacaciones, turismo, mochileo, vuelos, hoteles",
+        "Se habla de la experiencia de conocer lugares nuevos"
+      ],
+      "no_usar_cuando": [
+        "El viaje es un detalle menor y el foco del post está en otro tema (ej: reflexión personal, trabajo, estudio)"
+      ],
+      "subtags": {
+        "#playa": "Usar si el post se enfoca en la playa, el mar, la arena, tomar sol en la costa.",
+        "#montaña": "Usar si el foco del viaje son montañas, trekking, nieve, paisajes serranos o cordilleranos.",
+        "#citybreak": "Usar si el post trata de escapadas urbanas a ciudades (museos, bares, cultura ciudadana).",
+        "#mardelplata": "Usar cuando el viaje es específicamente a Mar del Plata (MDQ, La Feliz) y eso es relevante.",
+        "#lafeliz": "Usar en tono coloquial cuando se habla de Mar del Plata usando el apodo 'La Feliz'."
+      }
+    },
+    {
+      "tag": "#argentina",
+      "idea_principal": "El post resalta que algo pasa en Argentina o tiene que ver con ciudades, cultura o identidad argentina.",
+      "cuando_usar": [
+        "Se menciona explícitamente Argentina o una ciudad/provincia argentina como parte importante del contenido",
+        "Se habla de costumbres argentinas, lugares turísticos argentinos, política o economía del país",
+        "El post muestra orgullo o crítica sobre el país"
+      ],
+      "no_usar_cuando": [
+        "El lugar (Argentina o sus ciudades) se menciona solo como detalle sin relevancia para el tema del post"
+      ],
+      "subtags": {
+        "#buenosaires": "Usar cuando el contenido gira en torno a Buenos Aires/CABA (barrios, vida porteña, lugares icónicos).",
+        "#costaargentina": "Usar cuando el post habla de la costa argentina en general (no solo una ciudad específica)."
+      }
+    },
+    {
+      "tag": "#humor",
+      "idea_principal": "El objetivo del post es hacer reír o compartir algo gracioso.",
+      "cuando_usar": [
+        "El tono del post es claramente cómico, irónico o de meme",
+        "Se comparten chistes, memes, capturas graciosas, situaciones ridículas",
+        "El texto incluye señales claras de humor (emojis, jaja, tono absurdo) y el tema no es principalmente dramático o doloroso"
+      ],
+      "no_usar_cuando": [
+        "El post trata temas sensibles (duelo, trauma, salud mental grave, violencia) aunque tenga algún 'jaja' defensivo",
+        "El humor es mínimo y el foco principal es serio o reflexivo"
+      ],
+      "subtags": {
+        "#meme": "Usar cuando el formato del contenido es explícitamente un meme (imagen/recuadro típico de meme).",
+        "#chiste": "Usar cuando el contenido es un chiste o una anécdota graciosa contada en texto."
+      }
+    }
+  ]
+}
+
+Output esperado del modelo
+{
+  "hashtags": [
+    {
+      "tag": "#viajes",
+      "reason": "El post trata principalmente de unas vacaciones en Mar del Plata después de trabajar todo el año.",
+      "confidence": 0.97
+    },
+    {
+      "tag": "#mardelplata",
+      "reason": "Se menciona explícitamente Mar del Plata como destino central del viaje.",
+      "confidence": 0.94
+    },
+    {
+      "tag": "#argentina",
+      "reason": "Mar del Plata es una ciudad turística de Argentina y el contexto es un viaje dentro del país.",
+      "confidence": 0.86
+    },
+    {
+      "tag": "#familia",
+      "reason": "El viaje se describe como una experiencia compartida con la familia.",
+      "confidence": 0.8
+    },
+    {
+      "tag": "#verano",
+      "reason": "El tono y el contexto de vacaciones en la costa sugieren clima de verano.",
+      "confidence": 0.72
+    }
+  ]
+}
+
+
+(En este ejemplo supongo que también definiste las categorías #familia y #verano en tu lista completa.)
+
+

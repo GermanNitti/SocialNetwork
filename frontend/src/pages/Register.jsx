@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import SplashLogo from "../components/SplashLogo";
+import LoginBackground from "../components/LoginBackground";
+import MacanudosLogo from "../components/MacanudosLogo";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function Register() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -26,10 +27,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(form);
-      setShowSplash(true);
-      setTimeout(() => {
-        navigate("/feed");
-      }, 3000);
+      navigate("/feed");
     } catch (err) {
       setError(err.response?.data?.message || "Error al registrarse");
     } finally {
@@ -38,9 +36,11 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative">
-      <SplashLogo visible={showSplash} />
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-md relative z-10">
+    <LoginBackground>
+      <div className="absolute top-4 left-4 z-20">
+        <MacanudosLogo showText={false} size={140} />
+      </div>
+      <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl p-6 w-full max-w-sm relative z-10 backdrop-blur-md mt-0">
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 mb-1">Crear cuenta</h1>
         <p className="text-sm text-slate-500 mb-6">Únete y comparte tus ideas.</p>
         {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</div>}
@@ -106,8 +106,6 @@ export default function Register() {
           </Link>
         </p>
       </div>
-    </div>
+    </LoginBackground>
   );
 }
-
-

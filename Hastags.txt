@@ -1,0 +1,4390 @@
+  TAGS:
+
+
+
+#comida / #food
+
+Desayuno / Breakfast
+Almuerzo / Lunch
+Cena / Dinner
+Merienda / Snack
+Brunch
+Picoteo / Picada
+Antojo / Craving
+Casero / Homemade
+Restaurant / Restaurante
+Delivery
+Cocina / Cooking
+Receta / Recipe
+Chef / Cocinero
+Gourmet
+Comida rápida / Fast food
+Comida callejera / Street food
+Comida saludable / Healthy food
+Dieta / Diet
+Vegetariano / Vegetarian
+Vegano / Vegan
+Sin TACC / Gluten free / Celíaco
+Organic / Orgánico
+McDonalds
+Burger King
+KFC
+Subway
+Starbucks
+Mostaza (Argentina)
+Freddo
+Grido
+
+#bebidas / #drinks
+
+Café / Coffee
+Té / Tea
+Mate
+Agua / Water
+Jugo / Juice
+Smoothie / Licuado
+Gaseosa / Soda / Refresco
+Coca Cola
+Pepsi
+Fanta
+Sprite
+Cerveza / Beer
+Vino / Wine
+Fernet
+Whisky
+Vodka
+Ron / Rum
+Gin
+Tragos / Cocktails
+Bar
+Cafetería / Coffee shop
+Café & Bar
+Pub
+Boliche / Discoteca / Club
+
+#salud / #health
+
+Bienestar / Wellness
+Vida sana / Healthy lifestyle
+Ejercicio / Exercise
+Fitness
+Gym / Gimnasio
+Deporte / Sports
+Medicina / Medicine
+Doctor / Médico
+Hospital
+Clínica
+Farmacia / Pharmacy
+Medicamentos / Medication
+Terapia / Therapy
+Psicología / Psychology
+Nutrición / Nutrition
+Dieta / Diet
+Peso / Weight
+Salud mental / Mental health
+Meditación / Meditation
+Yoga
+Mindfulness
+Sueño / Sleep
+Descanso / Rest
+
+#deporte / #sports
+
+Fútbol / Football / Soccer
+Básquet / Basketball
+Tenis / Tennis
+Rugby
+Vóley / Volleyball
+Natación / Swimming
+Ciclismo / Cycling
+Running / Correr
+Gimnasia / Gymnastics
+Boxeo / Boxing
+Artes marciales / Martial arts
+Crossfit
+Entrenamiento / Training
+Competencia / Competition
+Campeonato / Championship
+Mundial / World Cup
+Olimpiadas / Olympics
+Equipo / Team
+Jugador / Player
+Entrenador / Coach
+Estadio / Stadium
+Cancha / Court / Field
+
+#música / #music
+
+Concierto / Concert
+Recital / Show
+Festival
+Banda / Band
+Artista / Artist
+Cantante / Singer
+Músico / Musician
+Canción / Song
+Álbum / Album
+Disco
+Spotify
+YouTube Music
+Rock
+Pop
+Trap
+Reggaeton
+Cumbia
+Cuarteto (Argentina)
+Folklore
+Tango
+Jazz
+Electrónica / Electronic
+Hip hop
+Rap
+Metal
+Indie
+Clásica / Classical
+
+#entretenimiento / #entertainment
+
+Película / Movie
+Serie / Series
+Cine / Cinema
+Teatro / Theatre
+Netflix
+Disney+
+Prime Video
+HBO
+Star+
+Flow
+Streaming
+Televisión / TV
+Canal / Channel
+Programa / Show
+Documental / Documentary
+Animación / Animation
+Comedia / Comedy
+Drama
+Acción / Action
+Terror / Horror
+Suspenso / Thriller
+
+#videojuegos / #gaming
+
+Gamer
+Juego / Game
+Consola / Console
+PlayStation
+Xbox
+Nintendo
+PC gaming
+Mobile gaming
+Streamer
+Twitch
+YouTube Gaming
+Esports
+Torneo / Tournament
+Online
+Multiplayer
+Battle Royale
+RPG
+FPS
+MOBA
+Minecraft
+Fortnite
+Call of Duty
+FIFA / EA Sports
+GTA
+League of Legends
+Valorant
+Free Fire
+
+#tecnología / #tech
+
+Celular / Smartphone / Phone
+Computadora / Computer / PC
+Laptop / Notebook
+Tablet
+Smart TV
+Auriculares / Headphones
+Smartwatch
+Cámara / Camera
+Tecnología / Technology
+Gadget
+App / Aplicación
+Software
+Hardware
+Internet
+WiFi
+5G
+Inteligencia Artificial / AI
+Innovación / Innovation
+Apple
+Samsung
+Xiaomi
+Motorola
+Huawei
+
+#redes / #socialmedia / #redessociales
+
+Instagram
+Facebook
+Twitter / X
+TikTok
+YouTube
+WhatsApp
+Telegram
+LinkedIn
+Threads
+Snapchat
+Pinterest
+Reddit
+Discord
+Influencer
+Contenido / Content
+Post / Publicación
+Story / Historia
+Reel
+Video
+Live / En vivo
+Viral
+Trending
+Hashtag
+Likes / Me gusta
+Comentarios / Comments
+Compartir / Share
+Followers / Seguidores
+Community / Comunidad
+
+#moda / #fashion
+
+Ropa / Clothes
+Outfit / Look / Conjunto
+Estilo / Style
+Tendencia / Trend
+Marca / Brand
+Diseñador / Designer
+Pasarela / Runway
+Fashion Week
+Vintage
+Streetwear
+Casual
+Formal
+Elegante / Elegant
+Deportivo / Sportswear
+Zapatos / Shoes
+Zapatillas / Sneakers
+Accesorios / Accessories
+Joyería / Jewelry
+Reloj / Watch
+Cartera / Bag
+Lentes / Sunglasses / Anteojos
+
+#belleza / #beauty
+
+Makeup / Maquillaje
+Skincare / Cuidado de piel
+Pelo / Hair / Cabello
+Peluquería / Salon
+Spa
+Manicura / Nails
+Tratamiento / Treatment
+Crema / Cream
+Serum
+Perfume / Fragancia
+Estética / Aesthetics
+Cosmética / Cosmetics
+Natural
+Orgánico / Organic
+Dermatología
+
+#viajes / #travel
+
+Viaje / Trip
+Vacaciones / Holidays / Vacation
+Turismo / Tourism
+Destino / Destination
+Aventura / Adventure
+Playa / Beach
+Montaña / Mountain
+Ciudad / City
+Campo / Countryside
+Hotel
+Hostel
+Airbnb
+Vuelo / Flight
+Aeropuerto / Airport
+Pasaporte / Passport
+Mochilero / Backpacker
+Roadtrip
+Excursión / Tour
+Guía / Guide
+Fotografía de viaje / Travel photography
+
+#argentina (categoría país)
+
+Argentina
+Buenos Aires / CABA / Baires
+Córdoba
+Rosario
+Mendoza
+Bariloche
+Salta
+Tucumán
+Mar del Plata
+Iguazú / Cataratas
+Patagonia
+Ushuaia
+El Calafate
+La Plata
+Santa Fe
+Neuquén
+San Juan
+Misiones
+Entre Ríos
+Corrientes
+Chaco
+Formosa
+Jujuy
+Santiago del Estero
+Catamarca
+La Rioja
+San Luis
+La Pampa
+Río Negro
+Chubut
+Santa Cruz
+Tierra del Fuego
+
+#buenosaires / #bsas / #caba
+
+Buenos Aires
+CABA
+Porteño/a
+Palermo
+Recoleta
+San Telmo
+La Boca
+Puerto Madero
+Belgrano
+Núñez
+Caballito
+Villa Crespo
+Colegiales
+Chacarita
+Almagro
+Boedo
+Constitución
+Once
+Retiro
+Centro
+Microcentro
+Barrio Norte
+Subte / Metro
+Colectivo / Bondi / Bus
+Tren
+Obelisco
+Plaza de Mayo
+Caminito
+Teatro Colón
+Avenida Corrientes
+Avenida 9 de Julio
+Costanera
+
+#educación / #education
+
+Estudio / Study
+Universidad / University
+Facultad / College
+Escuela / School
+Colegio
+Secundaria / High school
+Primaria / Elementary
+Jardín / Kindergarten
+UBA (Universidad de Buenos Aires)
+UTN
+Carrera / Degree
+Licenciatura / Bachelor
+Maestría / Master
+Doctorado / PhD
+Curso / Course
+Capacitación / Training
+Certificación / Certification
+Examen / Exam / Test
+Parcial
+Final
+Aprender / Learning
+Enseñar / Teaching
+Profesor / Teacher
+Alumno / Student
+Clase / Class
+Online / Virtual
+Presencial
+
+#trabajo / #work
+
+Trabajo / Job
+Empleo
+Carrera profesional / Career
+Oficina / Office
+Empresa / Company
+Negocio / Business
+Startup
+Emprendimiento / Entrepreneurship
+Freelance
+Remoto / Remote
+Home office
+Teletrabajo
+Reunión / Meeting
+Proyecto / Project
+Equipo / Team
+Jefe / Boss
+Compañeros / Colleagues
+Sueldo / Salary
+Aumento / Raise
+Beneficios / Benefits
+CV / Currículum
+Entrevista / Interview
+LinkedIn
+Networking
+Productividad / Productivity
+
+#finanzas / #finance
+
+Dinero / Money
+Plata (Argentina)
+Guita (Argentina)
+Ahorro / Savings
+Inversión / Investment
+Banco / Bank
+Cuenta / Account
+Tarjeta / Card
+Crédito / Credit
+Débito / Debit
+Préstamo / Loan
+Dólar / Dollar
+Peso argentino
+Euro
+Inflación / Inflation
+Economía / Economy
+Mercado / Market
+Acciones / Stocks
+Criptomonedas / Crypto
+Bitcoin
+Trading
+Negocios / Business
+Presupuesto / Budget
+
+#auto / #car
+
+Auto / Coche / Carro
+Vehículo / Vehicle
+0km
+Usado
+Camioneta / Truck / Pickup
+SUV
+Sedán
+Deportivo / Sports car
+Nafta / Gasolina / Gas
+Diesel / Gasoil
+Mecánico / Mechanic
+Taller / Garage
+Service
+Seguro / Insurance
+Patente / Placa
+Manejo / Driving
+Carnet / Licencia / Registro
+Estacionamiento / Parking
+Ruta / Highway / Road
+Autopista / Freeway
+Tránsito / Tráfico / Traffic
+
+#moto / #motorcycle
+
+Moto / Motocicleta
+Scooter
+Ciclomotor
+Casco / Helmet
+Motoquero/a / Biker
+Enduro
+Cross
+Delivery en moto
+Mototurismo
+
+#bicicleta / #bike
+
+Bicicleta / Bici
+Mountain bike / MTB
+Bici de ruta
+Ciclismo / Cycling
+Rodado
+Ciclovía / Bike lane
+Paseo en bici
+EcoBici (Buenos Aires)
+
+#transporte / #transport
+
+Transporte / Transportation
+Colectivo / Bondi / Bus / Ómnibus / Micro
+Subte / Metro
+Tren / Train
+Taxi
+Uber
+Cabify
+Didi
+Beat
+Avión / Plane
+Aeropuerto / Airport
+Terminal
+Estación / Station
+SUBE (tarjeta Argentina)
+Boleto / Ticket / Pasaje
+Viaje / Trip
+
+#hogar / #home
+
+Casa / Home / House
+Departamento / Apartment / Depto
+Alquiler / Rent
+Inquilino / Tenant
+Dueño / Owner / Propietario
+Inmobiliaria / Real estate
+Mudanza / Moving
+Decoración / Decoration / Deco
+Muebles / Furniture
+Diseño de interiores / Interior design
+Jardín / Garden
+Patio
+Balcón / Balcony
+Terraza / Terrace
+Garage / Cochera
+Limpieza / Cleaning
+Orden / Organization
+DIY
+Reformas / Renovación
+
+#mascotas / #pets
+
+Mascota / Pet
+Perro / Dog
+Gato / Cat
+Cachorro / Puppy
+Gatito / Kitten
+Veterinario / Vet
+Adopción / Adoption
+Rescate / Rescue
+Protectora de animales
+Comida para mascotas / Pet food
+Paseo / Walk
+Entrenamiento / Training
+Juguetes / Toys
+Accesorios
+
+#naturaleza / #nature
+
+Naturaleza / Nature
+Aire libre / Outdoor
+Paisaje / Landscape
+Campo / Countryside
+Montaña / Mountain
+Playa / Beach
+Río / River
+Lago / Lake
+Bosque / Forest
+Selva / Jungle
+Parque / Park
+Reserva natural / Nature reserve
+Trekking / Hiking
+Camping
+Aventura / Adventure
+Flora
+Fauna
+Animales / Animals
+Ecología / Ecology
+Medio ambiente / Environment
+Sustentabilidad / Sustainability
+
+#fotografía / #photography
+
+Foto / Photo
+Fotografía / Photography
+Cámara / Camera
+Fotógrafo / Photographer
+Retrato / Portrait
+Paisaje / Landscape
+Atardecer / Sunset
+Amanecer / Sunrise
+Blanco y negro / Black and white
+Edición / Editing
+Lightroom
+Photoshop
+iPhone photography
+DSLR
+Mirrorless
+Lente / Lens
+
+#arte / #art
+
+Arte / Art
+Artista / Artist
+Pintura / Painting
+Dibujo / Drawing
+Escultura / Sculpture
+Ilustración / Illustration
+Diseño / Design
+Galería / Gallery
+Museo / Museum
+Exposición / Exhibition
+Arte contemporáneo / Contemporary art
+Arte digital / Digital art
+Street art / Arte urbano
+Graffiti
+Muralismo
+
+#libros / #books
+
+Libro / Book
+Lectura / Reading
+Leer / Read
+Novela / Novel
+Autor / Author
+Escritor / Writer
+Literatura / Literature
+Bestseller
+Ficción / Fiction
+No ficción / Non-fiction
+Poesía / Poetry
+Cuento / Short story
+Biblioteca / Library
+Librería / Bookstore
+Ebook
+Audiolibro / Audiobook
+Bookstagram
+Reseña / Review
+
+#cine / #movies
+
+Película / Movie / Film
+Cine / Cinema
+Director
+Actor / Actriz
+Estreno / Premiere / Release
+Tráiler / Trailer
+Hollywood
+Cine argentino
+Oscar / Premios
+Festival de cine
+Cartelera / Billboard
+Palomitas / Pochoclo / Popcorn
+Drama
+Comedia / Comedy
+Acción / Action
+Terror / Horror
+Ciencia ficción / Sci-fi
+Romance
+
+#series / #tvseries
+
+Serie / Series
+Capítulo / Episode
+Temporada / Season
+Maratón / Binge watching
+Netflix
+HBO
+Prime Video
+Disney+
+Spoiler
+Personaje / Character
+Protagonista
+Final de temporada / Season finale
+
+#fiesta / #party
+
+Fiesta / Party
+Joda (Argentina)
+Cumpleaños / Birthday
+Celebración / Celebration
+Boliche / Club / Discoteca
+Bar
+Pub
+After office
+Previa / Pre-party
+Bailar / Dance
+DJ
+Música / Music
+Tragos / Drinks
+Amigos / Friends
+Noche / Night
+Salir / Going out
+
+#amor / #love
+
+Amor / Love
+Pareja / Couple
+Novio/a / Boyfriend/Girlfriend
+Esposo/a / Husband/Wife
+Matrimonio / Marriage
+Casamiento / Wedding
+Boda
+Aniversario / Anniversary
+San Valentín / Valentine's Day
+Cita / Date
+Romance
+Relación / Relationship
+Compromiso / Engagement
+Luna de miel / Honeymoon
+
+#familia / #family
+
+Familia / Family
+Padres / Parents
+Mamá / Mom / Madre
+Papá / Dad / Padre
+Hermanos / Siblings
+Hermano / Brother
+Hermana / Sister
+Hijo/a / Son/Daughter
+Abuelos / Grandparents
+Tíos / Aunts/Uncles
+Primos / Cousins
+Sobrinos / Nieces/Nephews
+Familia argentina
+Reunión familiar / Family gathering
+Asado familiar
+
+#amigos / #friends
+
+Amigos / Friends
+Amistad / Friendship
+Amigo/a / Friend
+Mejor amigo/a / Best friend / BFF
+Grupo / Group
+Salida / Outing
+Juntada (Argentina)
+Reunión / Gathering
+Asado con amigos
+Amigos de toda la vida
+
+#lifestyle / #estilodeVida
+
+Lifestyle / Estilo de vida
+Rutina / Routine
+Día a día / Daily life
+Momento / Moment
+Experiencia / Experience
+Felicidad / Happiness
+Motivación / Motivation
+Inspiración / Inspiration
+Bienestar / Wellness
+Balance / Equilibrio
+Mindset / Mentalidad
+Self care / Autocuidado
+Productividad / Productivity
+Objetivos / Goals
+Sueños / Dreams
+
+#humor / #funny
+
+Humor / Funny
+Meme
+Chiste / Joke
+Gracioso / Hilarious
+Risa / Laugh / LOL
+Comedia / Comedy
+Divertido / Fun
+Chistoso
+
+#noticias / #news
+
+Noticias / News
+Actualidad / Current affairs
+Información / Information
+Periodismo / Journalism
+Medios / Media
+Diario / Newspaper
+Nota / Article
+Reportaje / Report
+Entrevista / Interview
+Política / Politics
+Economía / Economy
+Sociedad / Society
+Internacional / International
+
+#clima / #weather
+
+Clima / Weather
+Pronóstico / Forecast
+Tiempo
+Sol / Sunny
+Lluvia / Rain
+Nublado / Cloudy
+Tormenta / Storm
+Viento / Wind
+Frío / Cold
+Calor / Heat
+Temperatura / Temperature
+Verano / Summer
+Invierno / Winter
+Otoño / Fall / Autumn
+Primavera / Spring
+
+#motivación / #motivation
+
+Motivación / Motivation
+Inspiración / Inspiration
+Éxito / Success
+Logros / Achievements
+Metas / Goals
+Objetivos
+Superación / Self-improvement
+Crecimiento / Growth
+Mentalidad / Mindset
+Disciplina / Discipline
+Constancia / Consistency
+Esfuerzo / Effort
+Perseverancia
+Frases motivacionales
+
+#reflexión / #thoughts
+
+Reflexión / Reflection
+Pensamiento / Thought
+Filosofía / Philosophy
+Vida / Life
+Aprendizaje / Learning
+Lección / Lesson
+Experiencia / Experience
+Sabiduría / Wisdom
+Consejo / Advice
+
+#domingo / #sunday
+
+Domingo / Sunday
+Fin de semana / Weekend
+Descanso / Rest
+Relax
+Familia / Family
+Asado dominical
+Plan dominguero
+Fútbol (domingo deportivo)
+
+#lunes / #monday
+
+Lunes / Monday
+Comienzo de semana / Start of the week
+Vuelta al trabajo / Back to work
+Rutina
+Café del lunes
+Motivación
+
+#viernes / #friday
+
+Viernes / Friday
+Finde / Fin de semana / Weekend
+TGIF (Thank God It's Friday)
+After office
+Viernes de fiesta
+Viernes casual
+Plan de viernes
+
+#sábado / #saturday
+
+Sábado / Saturday
+Fin de semana / Weekend
+Salida / Going out
+Plan de sábado
+Día libre / Day off
+Descanso
+
+#verano / #summer
+
+Verano / Summer
+Playa / Beach
+Vacaciones / Vacation
+Pileta / Piscina / Pool
+Sol / Sun
+Bronceado / Tan
+Helado / Ice cream
+Calor / Heat
+Costa / Coast
+Mar / Sea
+
+#invierno / #winter
+
+Invierno / Winter
+Frío / Cold
+Nieve / Snow
+Esquí / Ski
+Abrigo / Coat
+Calefacción / Heating
+Chocolate caliente / Hot chocolate
+Manta / Blanket
+Chimenea / 
+
+#messi / #lionelmessi
+
+    Messi
+    Leo Messi
+    Lionel Messi
+    La Pulga
+    D10S
+    GOAT (Greatest of All Time)
+    Mundial Qatar 2022
+    Campeón del mundo
+    PSG (Paris Saint-Germain)
+    Barcelona / Barça
+    Inter Miami
+    Selección Argentina
+    Albiceleste
+    Copa América
+    Balón de Oro
+    The Best FIFA
+    Antonela Roccuzzo (esposa)
+    Thiago, Mateo, Ciro (hijos)
+    Rosario
+    La Scaloneta
+
+#maradona / #diegomaradona / #d10s
+
+    Maradona
+    Diego Armando Maradona
+    D10S
+    El Diez / El 10
+    Pelusa
+    Pibe de oro
+    México 86 / Mundial 86
+    Mano de Dios
+    Gol del siglo
+    Napoli / Nápoles
+    Boca Juniors
+    Argentinos Juniors
+    Barcelona
+    Villa Fiorito
+    Claudia Villafañe
+    Dalma Maradona
+    Gianinna Maradona
+    La noche del 10
+    "Yo, Diego"
+
+#ricard ofort / #comandante
+
+    Ricardo Fort
+    Ricky Fort
+    El Comandante
+    "Miami me lo confirmó"
+    FeltFort (empresa chocolates)
+    Fort Night Show
+    Fortaleza
+    Martita Fort
+    Felipe Fort
+    Virginia Gallardo
+    Rodrigo Díaz (ex pareja)
+    Gustavo Martínez
+    "Los únicos millonarios somos nosotros"
+
+#colapinto / #francocolapinto
+
+    Franco Colapinto
+    Colapinto
+    F1 Argentina
+    Williams Racing
+    Fórmula 1
+    Pilarense
+    Williams FW46
+    Gran Premio
+    Monza
+    Baku
+    Automovilismo argentino
+    Fangio (Juan Manuel Fangio)
+    TC2000
+    Karting
+
+#famososargentinos / #celebridades
+
+    Susana Giménez
+    Mirtha Legrand / La Chiqui
+    Marcelo Tinelli
+    Jorge Lanata
+    Charly García
+    Fito Páez
+    Soda Stereo
+    Gustavo Cerati
+    Rodrigo Bueno / El Potro
+    Mercedes Sosa / La Negra
+    Carlos Gardel
+    Astor Piazzolla
+    Lali Espósito
+    Tini Stoessel / Martina Stoessel
+    María Becerra / La Nena de Argentina
+    Bizarrap / Biza
+    Duki
+    Trueno
+    Nicki Nicole
+    Paulo Londra
+    L-Gante / Elián Valenzuela
+    Wos
+    Emilia Mernes
+    Rusherking
+    Tiago PZK
+    TINI
+    Cazzu / Julieta Cazzuchelli
+    Ca7riel & Paco Amoroso
+    Khea
+
+#ricardobocalandro / #memeargentino
+
+    Beto Casella
+    Ángel de Brito
+    Yanina Latorre
+    Georgina Barbarossa
+    Juana Viale
+    Darín (Ricardo Darín)
+    Francella (Guillermo Francella)
+    Diego Peretti
+    Adrián Suar
+    Carla Peterson
+    Nancy Dupláa
+    Natalia Oreiro
+    Guillermo Vilas
+    Gabriela Sabatini
+    Juan Martín Del Potro / Delpo
+    Emanuel Ginóbili / Manu
+    Luis Scola
+    Sergio "Kun" Agüero
+    Ángel Di María / Fideo
+    Paulo Dybala / La Joya
+    Lautaro Martínez / El Toro
+    Julián Álvarez / La Araña
+    Emiliano "Dibu" Martínez
+    Enzo Fernández
+
+#clubesargentinos / #fútbolargentino
+
+    Boca Juniors / Boca / Xeneize
+    River Plate / River / Millonario
+    Racing Club / La Academia
+    Independiente / El Rojo
+    San Lorenzo / El Ciclón
+    Huracán / El Globo
+    Vélez Sarsfield / El Fortín
+    Estudiantes de La Plata / El Pincha
+    Gimnasia y Esgrima La Plata / El Lobo
+    Newell's Old Boys / La Lepra
+    Rosario Central / El Canalla
+    Belgrano de Córdoba / El Pirata
+    Talleres de Córdoba / La T
+    Lanús / El Granate
+    Banfield / El Taladro
+    Argentinos Juniors / El Bicho
+    Arsenal
+    Colón de Santa Fe
+    Unión de Santa Fe / El Tatengue
+    Godoy Cruz
+
+#superclásico / #bocavsriver
+
+    Superclásico
+    Boca vs River
+    Clásico argentino
+    Bombonera / La Bombonera
+    Monumental / Estadio Monumental
+    12º jugador
+    La 12 (Boca)
+    Gallinas (insulto a River)
+    Bosteros (insulto a Boca)
+    Libertadores
+    Copa Argentina
+    Liga Profesional
+    AFA (Asociación del Fútbol Argentino)
+
+#anime / #animé
+
+    Dragon Ball / DBZ / Dragon Ball Z
+    Goku
+    Vegeta
+    Gohan
+    Freezer / Frieza
+    Cell / Célula
+    Majin Buu
+    Torneo de la fuerza / Torneo del poder
+    Kamehameha
+    Super Saiyan / Saiyajin
+    One Piece
+    Luffy / Monkey D. Luffy
+    Zoro / Roronoa Zoro
+    Nami
+    Sanji
+    Chopper
+    Robin
+    Franky
+    Brook
+    Jinbe
+    Shanks
+    Barba Blanca / Whitebeard
+    Ace
+    Sombrero de paja / Straw Hats
+    Fruta del diablo / Akuma no Mi
+    Naruto
+    Naruto Shippuden
+    Boruto
+    Sasuke
+    Sakura
+    Kakashi
+    Itachi
+    Madara
+    Obito
+    Pain / Nagato
+    Sharingan
+    Rasengan
+    Jutsu
+    Konoha / Aldea oculta de la hoja
+    Attack on Titan / Shingeki no Kyojin
+    Eren Yeager
+    Mikasa
+    Levi / Capitán Levi
+    Titanes
+    Demon Slayer / Kimetsu no Yaiba
+    Tanjiro
+    Nezuko
+    Zenitsu
+    Inosuke
+    Hashiras
+    Jujutsu Kaisen
+    Yuji Itadori
+    Megumi
+    Nobara
+    Gojo Satoru
+    Sukuna
+    Death Note
+    Light Yagami
+    L / Elle Lawliet
+    Ryuk
+    Fullmetal Alchemist
+    Bleach
+    Ichigo
+    Hunter x Hunter
+    My Hero Academia / Boku no Hero
+    Deku / Izuku Midoriya
+    All Might
+    Bakugo
+    Todoroki
+    Cowboy Bebop
+    Evangelion / Neon Genesis Evangelion
+    Sailor Moon
+    Pokemon / Pokémon
+    Ash / Satoshi
+    Pikachu
+    Studio Ghibli
+    Mi vecino Totoro
+    El viaje de Chihiro
+    Crunchyroll
+
+#seriesclásicas / #tvclásica
+
+    Los Simpsons / The Simpsons
+    Homer Simpson
+    Bart Simpson
+    Marge Simpson
+    Lisa Simpson
+    Maggie Simpson
+    Springfield
+    Ned Flanders
+    El Chavo del 8 / El Chavo
+    Chapulín Colorado
+    Quico
+    Don Ramón
+    Doña Florinda
+    Profesor Jirafales
+    Chespirito / Roberto Gómez Bolaños
+    Vecindad del Chavo
+    ALF
+    Melmac (planeta de ALF)
+    Friends
+    Seinfeld
+    The Fresh Prince / El Príncipe del Rap
+    Full House / Tres por tres
+    Saved by the Bell / Salvados por la campana
+    El Chapulín Colorado
+
+#programasargentinos / #tvargentina
+
+    Showmatch
+    Bailando por un sueño
+    Videomatch
+    Ritmo de la noche
+    Sábado Bus
+    Los Simuladores
+    Casados con hijos
+    Son amores
+    Rebelde Way / Erreway
+    Chiquititas
+    Floricienta
+    Casi Ángeles
+    El marginal
+    Argentina tierra de amor y venganza / ATAV
+    El Trece / Canal 13
+    Telefe
+    América TV
+    Canal 9
+    TV Pública
+    Intrusos
+    LAM (Los Ángeles de la Mañana)
+    Almorzando con Mirtha Legrand / Almorzando con Juana
+    PH Podemos Hablar
+    Susana Giménez (programa)
+    Gran Hermano Argentina
+    MasterChef Argentina
+    Got Talent Argentina
+    La Voz Argentina
+
+#música / #rock / #cuarteto / #cumbia
+
+    Soda Stereo
+    Gustavo Cerati
+    Zeta Bosio
+    Charly Alberti
+    De música ligera
+    Persiana americana
+    Suí Generis
+    Serú Girán
+    Charly García
+    Los Abuelos de la Nada
+    Fito Páez
+    El amor después del amor
+    Spinetta / Luis Alberto Spinetta
+    Almendra
+    Pescado Rabioso
+    Invisible
+    Los Redondos / Patricio Rey y sus Redonditos de Ricota
+    Indio Solari
+    Skay Beilinson
+    La Renga
+    Viejas Locas
+    Pity Álvarez
+    Los Piojos
+    Andrés Ciro
+    Pappo
+    Riff
+    Divididos
+    Virus
+    Los Enanitos Verdes
+    Rata Blanca
+    Bersuit Vergarabat
+    Attaque 77 / A77aque
+    Las Pastillas del Abuelo
+    La Vela Puerca
+    Los Fabulosos Cadillacs
+    Vicentico
+    Los Auténticos Decadentes
+    Calle 13
+    Babasónicos
+    Miranda!
+    Tan Biónica
+    No Te Va Gustar
+    Tango
+    Carlos Gardel
+    Astor Piazzolla
+    Mercedes Sosa
+    Folklore argentino
+    Chacarera
+    Zamba
+    Cuarteto cordobés
+    La Mona Jiménez
+    Rodrigo / El Potro Rodrigo
+    Cuarteto Leo
+    La Barra
+    Ráfaga
+    Damas Gratis / Pablo Lescano
+    Cumbia villera
+    Pibes Chorros
+    Yerba Brava
+    Meta Guacha
+    Cumbia 420
+    Rombai
+    Agapornis
+    Nene Malo
+
+#reggaeton / #trap / #urbano
+
+    Bad Bunny
+    Un Verano Sin Ti
+    Daddy Yankee / DY
+    Gasolina
+    Don Omar
+    J Balvin
+    Maluma
+    Ozuna
+    Anuel AA
+    Karol G
+    Nicky Jam
+    Wisin y Yandel
+    Arcángel
+    Farruko
+    Rauw Alejandro
+    Myke Towers
+    Feid
+    Mora
+    Bizarrap
+    BZRP Music Sessions
+    Shakira BZRP
+    Quevedo BZRP
+    Residente BZRP
+    Duki
+    Emilia
+    Tini
+    Nicki Nicole
+    Maria Becerra
+    Trueno
+    Wos
+    L-Gante
+    RKT (Cumbia RKT)
+
+#rockclásico / #rockanglo
+
+    The Beatles
+    John Lennon
+    Paul McCartney
+    George Harrison
+    Ringo Starr
+    The Rolling Stones
+    Mick Jagger
+    Keith Richards
+    Led Zeppelin
+    Pink Floyd
+    The Dark Side of the Moon
+    Queen
+    Freddie Mercury
+    Bohemian Rhapsody
+    AC/DC
+    Back in Black
+    Highway to Hell
+    Guns N' Roses
+    Nirvana
+    Kurt Cobain
+    Metallica
+    Iron Maiden
+    Black Sabbath
+    Deep Purple
+    The Doors
+    Jimi Hendrix
+    The Who
+    Aerosmith
+    U2
+    Bono
+    The Cure
+    Depeche Mode
+    Radiohead
+    Red Hot Chili Peppers
+    Foo Fighters
+    Pearl Jam
+    Soundgarden
+    Alice in Chains
+    Green Day
+    Oasis
+    Blur
+    The Strokes
+    Arctic Monkeys
+    Coldplay
+
+#popinternacional / #popstars
+
+    Taylor Swift
+    Eras Tour
+    Swifties
+    Ariana Grande
+    Billie Eilish
+    Dua Lipa
+    Olivia Rodrigo
+    Sabrina Carpenter
+    Ed Sheeran
+    Bruno Mars
+    The Weeknd
+    Post Malone
+    Drake
+    Rihanna
+    Beyoncé
+    Jay-Z
+    Kanye West / Ye
+    Lady Gaga
+    Katy Perry
+    Justin Bieber
+    Selena Gomez
+    Miley Cyrus
+    Demi Lovato
+    Shawn Mendes
+    Harry Styles
+    One Direction
+    BTS
+    Blackpink
+    K-pop
+
+#marvel / #mcu / #dccomics
+
+    Marvel
+    MCU (Marvel Cinematic Universe)
+    Avengers / Vengadores
+    Iron Man / Tony Stark
+    Captain America / Capitán América
+    Thor
+    Hulk
+    Black Widow / Viuda Negra
+    Hawkeye / Ojo de Halcón
+    Spider-Man / Hombre Araña
+    Tom Holland
+    Tobey Maguire
+    Andrew Garfield
+    Doctor Strange
+    Black Panther / Pantera Negra
+    Wakanda
+    Guardians of the Galaxy / Guardianes de la Galaxia
+    Thanos
+    Infinity Stones / Gemas del infinito
+    Endgame
+    Infinity War
+    Loki
+    Scarlet Witch / Bruja Escarlata
+    WandaVision
+    DC Comics
+    Batman
+    Superman
+    Wonder Woman / Mujer Maravilla
+    The Flash
+    Aquaman
+    Justice League / Liga de la Justicia
+    Joker / Guasón
+    Harley Quinn
+    Gotham
+    Metropolis
+
+#starwars / #starwarsfan
+
+    Star Wars / La Guerra de las Galaxias
+    Luke Skywalker
+    Darth Vader
+    Leia Organa
+    Han Solo
+    Chewbacca
+    Yoda
+    Obi-Wan Kenobi
+    Anakin Skywalker
+    Padmé Amidala
+    Rey
+    Kylo Ren
+    Finn
+    Poe Dameron
+    BB-8
+    R2-D2
+    C-3PO
+    Millennium Falcon / Halcón Milenario
+    Lightsaber / Sable de luz
+    The Force / La Fuerza
+    Jedi
+    Sith
+    Stormtrooper
+    Death Star / Estrella de la Muerte
+    Mandalorian / El Mandaloriano
+    Baby Yoda / Grogu
+
+#harrypotter / #potterhead
+
+    Harry Potter
+    Hogwarts
+    Gryffindor / Gryffindor
+    Slytherin
+    Hufflepuff
+    Ravenclaw
+    Hermione Granger
+    Ron Weasley
+    Dumbledore
+    Snape / Severus Snape
+    Voldemort
+    Hagrid
+    Draco Malfoy
+    Luna Lovegood
+    Neville Longbottom
+    Dobby
+    Quidditch
+    Patronus
+    Varita mágica / Wand
+    Expecto Patronum
+    Avada Kedavra
+    Hogwarts Express
+    Plataforma 9¾
+    J.K. Rowling
+
+#señordelosanillos / #lotr / #tolkien
+
+    El Señor de los Anillos / Lord of the Rings
+    Frodo Baggins
+    Gandalf
+    Aragorn
+    Legolas
+    Gimli
+    Samwise / Sam
+    Merry
+    Pippin
+    Boromir
+    Gollum / Sméagol
+    Sauron
+    El Anillo Único / One Ring
+    Mordor
+    La Comarca / The Shire
+    Rivendel / Rivendell
+    Isengard
+    Saruman
+    Tierra Media / Middle Earth
+    El Hobbit / The Hobbit
+    Bilbo Baggins
+    Smaug
+    J.R.R. Tolkien
+    Peter Jackson (director)
+
+#gameofthrones / #got / #houseofthedragon
+
+    Game of Thrones / Juego de Tronos
+    Jon Snow
+    Daenerys Targaryen
+    Tyrion Lannister
+    Cersei Lannister
+    Jaime Lannister
+    Arya Stark
+    Sansa Stark
+    Bran Stark
+    Ned Stark
+    Robb Stark
+    Joffrey Baratheon
+    The Night King / Rey de la Noche
+    Dragones / Dragons
+    Drogon
+    White Walkers / Caminantes Blancos
+    Winterfell
+    King's Landing / Desembarco del Rey
+    Iron Throne / Trono de Hierro
+    House of the Dragon / La Casa del Dragón
+    George R.R. Martin
+    HBO
+
+#strangerthings
+
+    Stranger Things
+    Eleven / Once
+    Mike Wheeler
+    Dustin Henderson
+    Lucas Sinclair
+    Will Byers
+    Max Mayfield
+    Steve Harrington
+    Nancy Wheeler
+    Jonathan Byers
+    Joyce Byers
+    Jim Hopper
+    Demogorgon
+    Mind Flayer / Azotamentes
+    The Upside Down / El Mundo del Revés
+    Hawkins
+    Eggo (waffles)
+    Netflix
+
+#breakingbad / #bettercallsaul
+
+    Breaking Bad
+    Walter White / Heisenberg
+    Jesse Pinkman
+    Saul Goodman
+    Mike Ehrmantraut
+    Gus Fring
+    Hank Schrader
+    Skyler White
+    Los Pollos Hermanos
+    Metanfetamina / Crystal meth
+    Better Call Saul
+    AMC
+    Vince Gilligan
+
+#theoffice / #friends / #sitcoms
+
+    The Office
+    Michael Scott
+    Jim Halpert
+    Pam Beesly
+    Dwight Schrute
+    Friends
+    Rachel Green
+    Ross Geller
+    Monica Geller
+    Chandler Bing
+    Joey Tribbiani
+    Phoebe Buffay
+    Central Perk
+    How I Met Your Mother / Cómo conocí a tu madre
+    Ted Mosby
+    Barney Stinson
+    Marshall Eriksen
+    Lily Aldrin
+    Robin Scherbatsky
+    The Big Bang Theory
+    Sheldon Cooper
+    Leonard Hofstadter
+    Penny
+    Modern Family
+
+#animales / #mascotas / #pets
+
+    Perro / Dog
+    Gato / Cat
+    Cachorro / Puppy
+    Gatito / Kitten
+    Golden Retriever
+    Labrador
+    Bulldog francés
+    Chihuahua
+    Schnauzer
+    Caniche / Poodle
+    Yorkshire
+    Beagle
+    Husky siberiano
+    Pastor alemán
+    Border Collie
+    Dálmata
+    Rottweiler
+    Doberman
+    Pitbull
+    Boxer
+    Pug / Carlino
+    Gato persa
+    Gato siamés
+    Maine Coon
+    Gato bengalí
+    British Shorthair
+    Loro / Parrot
+    Hámster
+    Conejo / Rabbit
+    Pez / Fish
+    Tortuga / Turtle
+    Caballo / Horse
+    Vaca / Cow
+    Cerdo / Pig
+    Oveja / Sheep
+    León / Lion
+    Tigre / Tiger
+    Elefante / Elephant
+    Jirafa / Giraffe
+    Oso / Bear
+    Lobo / Wolf
+    Zorro / Fox
+    Águila / Eagle
+    Búho / Owl
+    Pingüino / Penguin
+    Delfín / Dolphin
+    Ballena / Whale
+    Tiburón / Shark
+
+#universidadesargentinas / #universidades
+
+    UBA (Universidad de Buenos Aires)
+    Facultad de Derecho UBA
+    Facultad de Medicina UBA
+    Facultad de Ingeniería UBA / FIUBA
+    Facultad de Ciencias Económicas UBA
+    Facultad de Arquitectura / FADU
+    Facultad de Psicología UBA
+    Facultad de Filosofía y Letras / Filo UBA
+    Facultad de Ciencias Sociales UBA
+    CBC (Ciclo Básico Común)
+    UTN (Universidad Tecnológica Nacional)
+    UNLP (Universidad Nacional de La Plata)
+    UNC (Universidad Nacional de Córdoba)
+    UNR (Universidad Nacional de Rosario)
+    Universidad Austral
+    Universidad Católica Argentina / UCA
+    Universidad de Palermo / UP
+    Universidad de San Andrés / UDESA
+    Universidad Torcuato Di Tella / UTDT
+    UADE
+    Universidad de Belgrano
+    Universidad Abierta Interamericana / UAI
+    Universidad de Ciencias Empresariales y Sociales / UCES
+    Universidad del Salvador / USAL
+    Universidad Maimónides
+    Universidad Favaloro
+    Instituto Tecnológico de Buenos Aires / ITBA
+    Universidad de Tres de Febrero / UNTREF
+
+#universidadesextranjeras / #estudiarenel exterior
+
+    Harvard University
+    MIT (Massachusetts Institute of Technology)
+    Stanford University
+    Oxford University
+    Cambridge University
+    Yale University
+    Princeton University
+    Columbia University
+    UC Berkeley
+    UCLA
+    University of Chicago
+    Cornell University
+    Duke University
+    NYU (New York University)
+    University of Pennsylvania / UPenn
+    Imperial College London
+    ETH Zurich
+    Sorbonne
+    La Sapienza (Roma)
+    Universidad Complutense de Madrid
+    Universidad de Barcelona
+    Universidad de Salamanca
+    McGill University (Canadá)
+    University of Toronto
+    Australian National University
+    University of Tokyo
+    National University of Singapore
+
+#memes / #memesargentinos / #internetargentino
+
+    Meme
+    Momo
+    Chad
+    Virgin vs Chad
+    Wojak
+    Pepe the Frog
+    Doge
+    Cheems
+    Distracted boyfriend
+    Woman yelling at cat
+    Drake meme
+    This is fine
+    Roll Safe / Think about it
+    Surprised Pikachu
+    Bernie Sanders mittens
+    Stonks
+    Big Chungus
+    Ugandan Knuckles
+    Trollface
+    Forever Alone
+    Me Gusta
+    Fuuu / Rage face
+    Y U No
+    One does not simply
+    Brace yourselves
+    Am I a joke to you?
+    Is this a pigeon?
+    Excuse me WTF
+    They had us in the first half
+    Guess I'll die
+    It's free real estate
+    Shut up and take my money
+    Press F to pay respects
+    Sir, this is a Wendy's
+    POV (Point of View)
+    NPC meme
+    Galaxy brain
+    Expanding brain
+    Nobody: / Absolutamente nadie:
+    When you... / Cuando...
+    The cooler Daniel
+    Two buttons
+    Trade offer
+    Gigachad
+    Sigma male
+    Beta male / Alpha male
+    Based
+    Cringe
+    Basado
+    ":v" (Pacman)
+    Papulince
+    SDLG (Seguidores de la Grasa Legión)
+    Momazos
+    Grasoso
+    Momichis
+
+#memeslatinos / #latinomemes
+
+    El Pepe
+    Ete Sech
+    Potaxio
+    When / Cuando
+    Papu
+    Alv (A la verga)
+    Xd / XD
+    Jaja / Jajaja
+    Jsjsjs
+    Asdasd
+    :v
+    Prro (Perro)
+    No papu
+    Elfa
+    Niu
+    Sad
+    Pasen contexto
+    Tilín
+    Tilin God
+    Potaxio
+    Si iron man fuera...
+    Hotel? Trivago
+    Zzz (dormido/aburrido)
+    F en el chat
+    Uf
+    Ndeah
+    Boludo (Argentina)
+    Pelotudo (Argentina)
+    Che (Argentina)
+    Chabón (Argentina)
+    Pibe / Piba (Argentina)
+    Mina (Argentina, mujer)
+    Tipo (Argentina, hombre)
+
+#deportistas / #atletas / #sport
+
+    Cristiano Ronaldo / CR7
+    Messi
+    Neymar Jr
+    Kylian Mbappé
+    Erling Haaland
+    Mohamed Salah
+    Kevin De Bruyne
+    Luka Modrić
+    Karim Benzema
+    Vinicius Jr
+    LeBron James
+    Michael Jordan
+    Kobe Bryant
+    Stephen Curry
+    Kevin Durant
+    Giannis Antetokounmpo
+    Rafael Nadal / Rafa Nadal
+    Roger Federer
+    Novak Djokovic
+    Serena Williams
+    Naomi Osaka
+    Simone Biles
+    Usain Bolt
+    Michael Phelps
+    Tiger Woods
+    Conor McGregor
+    Khabib Nurmagomedov
+    Floyd Mayweather
+    Mike Tyson
+    Muhammad Ali
+    Tom Brady
+    Patrick Mahomes
+    Lewis Hamilton
+    Max Verstappen
+    Valentino Rossi
+
+#equiposfútbol / #clubeseuropeos
+
+    Real Madrid / Merengues
+    FC Barcelona / Barça / Culés
+    Manchester United / Man Utd
+    Manchester City / Man City
+    Liverpool FC
+    Chelsea FC
+    Arsenal FC
+    Tottenham / Spurs
+    Bayern Munich / Bayern München
+    Borussia Dortmund / BVB
+    Juventus / Juve
+    AC Milan
+    Inter Milan / Inter de Milán
+    AS Roma
+    Napoli / Nápoles
+    PSG (Paris Saint-Germain)
+    Olympique de Marseille
+    Ajax Amsterdam
+    Benfica
+    Porto
+    Sporting Lisboa
+    Atlético de Madrid / Atleti
+
+#ligas / #competiciones
+
+    Premier League
+    La Liga / Liga española
+    Serie A / Calcio
+    Bundesliga
+    Ligue 1
+    Liga Profesional Argentina
+    Copa Libertadores / Libertadores
+    Copa Sudamericana
+    Champions League / UCL
+    Europa League / UEL
+    Copa del Rey
+    FA Cup
+    Coppa Italia
+    Copa Argentina
+    Mundial / World Cup
+    Eurocopa / Euro
+    Copa América
+    Mundial de Clubes
+
+#nba / #basketball
+
+    NBA
+    Los Angeles Lakers
+    Boston Celtics
+    Golden State Warriors
+    Chicago Bulls
+    Miami Heat
+    Brooklyn Nets
+    Milwaukee Bucks
+    Phoenix Suns
+    Dallas Mavericks
+    Philadelphia 76ers
+    Denver Nuggets
+    All-Star Game
+    NBA Finals
+    March Madness
+    NCAA
+
+#nfl / #superbowl
+
+    NFL
+    Super Bowl
+    Kansas City Chiefs
+    Patrick Mahomes
+    San Francisco 49ers
+    Dallas Cowboys
+    New England Patriots
+    Tom Brady
+    Green Bay Packers
+    Pittsburgh Steelers
+    New York Giants
+    Los Angeles Rams
+    Philadelphia Eagles
+    Touchdown
+    Quarterback
+    Halftime Show
+
+#tenis / #tennis / #grandslam
+
+    Wimbledon
+    US Open
+    Roland Garros / French Open
+    Australian Open
+    Grand Slam
+    ATP Tour
+    WTA Tour
+    Copa Davis / Davis Cup
+    Masters 1000
+
+#f1 / #formula1
+
+    Fórmula 1 / Formula 1
+    Red Bull Racing
+    Ferrari
+    Mercedes AMG
+    McLaren
+    Aston Martin
+    Alpine
+    Williams
+    Max Verstappen
+    Lewis Hamilton
+    Charles Leclerc
+    Carlos Sainz
+    Sergio "Checo" Pérez
+    Lando Norris
+    Gran Premio / GP
+    Pole position
+    DRS
+    Pit stop
+    Safety car
+    Podio / Podium
+
+#boxeo / #ufc / #mma
+
+    Boxeo / Boxing
+    UFC (Ultimate Fighting Championship)
+    MMA (Mixed Martial Arts)
+    Canelo Álvarez
+    Tyson Fury
+    Anthony Joshua
+    Gennady Golovkin / GGG
+    Manny Pacquiao
+    Conor McGregor
+    Khabib Nurmagomedov
+    Israel Adesanya
+    Jon Jones
+    Amanda Nunes
+    Dana White (presidente UFC)
+    Knockout / KO
+    TKO
+    Octágono / Octagon
+    Round
+    Uppercut
+    Jab
+    Cross
+    Hook
+
+#tiktok / #viral / #challenge
+
+    TikTok
+    TikToker
+    Reel (Instagram)
+    Short (YouTube)
+    Viral
+    Trending / Tendencia
+    For You Page / FYP
+    Challenge / Reto / Desafío
+    Duet / Dueto
+    Stitch
+    Hashtag
+    Algoritmo / Algorithm
+    POV
+    Storytime
+    Transition / Transición
+    Dance challenge
+    Lip sync
+    Cringe
+    Wholesome
+    Satisfying
+
+#youtubers / #streamers / #influencers
+
+    YouTuber
+    Streamer
+    Influencer
+    Content creator / Creador de contenido
+    PewDiePie
+    MrBeast
+    Markiplier
+    Jacksepticeye
+    Pokimane
+    Ninja
+    Rubius / El Rubius
+    AuronPlay
+    Ibai Llanos
+    ElRubius
+    TheGrefg
+    Luisito Comunica
+    Yuya
+  Werevertumorro
+    HolaSoyGerman
+    JuegaGerman
+    Vegetta777
+    Willyrex
+    Fernanfloo
+    DrossRotzank
+    Dalas Review
+    Wismichu
+    Coscu / Martín Disalvo (Argentina)
+    Spreen (Argentina)
+    Momo (Argentina)
+    Lit Killah (Argentina)
+    Juan Domingo Perón (meme/streamer Argentina)
+
+#plataformas / #apps / #aplicaciones
+
+    YouTube
+    Twitch
+    TikTok
+    Instagram / IG
+    Facebook / FB
+    Twitter / X
+    WhatsApp
+    Telegram
+    Discord
+    Reddit
+    Pinterest
+    Snapchat
+    LinkedIn
+    Threads
+    BeReal
+    Clubhouse
+    Spotify
+    Apple Music
+    Netflix
+    Disney+
+    Amazon Prime Video
+    HBO Max
+    Star+
+    Paramount+
+    Crunchyroll
+    Tinder
+    Bumble
+    Grindr
+    Uber
+    Uber Eats
+    Rappi
+    PedidosYa
+    Mercado Libre
+    Tiendamia
+    Zoom
+    Google Meet
+    Microsoft Teams
+    Slack
+    Notion
+    Trello
+    Asana
+    Canva
+    Photoshop
+    Premiere Pro
+    CapCut
+    InShot
+    VSCO
+    Lightroom
+
+#expresionesargentinas / #argentinoargentineando
+
+    Che
+    Boludo/a
+    Pelotudo/a
+    Gil / Gila
+    Chabón / Chabon
+    Pibe / Piba
+    Mina
+    Tipo
+    Flaco/a
+    Gordo/a (afectuoso)
+    Negro/a (afectuoso)
+    Viejo/a (padre/madre)
+    Vieja (esposa/novia)
+    Wacho (pibe)
+    Guacho
+    Chabona
+    Morocho/a
+    Rubio/a
+    Petiso/a / Petisa
+    Flaca
+    Gorda (cariñoso)
+    Loco/a
+    Groso/a
+    Capo
+    Crack
+    Genio
+    Maestro
+    Papá / Pa
+    Hermano / Bro
+    Amigo / Brother
+    Canchero/a
+    Piola
+    Copado/a
+    Bárbaro
+    Dale
+    Bueno / Bue
+    Ndeah / Ndea
+    Ni ahí
+    Re
+    Re copado
+    Mortal
+    Zarpado/a
+    Flashero/a
+    Picante
+    Trucho
+    Chanta
+    Cheto/a
+    Fachero/a
+    Facha
+    Chamuyero/a
+    Chamuyar
+    Verso / Versero
+    Bancarse / Bancar
+    Cagar / Cagada
+    Quilombo
+    Bardo
+    Drama
+    Flash
+    Manija / Manijear
+    Romper las bolas / Romper las pelotas
+    Hinchar las bolas / Hinchar las pelotas
+    Al pedo
+    Al divino botón / Al pedo
+    De una
+    Ya fue
+    Me chupa un huevo
+    Me importa tres carajos
+    Ni en pedo
+    Ni a palos
+    Ni a ganchos
+    Por las dudas
+    Ponele
+    Capaz
+    Tipo (como)
+    Tipo que / Tipo así
+    Y bueno
+    Qué sé yo
+    No me jodas
+    No rompas
+    No hinches
+    Posta / ¿Posta?
+    En serio / ¿En serio?
+    Joda / De joda
+    Jodido/a
+    Fiaca
+    Paja
+    Pinta
+    Gauchada
+    Mala leche
+    Mufa
+    Yeta
+    Cábala
+    Morfar (comer)
+    Laburar / Laburo (trabajar/trabajo)
+    Faso (cigarrillo)
+    Birra (cerveza)
+    Escabio / Escabiar (alcohol/beber)
+    Bondi (colectivo)
+    Nafta (gasolina)
+
+#comidascallejeras / #streetfood
+
+    Choripán
+    Pancho
+    Hamburguesa de carrito
+    Pizza de cancha
+    Garrapiñada
+    Pochoclo / Pororó / Palomitas
+    Churros
+    Empanadas
+    Choripán en la cancha
+    Bondiola
+    Lomito
+    Milanesa al pan
+    Sándwich de miga
+    Tortas fritas
+    Facturas
+    Alfajores
+
+#postres / #desserts / #dulces
+
+    Helado / Ice cream
+    Flan
+    Tiramisú
+    Cheesecake
+    Brownie
+    Chocotorta
+    Torta / Cake
+    Panqueques / Pancakes
+    Waffles
+    Crepes
+    Dulce de leche
+    Alfajor
+    Medialunas
+    Facturas
+    Budín
+    Gelatina / Jelly
+    Mousse
+    Crema / Nata
+    Merengue
+    Suspiro / Meringue
+    Arroz con leche
+    Natilla
+    Flan casero
+    Creme brûlée
+    Panna cotta
+    Tarta de manzana / Apple pie
+    Lemon pie
+    Carrot cake
+    Red velvet
+    Cupcakes
+    Muffins
+    Cookies / Galletitas
+    Donuts / Donas
+    Churros
+    Profiteroles / Profiteroles
+    Eclairs / Eclairs
+    Macarons
+    Tres leches
+
+#bebidascalientes / #hotdrinks
+
+    Café / Coffee
+    Café con leche
+    Cortado
+    Lágrima (mucha leche, poco café)
+    Café americano
+    Espresso
+    Cappuccino
+    Latte
+    Mocha
+    Macchiato
+    Té / Tea
+    Té negro
+    Té verde
+    Té rojo
+    Infusión
+    Mate cocido
+    Chocolate caliente / Hot chocolate
+    Submarino (chocolate en barra en leche caliente, Argentina)
+
+#snacks / #golosinas / #candy
+
+    Papas fritas / Chips
+    Nachos
+    Cheetos
+    Doritos
+    Pringles
+    Palitos salados
+    Maní / Peanuts / Cacahuates
+    Almendras / Almonds
+    Nueces / Walnuts
+    Mix de frutos secos
+    Chocolate
+    Milka
+    Toblerone
+    Kinder
+    Ferrero Rocher
+    M&M's
+    Snickers
+    Twix
+    Kit Kat
+    Milky Way
+    Alfajor
+    Mantecol
+    Marroc
+    Bon o bon
+    Rocklets
+    Cofler
+    Cabsha
+    Jorgito
+    Guaymallén
+    Havanna
+    Cachafaz
+    Shot
+    Rhodesia
+    Oreo
+    Chocolinas
+    Pitusas
+    Pepitos
+    Cerealitas
+    Tita
+    Sonrisas
+    Melba
+    Opera
+    Toddy
+    Nesquik
+    Gomitas / Gummy bears
+    Chicles / Gum
+    Caramelos / Candy
+    Chupetín / Lollipop / Paleta
+    Mentitas / Mints
+    Halls
+    Tic Tac
+    Sugus
+    Mogul
+    Arcor
+    Billiken (golosina)
+    Flynn Paff
+    Topline
+    Mantecol
+    Sublime (Perú)
+
+#marcas / #brands
+
+    Nike
+    Adidas
+    Puma
+    Reebok
+    Under Armour
+    New Balance
+    Converse
+    Vans
+    Zara
+    H&M
+    Uniqlo
+    Forever 21
+    Gap
+    Levi's
+    Gucci
+    Louis Vuitton
+    Prada
+    Chanel
+    Versace
+    Balenciaga
+    Off-White
+    Supreme
+    Jordan (marca)
+    Yeezy
+    Rolex
+    Casio
+    Timex
+    Seiko
+    Ray-Ban
+    Oakley
+    Coca-Cola
+    Pepsi
+    Red Bull
+    Monster Energy
+    Gatorade
+    Sprite
+    Fanta
+    7UP
+    Quilmes (Argentina)
+    Brahma (Argentina)
+    Andes (Argentina)
+    Quilmes Cristal
+    Schneider (Argentina)
+    Patagonia (cerveza Argentina)
+    Budweiser
+    Corona
+    Heineken
+    Stella Artois
+    Miller
+    Smirnoff
+    Absolut
+    Jack Daniel's
+    Johnnie Walker
+    Chivas Regal
+    Ballantine's
+    Jim Beam
+    Bacardi
+    Havana Club
+    Captain Morgan
+    Fernet Branca
+    Fernet 1882
+    Campari
+
+#autos / #carbrands / #marcasauto
+
+    Toyota
+    Honda
+    Ford
+    Chevrolet / Chevy
+    Volkswagen / VW
+    Fiat
+    Peugeot
+    Renault
+    Citroën
+    Nissan
+    Hyundai
+    Kia
+    Mazda
+    Subaru
+    Suzuki
+    Mitsubishi
+    Mercedes-Benz
+    BMW
+    Audi
+    Porsche
+    Ferrari
+    Lamborghini
+    McLaren
+    Bugatti
+    Rolls-Royce
+    Bentley
+    Aston Martin
+    Maserati
+    Tesla
+    Volvo
+    Land Rover
+    Range Rover
+    Jeep
+    Dodge
+    RAM
+    Cadillac
+    Lincoln
+    Chrysler
+    GMC
+    Alfa Romeo
+    Jaguar
+
+#motos / #motosargentina / #motorcycles
+
+    Yamaha
+    Honda
+    Kawasaki
+    Suzuki
+    Harley-Davidson
+    Ducati
+    BMW Motorrad
+    KTM
+    Triumph
+    Royal Enfield
+    Indian Motorcycle
+    Aprilia
+    Moto Guzzi
+    Vespa
+    Zanella (Argentina)
+    Gilera (Argentina)
+    Guerrero (Argentina)
+    Corven (Argentina)
+    Motomel (Argentina)
+    Mondial (Argentina)
+    Keller (Argentina)
+    Benelli (Argentina)
+
+#electrodomésticos / #appliances
+
+    Heladera / Refrigerador / Nevera / Fridge
+    Freezer / Congelador
+    Lavarropas / Lavadora / Washing machine
+    Secarropas / Secadora / Dryer
+    Lavavajillas / Dishwasher
+    Microondas / Microwave
+    Horno / Oven
+    Cocina / Stove
+    Anafe
+    Licuadora / Blender
+    Procesadora / Food processor
+    Batidora / Mixer
+    Tostadora / Toaster
+    Pava eléctrica / Kettle
+    Cafetera / Coffee maker
+    Aire acondicionado / AC
+    Split
+    Ventilador / Fan
+    Estufa / Heater
+    Caloventor
+    Aspiradora / Vacuum cleaner
+    Plancha / Iron
+    Smart TV
+    Chromecast
+    Fire Stick
+
+#supermercados / #supermarkets (Argentina)
+
+    Carrefour
+    Coto
+    Día
+    Disco
+    Jumbo
+    Walmart (ya no en Argentina)
+    La Anónima
+    Vital
+    Maxiconsumo
+    Changomas
+    Mercado Central
+    Almacén
+    Verdulería
+    Carnicería
+    Panadería
+    Dietética
+    Farmacia
+    Farmacity
+    Dr. Ahorro
+
+#bancos / #banks (Argentina)
+
+    Banco Nación / BNA
+    Banco Provincia
+    Banco Galicia
+    Banco Santander
+    BBVA
+    HSBC
+    Banco Macro
+    Banco Ciudad
+    ICBC
+    Banco Patagonia
+    Banco Supervielle
+    Brubank
+    Ualá
+    Mercado Pago
+    Naranja X
+    Personal Pay
+    Modo
+    Cuenta DNI
+
+#tarjetas / #cards (Argentina)
+
+    Visa
+    Mastercard
+    American Express / Amex
+    Cabal
+    Naranja
+    Tarjeta Shopping
+    Argencard
+    Nativa
+    Crédito
+    Débito
+    Prepaga
+
+#feriados / #holidays (Argentina)
+
+    Año Nuevo / New Year
+    Carnaval
+    Semana Santa / Easter
+    Viernes Santo / Good Friday
+    Día del Trabajador / Labor Day (1 mayo)
+    25 de Mayo / Revolución de Mayo
+    Día de la Bandera / Flag Day (20 junio)
+    9 de Julio / Día de la Independencia
+    17 de Agosto / San Martín
+    12 de Octubre / Día de la Raza / Día del Respeto
+    20 de Noviembre / Día de la Soberanía
+    8 de Diciembre / Inmaculada Concepción
+    Navidad / Christmas (25 diciembre)
+    Nochebuena / Christmas Eve (24 diciembre)
+    Nochevieja / New Year's Eve (31 diciembre)
+    Día de los enamorados / San Valentín (14 febrero)
+    Día de la Madre
+    Día del Padre
+    Día del Niño
+    Día del Amigo (20 julio, Argentina)
+    Black Friday
+    Cyber Monday
+    Hot Sale
+
+#celebracionesargentinas
+
+    25 de Mayo
+    9 de Julio
+    Día del Amigo
+    Noche de la Nostalgia (Uruguay, 24 agosto)
+    Día de la Primavera (21 septiembre, Argentina)
+    Día del Estudiante (21 septiembre, Argentina)
+    Halloween (cada vez más en Argentina)
+    Día de Muertos (México, 1-2 noviembre)
+    Día de la Tradición (10 noviembre, Argentina)
+
+#politicaargentina / #política
+
+    Javier Milei
+    Cristina Fernández de Kirchner / CFK / Cristina
+    Alberto Fernández
+    Mauricio Macri
+    Néstor Kirchner
+    Peronismo / Peronista
+    Kirchnerismo / K
+    Cambiemos
+    Juntos por el Cambio / JxC
+    La Libertad Avanza / LLA
+    Frente de Todos
+    Unión por la Patria
+    Casa Rosada
+    Congreso de la Nación
+    Senado
+    Diputados
+    Elecciones
+    Balotaje / Segunda vuelta
+    Voto / Sufragio
+    Padrón electoral
+    Mesa electoral
+    Fiscal de mesa
+    Boleta única
+    DNI (Documento)
+
+#economíaargentina / #crisis
+
+    Inflación
+    Dólar
+    Dólar blue
+    Dólar oficial
+    Brecha cambiaria
+    Cepo cambiario / Cepo
+    Peso argentino
+    Devaluación
+    Recesión
+    Crisis económica
+    FMI (Fondo Monetario Internacional)
+    Déficit fiscal
+    Emisión monetaria
+    BCRA (Banco Central)
+    Reservas
+    Bonos
+    Riesgo país
+    Corralito
+    Default
+
+#geografíaargentina / #provincias
+
+    Ciudad de Buenos Aires / CABA
+    Provincia de Buenos Aires / PBA / Conurbano
+    Córdoba
+    Santa Fe
+    Mendoza
+    Tucumán
+    Salta
+    Entre Ríos
+    Misiones
+    Corrientes
+    Santiago del Estero
+    Chaco
+    San Juan
+    Jujuy
+    Río Negro
+    Neuquén
+    Formosa
+    Chubut
+    San Luis
+    Catamarca
+    La Rioja
+    La Pampa
+    Santa Cruz
+    Tierra del Fuego
+    Antártida Argentina
+    Islas Malvinas
+
+#lugaresargentinos / #turistaarg
+
+    Buenos Aires
+    Córdoba Capital
+    Rosario
+    Mendoza Capital
+    La Plata
+    Mar del Plata / Mardel
+    San Carlos de Bariloche / Bariloche
+    Salta Capital
+    San Miguel de Tucumán
+    Ushuaia
+    El Calafate
+    Puerto Madryn
+    Villa Carlos Paz
+    Villa General Belgrano
+    Tigre
+    Pinamar
+    Villa Gesell
+    Cariló
+    Tandil
+    Sierra de la Ventana
+    Cataratas del Iguazú
+    Glaciar Perito Moreno
+    Aconcagua
+    Quebrada de Humahuaca
+    Salinas Grandes
+    Cerro de los Siete Colores
+    Valles Calchaquíes
+    Talampaya
+    Ischigualasto / Valle de la Luna
+    Península Valdés
+    Cueva de las Manos
+    Tren a las Nubes
+    Ruta 40
+    Ruta 7
+    Camino de los Siete Lagos
+    Fin del Mundo
+
+#ríos / #lagos (Argentina)
+
+    Río de la Plata
+    Río Paraná
+    Río Uruguay
+    Río Negro
+    Río Colorado
+    Río Salado
+    Laguna de los Padres
+    Lago Nahuel Huapi
+    Lago Argentino
+    Lago Viedma
+    Laguna del Desierto
+    Embalse
+    Delta del Paraná
+
+#montañas / #cerros (Argentina)
+
+    Aconcagua
+    Cerro Catedral
+    Cerro Tronador
+    Cerro Champaquí
+    Cerro de la Ventana
+    Cordillera de los Andes
+    Sierras de Córdoba
+    Sierras de Tandil
+
+#climaargentina
+
+    Verano argentino
+    Invierno argentino
+    Otoño
+    Primavera
+    Ola de calor
+    Ola polar
+    Sudestada
+    Zonda (viento cálido)
+    Pampero (viento frío)
+    Nieve en Bariloche
+    Nieve en Mendoza
+    Sequía
+    Inundaciones
+
+#universofantástico / #fantasía
+
+    Dragón / Dragon
+    Unicornio / Unicorn
+    Hada / Fairy
+    Duende / Elf / Goblin
+    Enano / Dwarf
+    Gigante / Giant
+    Ogro / Ogre
+    Troll
+    Orco / Orc
+    Vampiro / Vampire
+    Hombre lobo / Werewolf
+    Zombi / Zombie
+    Bruja / Witch
+    Mago / Wizard
+    Hechicero / Sorcerer
+    Caballero / Knight
+    Reino / Kingdom
+    Castillo / Castle
+    Mazmorra / Dungeon
+    Espada / Sword
+    Escudo / Shield
+    Armadura / Armor
+    Arco y flecha / Bow and arrow
+    Varita mágica / Magic wand
+    Poción / Potion
+    Hechizo / Spell
+    Conjuro / Incantation
+    Magia / Magic
+
+#cienciaficción / #scifi
+
+    Alien / Extraterrestre
+    OVNI / UFO
+    Nave espacial / Spaceship
+    Astronauta / Astronaut
+    Planeta
+    Galaxia / Galaxy
+    Estrella / Star
+    Agujero negro / Black hole
+    Viaje en el tiempo / Time travel
+    Máquina del tiempo / Time machine
+    Teletransportación / Teleportation
+    Robot
+    Androide / Android
+    Cyborg
+    Inteligencia Artificial / AI
+    Realidad virtual / Virtual reality
+    Distopía / Dystopia
+    Apocalipsis
+    Fin del mundo / End of the world
+    Invasión alienígena
+
+#terror / #horror
+
+    Terror / Horror
+    Miedo / Fear
+    Susto / Scare
+    Pesadilla / Nightmare
+    Monstruo / Monster
+    Fantasma / Ghost
+    Espíritu / Spirit
+    Aparición / Apparition
+    Poltergeist
+    Posesión / Possession
+    Exorcismo / Exorcism
+    Demonio / Demon
+    Satanás / Satan
+    Casa embrujada / Haunted house
+    Cementerio / Cemetery
+    Cripta / Crypt
+    Ataúd / Coffin
+    Sangre / Blood
+    Gore
+    Slasher
+    Serial killer / Asesino en serie
+    Psicópata / Psychopath
+
+#videojuegosclásicos / #retrogaming
+
+    Super Mario Bros
+    Mario Kart
+    The Legend of Zelda
+    Pokémon
+    Sonic
+    Pac-Man
+    Tetris
+    Space Invaders
+    Donkey Kong
+    Street Fighter
+    Mortal Kombat
+    Tekken
+    FIFA
+    Pro Evolution Soccer / PES
+    Winning Eleven
+    Gran Turismo
+    Need for Speed
+    GTA (Grand Theft Auto)
+    Vice City
+    San Andreas
+    Final Fantasy
+    Resident Evil
+    Silent Hill
+    Metal Gear Solid
+    Tomb Raider
+    Lara Croft
+    Crash Bandicoot
+    Spyro
+    Counter-Strike / CS
+    Half-Life
+    Portal
+    Age of Empires
+    StarCraft
+    Warcraft
+    Diablo
+    World of Warcraft / WoW
+    The Sims
+    SimCity
+    Civilization
+
+#videojuegosmodernos / #gaming2020s
+
+    Fortnite
+    Call of Duty / COD
+    Warzone
+    Apex Legends
+    Valorant
+    League of Legends / LoL
+    Dota 2
+    Counter-Strike 2 / CS2
+    Minecraft
+    Roblox
+    Among Us
+    Fall Guys
+    Rocket League
+    Overwatch
+    Rainbow Six Siege
+    PUBG
+    Free Fire
+    Genshin Impact
+    Honkai Star Rail
+    Zelda Tears of the Kingdom
+    Elden Ring
+    God of War
+    The Last of Us
+    Spider-Man (juego)
+    Hogwarts Legacy
+    Baldur's Gate 3
+    Cyberpunk 2077
+    Red Dead Redemption
+    Assassin's Creed
+    FIFA / EA Sports FC
+    NBA 2K
+    Madden NFL
+    Gran Turismo
+    Forza
+
+#plataformasgaming / #consolasgaming
+
+    PlayStation / PS5 / PS4
+    Xbox Series X/S
+    Xbox One
+    Nintendo Switch
+    PC Gaming
+    Steam
+    Epic Games Store
+    GOG
+    Origin
+    Uplay
+    Battle.net
+    Game Pass
+    PlayStation Plus
+    Nintendo Online
+    Twitch
+    Discord
+
+#esports / #competitivo
+
+    Esports / Deportes electrónicos
+    Pro player
+    Equipo / Team
+    Clan
+    Guild / Guilda
+    Torneo / Tournament
+    LAN
+    Online
+    Ranked / Competitivo
+    Casual
+    Scrim / Scrimmage
+    Bootcamp
+    Coach / Entrenador
+    Analyst / Analista
+    Streamer
+    Caster / Comentarista
+    Prize pool / Bolsa de premios
+    Worlds / Mundial
+    Major
+    Minor
+    Qualifier / Clasificatorio
+
+#términosgaming
+
+    GG (Good Game)
+    GL (Good Luck)
+    HF (Have Fun)
+    GG WP (Good Game Well Played)
+    AFK (Away From Keyboard)
+    BRB (Be Right Back)
+    Lag
+    Ping
+    FPS (Frames Per Second)
+    Buff
+    Nerf
+    OP (Overpowered)
+    Meta
+    Camping / Camper
+    Rushear / Rush
+    Clutch
+    Ace
+    Pentakill
+    Headshot / HS
+    Wallbang
+    Flashbang / Flash
+    Smoke
+    Molotov
+    Grenade / Granada
+    Respawn / Reaparecer
+    Loot / Botín
+    Drop / Caída
+    Spawn
+    Checkpoint
+    Save point / Punto de guardado
+    Boss / Jefe
+    NPC (Non-Player Character)
+    Quest / Misión
+    Side quest / Misión secundaria
+    Main quest / Misión principal
+    Level / Nivel
+    XP (Experience Points)
+    HP (Health Points)
+    MP (Mana Points)
+    Cooldown / CD
+    Ultimate / Ulti
+    Skill / Habilidad
+    Combo
+    Juggle
+    Parry / Parada
+    Dodge / Esquivar
+    Roll / Rodar
+    Sprint / Correr
+    Crouch / Agacharse
+    Prone / Tumbarse
+    Aim / Apuntar
+    Scope / Mira telescópica
+    Reload / Recargar
+    Ammo / Munición
+    Inventory / Inventario
+    Crafting / Crafteo
+    Farming / Farmear
+    Grinding / Grindear
+    Speedrun
+    Walkthrough / Guía
+    Easter egg
+    Glitch / Bug
+    Exploit
+    Hack / Hackear
+    Cheat / Trampa
+    Mod / Modificación
+    DLC (Downloadable Content)
+    Season Pass
+    Battle Pass
+    Skin / Aspecto
+    Emote / Gesto
+    Spray
+    Sticker
+
+#memesclásicos
+
+    Troll face
+    Me gusta
+    Fuck yeah
+    Okay guy
+    Forever alone
+    Rage guy
+    Y U No
+    Challenge accepted
+    Not bad
+    True story
+    Watch out we got a badass
+    I lied
+    Poker face
+    Fuuuu
+    Le me
+    Derp
+    Derpina
+    Herpderp
+
+#expresionesinternet / #slanginglés
+
+    LOL (Laugh Out Loud)
+    LMAO (Laughing My Ass Off)
+    ROFL (Rolling On Floor Laughing)
+    OMG (Oh My God)
+    WTF (What The Fuck)
+    FFS (For Fuck's Sake)
+    SMH (Shaking My Head)
+    IMO / IMHO (In My Opinion / Humble)
+    TBH (To Be Honest)
+    NGL (Not Gonna Lie)
+    IDK (I Don't Know)
+    IKR (I Know Right)
+    AFAIK (As Far As I Know)
+    TLDR / TL;DR (Too Long Didn't Read)
+    ELI5 (Explain Like I'm 5)
+    AMA (Ask Me Anything)
+    FTFY (Fixed That For You)
+    ICYMI (In Case You Missed It)
+    FOMO (Fear Of Missing Out)
+    YOLO (You Only Live Once)
+    Bae (Before Anyone Else)
+    Sus / Sussy (Suspicious)
+    Cap / No cap (Mentira / Sin mentira)
+    Slaps / Slapping (Está buenísimo)
+    Bussin (Delicioso)
+    Sheesh
+    Slay / Slayed / Slaying
+    Vibe / Vibing
+    Stan (Fan obsesivo)
+    Ship / Shipping (Emparejar personajes)
+    OTP (One True Pairing)
+    Canon
+    Fanfic / Fan fiction
+    Headcanon
+    Cosplay
+
+# #tecnología
+- Inteligencia Artificial (IA/AI)
+- Machine Learning
+- Cloud Computing
+- Ciberseguridad
+- Blockchain
+- Internet of Things (IoT)
+- 5G/6G
+- Realidad Virtual (VR)
+- Realidad Aumentada (AR)
+- Big Data
+- Quantum Computing
+- Robótica
+- Drones
+- Impresión 3D
+- Automatización
+
+# #apple
+- iPhone
+- iPad
+- Mac
+- MacBook (Air, Pro)
+- iMac
+- Apple Watch
+- AirPods
+- Apple TV
+- Vision Pro
+- iOS
+- macOS
+- iCloud
+- Apple Music
+- App Store
+- Siri
+- Face ID
+- Apple Pay
+
+# #microsoft
+- Windows
+- Office 365
+- Azure
+- Xbox
+- Surface
+- Teams
+- OneDrive
+- Outlook
+- Visual Studio
+- LinkedIn (propiedad de Microsoft)
+- GitHub (propiedad de Microsoft)
+- Bing
+- Copilot
+- Dynamics 365
+
+# #google
+- Gmail
+- Google Search
+- YouTube
+- Android
+- Chrome
+- Google Drive
+- Google Maps
+- Google Photos
+- Google Cloud
+- Pixel
+- Nest
+- Gemini (IA)
+- Google Workspace
+- AdWords/AdSense
+- Chromebook
+
+# #meta
+- Facebook
+- Instagram
+- WhatsApp
+- Messenger
+- Meta Quest (VR)
+- Threads
+- Metaverso
+- Oculus
+- Portal
+- Workplace
+
+# #amazon
+- Amazon.com (e-commerce)
+- Prime Video
+- AWS (Amazon Web Services)
+- Kindle
+- Alexa
+- Echo
+- Fire TV
+- Whole Foods
+- Audible
+- Twitch
+- Amazon Music
+- Prime Day
+
+# #tesla
+- Model S
+- Model 3
+- Model X
+- Model Y
+- Cybertruck
+- Roadster
+- Autopilot
+- Full Self-Driving (FSD)
+- Supercharger
+- Powerwall
+- Solar Roof
+- Tesla Energy
+- Elon Musk
+
+# #netflix
+- Streaming
+- Series originales
+- Películas
+- Documentales
+- Netflix Games
+- Perfiles
+- Descargas offline
+- 4K/HDR
+
+# #spotify
+- Música streaming
+- Podcasts
+- Playlists
+- Discover Weekly
+- Spotify Premium
+- Audiobooks
+- Wrapped (resumen anual)
+- Spotify Connect
+
+# #nvidia
+- GeForce (GPUs)
+- RTX
+- DLSS
+- Ray Tracing
+- CUDA
+- Tegra
+- Shield TV
+- GeForce Now
+- Omniverse
+- AI Computing
+
+# #amd
+- Ryzen (procesadores)
+- Radeon (GPUs)
+- EPYC (servidores)
+- Threadripper
+- FSR (FidelityFX)
+
+# #intel
+- Core (i3, i5, i7, i9)
+- Xeon
+- Evo Platform
+- Arc (GPUs)
+- Optane
+- Thunderbolt
+
+# #samsung
+- Galaxy (S, Z, A series)
+- Galaxy Tab
+- Galaxy Watch
+- Galaxy Buds
+- SmartTV
+- QLED/Neo QLED
+- Bixby
+- One UI
+- SmartThings
+- Electrodomésticos
+
+# #sony
+- PlayStation (PS5)
+- Bravia (TVs)
+- Xperia (smartphones)
+- WH-1000XM (auriculares)
+- Cámaras Alpha
+- Sony Pictures
+- Sony Music
+
+# #nintendo
+- Switch
+- Mario
+- Zelda
+- Pokémon
+- Animal Crossing
+- Splatoon
+- Super Smash Bros
+- Nintendo Online
+
+# #finanzas
+- Acciones
+- Bonos
+- Criptomonedas
+- Bitcoin
+- Ethereum
+- Forex
+- Trading
+- Inversiones
+- Bolsa de valores
+- NYSE
+- NASDAQ
+- S&P 500
+- Dow Jones
+- ETFs
+- Fondos mutuos
+- Dividendos
+
+# #bitcoin
+- BTC
+- Blockchain
+- Satoshi Nakamoto
+- Mining (minería)
+- Wallet
+- Halving
+- Lightning Network
+- Descentralización
+- Peer-to-peer
+
+# #ethereum
+- ETH
+- Smart Contracts
+- DeFi
+- NFTs
+- Vitalik Buterin
+- Gas fees
+- Ethereum 2.0
+- Proof of Stake
+- dApps
+
+# #nft
+- Arte digital
+- Coleccionables
+- OpenSea
+- Rarible
+- Metaverso
+- Tokens no fungibles
+- Royalties
+- Smart contracts
+
+# #fitness
+- Gimnasio
+- Cardio
+- Pesas
+- CrossFit
+- Yoga
+- Pilates
+- Running
+- Ciclismo
+- Natación
+- HIIT
+- Calistenia
+- Proteína
+- Pre-workout
+- Suplementos
+
+# #nutrición
+- Macros (proteínas, carbohidratos, grasas)
+- Calorías
+- Dieta mediterránea
+- Keto
+- Ayuno intermitente
+- Vegano/Vegetariano
+- Vitaminas
+- Minerales
+- Superalimentos
+- Hidratación
+
+# #salud
+- Bienestar
+- Medicina preventiva
+- Chequeos médicos
+- Vacunas
+- Salud mental
+- Terapia
+- Meditación
+- Sueño
+- Estrés
+- Ansiedad
+- Depresión
+
+# #viajes
+- Turismo
+- Hoteles
+- Airbnb
+- Vuelos
+- Cruceros
+- Mochilero (Backpacking)
+- All-inclusive
+- Road trip
+- Visa
+- Pasaporte
+- Seguro de viaje
+
+# #fotografía
+- DSLR
+- Mirrorless
+- Canon
+- Nikon
+- Sony Alpha
+- Fujifilm
+- Lentes
+- Apertura
+- ISO
+- Shutter Speed
+- Lightroom
+- Photoshop
+- Fotografía de retrato
+- Fotografía de paisaje
+
+# #gaming
+- PC Gaming
+- Consolas
+- Esports
+- Twitch
+- Streamers
+- RGB
+- Mechanical keyboards
+- Gaming mouse
+- Monitor 144Hz
+- Discord
+- Steam
+- Epic Games
+- Battle Royale
+- MMORPG
+- FPS
+
+# #cine
+- Hollywood
+- Blockbusters
+- Cine independiente
+- Festivales (Cannes, Sundance, Oscars)
+- Directores
+- Actores
+- CGI/VFX
+- IMAX
+- Dolby Atmos
+- Marvel/DC
+- Disney
+
+# #música
+- Géneros (Pop, Rock, Hip-Hop, EDM, Jazz, Clásica)
+- Conciertos
+- Festivales
+- Instrumentos
+- Producción musical
+- DAW (Digital Audio Workstation)
+- Vinilos
+- Audiophile
+- Streaming
+
+# #moda
+- Alta costura
+- Street style
+- Diseñadores
+- Fashion Week
+- Tendencias
+- Vintage
+- Sostenibilidad
+- Fast fashion
+- Sneakers
+- Accesorios
+
+# #automóviles
+- SUV
+- Sedán
+- Eléctricos (EV)
+- Híbridos
+- Supercars
+- BMW
+- Mercedes-Benz
+- Audi
+- Porsche
+- Ferrari
+- Lamborghini
+- Toyota
+- Honda
+- Ford
+- Tuning
+
+# #spaceX
+- Falcon 9
+- Falcon Heavy
+- Starship
+- Dragon
+- Starlink
+- Marte
+- Elon Musk
+- Misiones espaciales
+- Reutilización de cohetes
+
+# #nasa
+- Artemis
+- ISS (Estación Espacial)
+- Mars Rover
+- Telescopio James Webb
+- Astronautas
+- Exploración espacial
+- Luna
+- Marte
+
+# #educación
+- E-learning
+- Cursos online
+- Udemy
+- Coursera
+- Khan Academy
+- Universidades
+- Maestrías
+- Doctorados
+- Becas
+- Idiomas
+
+# #emprendimiento
+- Startup
+- Business plan
+- MVP (Minimum Viable Product)
+- Pitch
+- Inversores
+- Venture Capital
+- Bootstrapping
+- Escalabilidad
+- Product-Market Fit
+- Exit strategy
+
+# #marketing
+- Marketing digital
+- SEO
+- SEM
+- Social Media
+- Content Marketing
+- Email Marketing
+- Influencers
+- Branding
+- Analytics
+- Conversión
+- ROI
+
+# #inteligenciaartificial
+- ChatGPT
+- Claude
+- Gemini
+- Midjourney
+- DALL-E
+- Machine Learning
+- Deep Learning
+- Neural Networks
+- NLP (Natural Language Processing)
+- Computer Vision
+- GPT-4
+- LLMs
+
+# #criptomonedas
+- Bitcoin
+- Ethereum
+- Binance
+- Coinbase
+- Altcoins
+- Stablecoins
+- DeFi
+- Staking
+- Mining
+- Cold Wallet
+- Hot Wallet
+- Bull/Bear Market
+
+# #redes sociales
+- TikTok
+- Instagram
+- Twitter/X
+- Facebook
+- LinkedIn
+- Pinterest
+- Snapchat
+- Reddit
+- YouTube
+- Algoritmo
+- Engagement
+- Viral
+- Influencer
+
+# #deportes
+- Fútbol
+- Basketball
+- Tenis
+- Golf
+- Fórmula 1
+- MMA/UFC
+- Boxing
+- NFL
+- NBA
+- Premier League
+- Champions League
+- Olimpiadas
+- Mundial
+
+# #cocina
+- Recetas
+- Chef
+- MasterChef
+- Gastronomía
+- Repostería
+- Cocina molecular
+- Sous vide
+- Air fryer
+- Slow cooker
+- Meal prep
+- Food truck
+
+# #sostenibilidad
+- Energía renovable
+- Solar
+- Eólica
+- Reciclaje
+- Zero waste
+- Economía circular
+- Cambio climático
+- Huella de carbono
+- Compostaje
+- Vehículos eléctricos
+
+# #inmobiliario
+- Bienes raíces
+- Inversión inmobiliaria
+- Hipotecas
+- Renta
+- Airbnb
+- REITS
+- Flipping
+- Smart homes
+- Arquitectura
+- Diseño de interiores
+
+# #libros
+- Bestsellers
+- Ficción
+- No ficción
+- Biografías
+- Autoayuda
+- Thriller
+- Romance
+- Ciencia ficción
+- Fantasy
+- Kindle
+- Audiolibros
+- Goodreads
+
+# #anime
+- Manga
+- Shonen
+- Seinen
+- Shojo
+- Studio Ghibli
+- Crunchyroll
+- One Piece
+- Naruto
+- Attack on Titan
+- Demon Slayer
+- Cosplay
+- Conventions
+
+# #café
+- Espresso
+- Cappuccino
+- Latte
+- Cold brew
+- French press
+- Aeropress
+- Barista
+- Specialty coffee
+- Single origin
+- Arabica
+- Robusta
+- Latte art
+
+# #mascotas
+- Perros
+- Gatos
+- Veterinario
+- Adopción
+- Entrenamiento
+- Grooming
+- Pet-friendly
+- Razas
+- Alimentación
+- Juguetes
+
+# #reloj
+- Rolex
+- Omega
+- Tag Heuer
+- Seiko
+- Casio
+- Apple Watch
+- Smartwatch
+- Automático
+- Cronógrafo
+- Relojes de lujo
+
+¡Perfecto! Aquí te van tópicos completamente nuevos:
+
+# #arquitectura
+- Diseño arquitectónico
+- Modernismo
+- Minimalismo
+- Brutalismo
+- Art Deco
+- Bauhaus
+- Sustentabilidad
+- BIM (Building Information Modeling)
+- Zaha Hadid
+- Frank Lloyd Wright
+- Le Corbusier
+- Rascacielos
+- Casas prefabricadas
+- Tiny houses
+
+# #ciberseguridad
+- Hacking ético
+- Pentesting
+- Firewall
+- VPN
+- Malware
+- Ransomware
+- Phishing
+- Two-Factor Authentication
+- Encriptación
+- Zero Trust
+- Bug bounty
+- Dark web
+- Antivirus
+- GDPR
+
+# #podcasts
+- Spotify Podcasts
+- Apple Podcasts
+- Producción de audio
+- Micrófono
+- Edición
+- Entrevistas
+- True crime
+- Comedia
+- Negocios
+- Audacity
+- Anchor
+
+# #esports
+- League of Legends
+- Dota 2
+- Counter-Strike
+- Valorant
+- Fortnite
+- Call of Duty
+- Overwatch
+- Rocket League
+- Torneos
+- Premios
+- Teams profesionales
+- Streamers
+
+# #vinos
+- Sommelier
+- Vino tinto
+- Vino blanco
+- Rosé
+- Champagne
+- Prosecco
+- Bodegas
+- Cata
+- Maridaje
+- Taninos
+- Denominación de origen
+- Viñedos
+- Añada
+
+# #cerveza
+- Craft beer
+- IPA
+- Stout
+- Lager
+- Ale
+- Porter
+- Cervecería artesanal
+- Homebrewing
+- Lúpulo
+- Malta
+- ABV
+- IBU
+
+# #yoga
+- Hatha
+- Vinyasa
+- Ashtanga
+- Bikram/Hot Yoga
+- Yin Yoga
+- Power Yoga
+- Meditación
+- Pranayama
+- Asanas
+- Chakras
+- Namaste
+- Mat (tapete)
+- Mindfulness
+
+# #diseñográfico
+- Adobe Creative Suite
+- Illustrator
+- InDesign
+- Figma
+- Canva
+- Photoshop
+- Tipografía
+- Branding
+- UI/UX
+- Logo design
+- Color theory
+- Mockups
+- Portfolio
+
+# #astronomía
+- Telescopio
+- Planetas
+- Estrellas
+- Galaxias
+- Agujeros negros
+- Nebulosas
+- Constelaciones
+- Eclipses
+- Luna llena
+- Vía Láctea
+- Astrofotografía
+- NASA
+- SpaceX
+
+# #jardinería
+- Plantas
+- Huerto urbano
+- Compost
+- Hidroponía
+- Suculentas
+- Bonsái
+- Invernadero
+- Semillas
+- Macetas
+- Riego
+- Fertilizantes
+- Plagas
+- Jardín vertical
+
+# #drones
+- DJI
+- Fotografía aérea
+- FPV (First Person View)
+- Racing drones
+- Gimbal
+- 4K video
+- Licencia de piloto
+- Autonomía de vuelo
+- GPS
+- Return to home
+- Mavic
+- Phantom
+
+# #realidadvirtual
+- Meta Quest
+- PlayStation VR
+- HTC Vive
+- Valve Index
+- Beat Saber
+- Half-Life Alyx
+- VRChat
+- 360 grados
+- Simuladores
+- Room scale
+- Motion sickness
+- Haptic feedback
+
+# #smartwatch
+- Apple Watch
+- Samsung Galaxy Watch
+- Garmin
+- Fitbit
+- Wear OS
+- Health tracking
+- GPS
+- Notificaciones
+- Batería
+- Correas
+- Apps
+- Water resistant
+
+# #ciclismo
+- Bicicleta de ruta
+- Mountain bike
+- BMX
+- Gravel bike
+- Cicloturismo
+- Tour de Francia
+- Giro de Italia
+- Vuelta a España
+- Shimano
+- SRAM
+- Cadencia
+- Rodillos
+- Strava
+
+# #skateboarding
+- Street skating
+- Vert
+- Trick
+- Ollie
+- Kickflip
+- Halfpipe
+- Skatepark
+- Tony Hawk
+- Vans
+- Independent Trucks
+- X Games
+
+# #surf
+- Olas
+- Tabla de surf
+- Longboard
+- Shortboard
+- Bodyboard
+- Wetsuit
+- Wax
+- Spots
+- Pipeline
+- Big wave
+- Competencias WSL
+- Kelly Slater
+
+# #teatro
+- Broadway
+- West End
+- Musical
+- Drama
+- Comedia
+- Shakespeare
+- Actores
+- Director
+- Escenografía
+- Vestuario
+- Improvisación
+- Monólogo
+
+# #ópera
+- Tenor
+- Soprano
+- Baritono
+- La Scala
+- Metropolitan Opera
+- Wagner
+- Verdi
+- Puccini
+- Aria
+- Libretto
+- Orquesta
+
+# #ballet
+- Danza clásica
+- Pointe shoes
+- Tutu
+- Pas de deux
+- Bolshoi
+- American Ballet Theatre
+- El Cascanueces
+- El Lago de los Cisnes
+- Barre
+- Pliés
+
+# #ajedrez
+- Gambito
+- Aperturas
+- Defensa
+- Jaque mate
+- Magnus Carlsen
+- Garry Kasparov
+- Bobby Fischer
+- Chess.com
+- Lichess
+- Elo rating
+- Torneos
+- Blitz
+
+# #scifi
+- Ciencia ficción
+- Distopía
+- Utopía
+- Cyberpunk
+- Steampunk
+- Time travel
+- Aliens
+- Space opera
+- Isaac Asimov
+- Philip K. Dick
+- Arthur C. Clarke
+- Robots
+- Inteligencia artificial
+
+# #fantasía
+- High fantasy
+- Urban fantasy
+- Dragones
+- Magia
+- Elfos
+- Enanos
+- J.R.R. Tolkien
+- George R.R. Martin
+- Brandon Sanderson
+- Worldbuilding
+- RPG
+- D&D (Dungeons & Dragons)
+
+# #coleccionismo
+- Antigüedades
+- Monedas
+- Sellos
+- Comics
+- Cartas (trading cards)
+- Pokémon cards
+- Magic: The Gathering
+- Figuras de acción
+- Funko Pop
+- Memorabilia
+- Vintage
+- Ediciones limitadas
+
+# #whisky
+- Scotch
+- Bourbon
+- Single malt
+- Blended
+- Irish whiskey
+- Japanese whisky
+- Destilería
+- Barril
+- Añejamiento
+- Cata
+- Peat (turba)
+- Angels' share
+
+# #camping
+- Tienda de campaña
+- Sleeping bag
+- Fogata
+- Senderismo
+- Glamping
+- RV (Motorhome)
+- Camping gear
+- Supervivencia
+- Bushcraft
+- Mochila
+- Linterna
+- Cocina portátil
+
+# #pesca
+- Pesca deportiva
+- Fly fishing
+- Spinning
+- Trolling
+- Caña de pescar
+- Carrete
+- Señuelos
+- Carnada
+- Catch and release
+- Bass fishing
+- Pesca en mar
+- Torneo de pesca
+
+# #running
+- Maratón
+- Media maratón
+- 5K/10K
+- Trail running
+- Nike Run Club
+- Strava
+- Zapatillas running
+- Pace
+- Personal record
+- Boston Marathon
+- Ultra maratón
+- Interval training
+
+# #boxeo
+- Heavyweight
+- Welterweight
+- Knockout
+- Uppercut
+- Jab
+- Muhammad Ali
+- Mike Tyson
+- Floyd Mayweather
+- Guantes
+- Ring
+- Rounds
+- Sparring
+
+# #tenis
+- Grand Slam
+- Wimbledon
+- US Open
+- Roland Garros
+- Australian Open
+- Roger Federer
+- Rafael Nadal
+- Novak Djokovic
+- Raqueta
+- Arcilla/Clay
+- Hierba/Grass
+- ATP/WTA
+
+# #golf
+- PGA Tour
+- Masters
+- Tiger Woods
+- Palos de golf
+- Drive
+- Putt
+- Green
+- Handicap
+- Hole in one
+- Caddie
+- Par
+- Birdie/Eagle
+
+# #formula1
+- F1
+- Max Verstappen
+- Lewis Hamilton
+- Ferrari
+- Mercedes
+- Red Bull Racing
+- McLaren
+- DRS
+- Pole position
+- Pit stop
+- Monaco GP
+- Monza
+
+# #motociclismo
+- MotoGP
+- Harley-Davidson
+- Ducati
+- Yamaha
+- Honda
+- Kawasaki
+- Superbikes
+- Cruiser
+- Sport bike
+- Touring
+- Custom bikes
+- Valentino Rossi
+
+# #tatuajes
+- Tattoo artist
+- Ink
+- Traditional
+- Realismo
+- Blackwork
+- Watercolor
+- Tribal
+- Japanese style
+- Cover-up
+- Aftercare
+- Tattoo machine
+- Flash
+
+# #barberías
+- Barbero
+- Fade
+- Undercut
+- Pompadour
+- Beard trim
+- Straight razor
+- Clippers
+- Barber shop
+- Men's grooming
+- Shaving
+- Aftershave
+- Styling products
+
+# #skincare
+- Rutina facial
+- Cleanser
+- Toner
+- Serum
+- Moisturizer
+- Sunscreen/SPF
+- Retinol
+- Ácido hialurónico
+- Vitamin C
+- Exfoliante
+- K-beauty
+- The Ordinary
+
+# #maquillaje
+- Makeup artist
+- Foundation
+- Concealer
+- Contour
+- Highlighter
+- Eyeshadow
+- Mascara
+- Lipstick
+- Brushes
+- Sephora
+- MAC
+- Glam
+
+# #uñas
+- Manicure
+- Pedicure
+- Gel nails
+- Acrílicas
+- Nail art
+- Esmalte
+- French tips
+- Press-on nails
+- Nail salon
+- UV lamp
+- Top coat
+
+# #perfumes
+- Fragancias
+- Eau de Parfum
+- Eau de Toilette
+- Notas de salida
+- Notas de corazón
+- Notas de fondo
+- Chanel
+- Dior
+- Tom Ford
+- Niche perfumes
+- Cologne
+- Unisex
+
+# #relojesinteligentes
+- Smartwatch
+- Fitness tracker
+- Heart rate monitor
+- Sleep tracking
+- Steps counter
+- Calories
+- Notifications
+- Water resistant
+- Battery life
+- Xiaomi Mi Band
+- Amazfit
+
+# #homeautomation
+- Smart home
+- Google Home
+- Amazon Alexa
+- Apple HomeKit
+- Smart lights
+- Philips Hue
+- Nest Thermostat
+- Ring doorbell
+- Security cameras
+- Voice control
+- IFTTT
+- Zigbee
+
+# #impresoras3d
+- 3D printing
+- Filamento
+- PLA
+- ABS
+- Resin printing
+- FDM
+- SLA
+- Creality
+- Prusa
+- STL files
+- Thingiverse
+- Prototipos
+
+# #streaming
+- Twitch
+- YouTube Live
+- OBS
+- StreamElements
+- Streamlabs
+- Webcam
+- Elgato
+- Green screen
+- Subs/Donaciones
+- Emotes
+- Moderadores
+
+# #podcasting
+- Micrófono USB
+- Interface de audio
+- Shure SM7B
+- Blue Yeti
+- Adobe Audition
+- GarageBand
+- RSS feed
+- Hosting
+- Intro/Outro
+- Show notes
+
+# #fotografíacallejera
+- Street photography
+- Candid
+- Black and white
+- Documentary
+- Urban
+- Storytelling
+- Henri Cartier-Bresson
+- Leica
+- Fujifilm X series
+- 35mm
+- Composition
+
+# #astrofotografía
+- Milky Way
+- Star trails
+- Deep sky
+- Telescope
+- Mount tracking
+- Long exposure
+- Light pollution
+- Dark sky
+- Stacking
+- Bortle scale
+- Astrophotography gear
+
+# #videoedición
+- Premiere Pro
+- Final Cut Pro
+- DaVinci Resolve
+- After Effects
+- Color grading
+- Transitions
+- LUTs
+- Render
+- Timeline
+- B-roll
+- Sound design
+
+# #animación
+- 2D animation
+- 3D animation
+- Stop motion
+- Motion graphics
+- Pixar
+- Studio Ghibli
+- Blender
+- Maya
+- Rigging
+- Keyframes
+- Frame rate
+
+# #comicbooks
+- Marvel Comics
+- DC Comics
+- Superhéroes
+- Manga
+- Graphic novels
+- Spider-Man
+- Batman
+- X-Men
+- Avengers
+- Comic Con
+- Ediciones variant
+- First editions
+

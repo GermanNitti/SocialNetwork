@@ -51,6 +51,14 @@ export default function PostComposer({ onCreated }) {
             rows={3}
             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
             placeholder="¿Qué estás pensando?"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (content.trim() && !isPending) {
+                  mutateAsync();
+                }
+              }
+            }}
           />
           {preview && (
             <img

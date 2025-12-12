@@ -1,4 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_BASE_URL } from "../api/client";
 import api from "../api/client";
@@ -9,22 +11,73 @@ import { REACTIONS, REACTION_ORDER } from "../constants/reactions";
 import useCardStyle from "../hooks/useCardStyle";
 import { useLightbox } from "../context/LightboxContext";
 
-export default function PostCard({ post, showHelpHighlight = false }) {
+export default function PostCard({ post, showHelpHighlight = false, onCommentAdded, onPostUpdated }) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [comment, setComment] = useState("");
+  const [editingPost, setEditingPost] = useState(false);
+  const [editContent, setEditContent] = useState(post.content || "");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState("");
+  const [showComments, setShowComments] = useState(false);
+  const [allComments, setAllComments] = useState(post.comments || []);
+  const [visibleComments, setVisibleComments] = useState(0);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const commentsFetchedRef = useRef(false);
   const commentInputRef = useRef(null);
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
   const currentReaction = post.userReaction;
   const { style } = useCardStyle();
   const { open } = useLightbox();
+  const safeHashtags = Array.isArray(post.hashtags)
+    ? post.hashtags.filter((h) => typeof h === "string" && h.trim())
+    : [];
+  const safeTags = Array.isArray(post.tags) ? post.tags.filter((t) => typeof t === "string" && t.trim()) : [];
+  const commentCount = post._count?.comments ?? allComments.length ?? 0;
+
+  useEffect(() => {
+    setEditContent(post.content || "");
+  }, [post.content]);
+
+  const fetchComments = async () => {
+    if (commentsFetchedRef.current) {
+      // Ya se cargaron; solo aseguro visibles = total
+      setVisibleComments((v) => (allComments.length ? allComments.length : v));
+      return;
+    }
+    try {
+      setLoadingComments(true);
+      const { data } = await api.get(`/posts/${post.id}/comments`);
+      const list = Array.isArray(data) ? data : [];
+      setAllComments(list);
+      setVisibleComments(list.length);
+      commentsFetchedRef.current = true;
+    } catch (err) {
+      console.error("Error cargando comentarios", err);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  // Cuando se abre el panel de comentarios, traemos todos y arrancamos con 10 visibles
+  useEffect(() => {
+    if (showComments) {
+      fetchComments();
+    }
+  }, [showComments, post.id]);
 
   const { mutateAsync: setReaction, isPending: reacting } = useMutation({
     mutationFn: async (type) => {
       const { data } = await api.post(`/posts/${post.id}/reactions`, { type });
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
+    onSuccess: () => {
+      if (typeof onPostUpdated === "function") {
+        onPostUpdated();
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+    },
   });
 
   const { mutateAsync: sendComment, isPending: commenting } = useMutation({
@@ -32,9 +85,80 @@ export default function PostCard({ post, showHelpHighlight = false }) {
       const { data } = await api.post(`/posts/${post.id}/comments`, { content });
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setComment("");
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      // Actualiza la lista local para verlo al instante
+      if (data && data.id) {
+        setAllComments((prev) => {
+          const merged = [...prev, data];
+          setVisibleComments(merged.length);
+          return merged;
+        });
+        commentsFetchedRef.current = true;
+      }
+      if (typeof onPostUpdated === "function") {
+        onPostUpdated();
+      } else if (typeof onCommentAdded === "function") {
+        onCommentAdded();
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+    },
+  });
+
+  const { mutateAsync: updatePost, isPending: savingPost } = useMutation({
+    mutationFn: async (content) => {
+      const { data } = await api.put(`/posts/${post.id}`, { content });
+      return data;
+    },
+    onSuccess: () => {
+      setEditingPost(false);
+      if (typeof onPostUpdated === "function") {
+        onPostUpdated();
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+    },
+  });
+
+  const { mutateAsync: updateComment, isPending: savingComment } = useMutation({
+    mutationFn: async ({ commentId, content }) => {
+      const { data } = await api.put(`/posts/${post.id}/comments/${commentId}`, { content });
+      return data;
+    },
+    onSuccess: () => {
+      setEditingCommentId(null);
+      setEditCommentContent("");
+      if (typeof onPostUpdated === "function") {
+        onPostUpdated();
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+    },
+  });
+
+  const { mutateAsync: reactComment, isPending: reactingComment } = useMutation({
+    mutationFn: async ({ commentId, type }) => {
+      const { data } = await api.post(`/posts/${post.id}/comments/${commentId}/reactions`, { type });
+      return data;
+    },
+    onSuccess: (data, variables) => {
+      // Actualiza estado local para respuesta instantánea
+      if (variables?.commentId && data?.reactions) {
+        setAllComments((prev) =>
+          prev.map((c) =>
+            c.id === variables.commentId
+              ? { ...c, reactions: data.reactions, userReaction: data.userReaction }
+              : c
+          )
+        );
+      }
+      if (typeof onPostUpdated === "function") {
+        onPostUpdated();
+      } else {
+        fetchComments();
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
     },
   });
 
@@ -46,109 +170,291 @@ export default function PostCard({ post, showHelpHighlight = false }) {
       style={style}
     >
       <div className="p-4 space-y-4">
-        <div className="flex items-start gap-3">
-          <Avatar user={post.author} size={48} />
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <div>
-                <div className="font-semibold text-slate-900 dark:text-white leading-tight">
-                  {post.author?.name}
+        {/* Área de hover: todo menos el input de comentario */}
+        <div
+          className="space-y-4"
+          onMouseEnter={() => setShowComments(true)}
+          onMouseLeave={() => setShowComments(false)}
+        >
+          <div className="flex items-start gap-3">
+            <Avatar user={post.author} size={48} />
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <div>
+                  <div className="font-semibold text-slate-900 dark:text-white leading-tight">
+                    {post.author?.name}
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">@{post.author?.username}</div>
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">@{post.author?.username}</div>
+                {post.type === "HELP_REQUEST" && (
+                  <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-100 px-3 py-1 text-[11px] font-semibold">
+                    ⚡ Ayuda
+                  </span>
+                )}
+                {post.squad && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[11px] text-slate-700 dark:text-slate-200">
+                    🛡️ {post.squad.name}
+                  </span>
+                )}
               </div>
-              {post.type === "HELP_REQUEST" && (
-                <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-100 px-3 py-1 text-[11px] font-semibold">
-                  ⚡ Ayuda
-                </span>
-              )}
-              {post.squad && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[11px] text-slate-700 dark:text-slate-200">
-                  🛡️ {post.squad.name}
-                </span>
-              )}
+              <div className="text-xs text-slate-500 mt-1">{new Date(post.createdAt).toLocaleString()}</div>
             </div>
-            <div className="text-xs text-slate-500 mt-1">{new Date(post.createdAt).toLocaleString()}</div>
           </div>
-        </div>
 
-        <div className="text-slate-800 dark:text-slate-100 text-sm whitespace-pre-line leading-relaxed">
-          {formatTextWithHashtags(post.content)}
-        </div>
-
-        {post.image && (
-          <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-            <img
-              src={`${mediaBase}/${post.image}`}
-              alt="Post"
-              className="w-full object-cover max-h-96 cursor-pointer"
-              onClick={() => open(`${mediaBase}/${post.image}`, "Imagen")}
-            />
+          <div className="text-slate-800 dark:text-slate-100 text-sm whitespace-pre-line leading-relaxed">
+            {editingPost ? (
+              <div className="space-y-2">
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:border-indigo-400 focus:outline-none"
+                  rows={3}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => updatePost(editContent)}
+                    disabled={savingPost || !editContent.trim()}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 disabled:opacity-60"
+                  >
+                    {savingPost ? "Guardando..." : "Guardar"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingPost(false);
+                      setEditContent(post.content || "");
+                    }}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              formatTextWithHashtags(post.content)
+            )}
           </div>
-        )}
 
-        {(post.hashtags?.length || post.tags?.length) && (
-          <div className="flex flex-wrap gap-2 text-xs">
-            {post.hashtags?.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-800"
+          {post.image && (
+            <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+              <img
+                src={`${mediaBase}/${post.image}`}
+                alt="Post"
+                className="w-full object-cover max-h-96 cursor-pointer"
+                onClick={() => open(`${mediaBase}/${post.image}`, "Imagen")}
+              />
+            </div>
+          )}
+
+          {(safeHashtags.length || safeTags.length) && (
+            <div className="flex flex-wrap gap-2 text-xs">
+              {safeHashtags.map((tag) => (
+                <Link
+                  key={tag}
+                  to={`/tag/${encodeURIComponent(tag)}`}
+                  className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                >
+                  #{tag}
+                </Link>
+              ))}
+              {safeTags.map((tag) => (
+                <Link
+                  key={tag}
+                  to={`/tag/${encodeURIComponent(tag)}`}
+                  className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700/80"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Zona que controla el hover para desplegar comentarios (excluye el área del input) */}
+          <div className="flex flex-wrap items-center gap-2">
+            {REACTION_ORDER.map((key) => (
+              <button
+                key={key}
+                onClick={() => setReaction(key)}
+                disabled={reacting}
+                className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition border ${
+                  currentReaction === key
+                    ? "bg-indigo-50 dark:bg-indigo-900/40 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-200"
+                    : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                }`}
               >
-                #{tag}
-              </span>
+                <span>{REACTIONS[key].icon}</span>
+                <span className="hidden sm:inline">{REACTIONS[key].label}</span>
+                <span className="font-semibold">{post.reactions?.[key] ?? 0}</span>
+              </button>
             ))}
-            {post.tags?.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700"
+            <div className="ml-auto flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-100 dark:border-indigo-700 text-xs font-semibold">
+                💬 {post._count?.comments ?? allComments.length ?? 0}
+              </span>
+            </div>
+            {post.author?.id === user?.id && !editingPost && (
+              <button
+                onClick={() => setEditingPost(true)}
+                className="text-xs px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
-                #{tag}
-              </span>
-            ))}
+                Editar post
+              </button>
+            )}
           </div>
-        )}
 
-        <div className="flex flex-wrap items-center gap-2">
-          {REACTION_ORDER.map((key) => (
-            <button
-              key={key}
-              onClick={() => setReaction(key)}
-              disabled={reacting}
-              className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition border ${
-                currentReaction === key
-                  ? "bg-indigo-50 dark:bg-indigo-900/40 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-200"
-                  : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+          <div className="space-y-3">
+            {!showComments && (
+              <div className="text-xs text-slate-500 dark:text-slate-300">
+                Pasá el mouse para ver comentarios (#{post._count?.comments ?? allComments.length ?? 0})
+              </div>
+            )}
+            <div
+              className={`rounded-xl border border-slate-200 dark:border-slate-800 ${
+                showComments ? "bg-slate-50 dark:bg-slate-900/60" : "bg-transparent"
               }`}
             >
-              <span>{REACTIONS[key].icon}</span>
-              <span className="hidden sm:inline">{REACTIONS[key].label}</span>
-              <span className="font-semibold">{post.reactions?.[key] ?? 0}</span>
-            </button>
-          ))}
-          <div className="ml-auto flex items-center gap-1 text-xs text-slate-500 dark:text-slate-300">
-            💬 {post._count?.comments ?? 0}
+              <AnimatePresence>
+                {showComments && (
+                  <motion.div
+                    key="comments-panel"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="max-h-64 overflow-y-auto px-3 py-2 space-y-3"
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    {loadingComments && (
+                      <div className="text-xs text-slate-500 dark:text-slate-300">Cargando comentarios...</div>
+                    )}
+                    {!loadingComments &&
+                      allComments.slice(0, visibleComments).map((c) => {
+                        const isAuthor = c.author?.id === user?.id;
+                        const isEditingThis = editingCommentId === c.id;
+                        return (
+                          <motion.div
+                            layout
+                            key={c.id}
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                            transition={{ duration: 0.15 }}
+                            className="flex gap-2 items-start text-sm"
+                          >
+                            <Avatar user={c.author} size={32} />
+                            <div className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-3 py-2 space-y-1">
+                              <div className="flex items-center justify-between">
+                                <div className="font-semibold text-slate-800 dark:text-slate-100">{c.author?.name}</div>
+                                {isAuthor && !isEditingThis && (
+                                  <button
+                                    onClick={() => {
+                                      setEditingCommentId(c.id);
+                                      setEditCommentContent(c.content);
+                                    }}
+                                    className="text-[11px] text-slate-500 hover:text-indigo-600"
+                                    type="button"
+                                  >
+                                    Editar
+                                  </button>
+                                )}
+                              </div>
+                              {isEditingThis ? (
+                                <div className="space-y-1">
+                                  <textarea
+                                    value={editCommentContent}
+                                    onChange={(e) => setEditCommentContent(e.target.value)}
+                                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-sm text-slate-800 dark:text-slate-100 focus:border-indigo-400 focus:outline-none"
+                                    rows={2}
+                                  />
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => updateComment({ commentId: c.id, content: editCommentContent })}
+                                      disabled={savingComment || !editCommentContent.trim()}
+                                      className="px-2 py-1 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 disabled:opacity-60"
+                                    >
+                                      {savingComment ? "Guardando..." : "Guardar"}
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setEditingCommentId(null);
+                                        setEditCommentContent("");
+                                      }}
+                                      className="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="text-slate-700 dark:text-slate-200 whitespace-pre-line">
+                                  {formatTextWithHashtags(c.content)}
+                                </p>
+                              )}
+                              {!isEditingThis && (
+                                <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 dark:text-slate-300">
+                                  {REACTION_ORDER.map((key) => (
+                                    <button
+                                      key={key}
+                                      onClick={() => reactComment({ commentId: c.id, type: key })}
+                                      disabled={reactingComment}
+                                      className={`flex items-center gap-1 rounded-full px-2 py-1 border ${
+                                        c.userReaction === key
+                                          ? "bg-indigo-50 dark:bg-indigo-900/40 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-200"
+                                          : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                      }`}
+                                    >
+                                      <span>{REACTIONS[key].icon}</span>
+                                      <span className="font-semibold">{c.reactions?.[key] ?? 0}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    {!loadingComments && allComments.length === 0 && (
+                      <div className="text-xs text-slate-500 dark:text-slate-300">No hay comentarios aún.</div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
+        {/* Input y acciones adicionales (fuera del hover) */}
         <div className="space-y-3">
-          {post.comments?.slice(0, 3).map((c) => (
-            <div key={c.id} className="flex gap-2 items-start text-sm">
-              <Avatar user={c.author} size={32} />
-              <div className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-3 py-2">
-                <div className="font-semibold text-slate-800 dark:text-slate-100">{c.author?.name}</div>
-                <p className="text-slate-700 dark:text-slate-200 whitespace-pre-line">
-                  {formatTextWithHashtags(c.content)}
-                </p>
-              </div>
-            </div>
-          ))}
-
+          <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-300">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <span>💬</span>
+              <span>{commentCount}</span>
+            </span>
+            {commentCount > 0 && (
+              <motion.span
+                animate={{ y: [0, 6, 0] }}
+                transition={{ repeat: Infinity, duration: 1.1, ease: "easeInOut" }}
+                className="text-slate-400"
+              >
+                ⬇️
+              </motion.span>
+            )}
+          </div>
           <div className="flex gap-2 items-start">
-            <input
+            <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               ref={commentInputRef}
+              rows={2}
               className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:border-indigo-400 focus:outline-none"
               placeholder="Escribe un comentario..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (comment.trim() && !commenting) {
+                    sendComment(comment);
+                  }
+                }
+              }}
             />
             <button
               onClick={() => sendComment(comment)}

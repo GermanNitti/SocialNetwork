@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.11",
     "axios": "^1.13.2",
+    "color-thief-browser": "^2.0.2",
     "framer-motion": "^12.23.25",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

@@ -758,7 +758,11 @@ export default function Profile() {
               </button>
             </div>
             {projectPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                onPostUpdated={() => queryClient.invalidateQueries({ queryKey: ["profile", username] })}
+              />
             ))}
             {projectPosts.length === 0 && (
               <div className="text-sm text-slate-500">Sin posts para este proyecto.</div>
@@ -773,7 +777,11 @@ export default function Profile() {
           </div>
         )}
         {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
+          <PostCard
+            key={post.id}
+            post={post}
+            onPostUpdated={() => queryClient.invalidateQueries({ queryKey: ["profile", username] })}
+          />
         ))}
       </div>
     </div>

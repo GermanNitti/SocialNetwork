@@ -10,7 +10,7 @@ const CardBase: React.FC<{ title: string; children: React.ReactNode }> = ({ titl
 );
 
 const HoyEnMacanudoCard: React.FC = () => (
-  <CardBase title="Hoy en Macanudo">
+  <CardBase title="Hoy en Macanudos">
     <p className="text-xs text-white/70">
       Estás en modo <span className="text-emerald-300">creativo</span>. Compartiste proyectos y mates con la comunidad.
       ✨

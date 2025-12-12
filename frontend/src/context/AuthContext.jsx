@@ -9,19 +9,44 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash, setShowSplash] = useState(() => {
+    // Si ya hay token guardado, no mostramos splash en recarga
+    return localStorage.getItem("token") ? false : true;
+  });
+  const [splashSubtitle, setSplashSubtitle] = useState("SOCIAL EXPERIENCE");
 
   useEffect(() => {
     const initialize = async () => {
       if (!token) {
+        // Mostrar intro inicial aunque no haya sesión
+        setSplashSubtitle("SOCIAL EXPERIENCE");
+        const timer = setTimeout(() => setShowSplash(false), SPLASH_DURATION);
         setLoading(false);
-        return;
+        return () => clearTimeout(timer);
       }
       // Mostrar el splash apenas detectamos token para evitar ver el feed antes del efecto
+      // Si ya lo ocultamos por haber token en localStorage, no lo volvemos a mostrar
+      if (!showSplash) {
+        setLoading(false);
+        try {
+          const { data } = await api.get("/auth/me");
+          setUser(data.user);
+        } catch (error) {
+          logout();
+        }
+        return;
+      }
       setShowSplash(true);
       try {
         const { data } = await api.get("/auth/me");
         setUser(data.user);
+        setSplashSubtitle(
+          data.user?.name
+            ? `Bienvenido ${data.user.name}`
+            : data.user?.username
+              ? `Bienvenido ${data.user.username}`
+              : "Bienvenido"
+        );
         setTimeout(() => setShowSplash(false), SPLASH_DURATION);
       } catch (error) {
         setShowSplash(false);
@@ -38,6 +63,15 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
+    setSplashSubtitle(
+      data.user?.name
+        ? `Bienvenido ${data.user.name}`
+        : data.user?.username
+          ? `Bienvenido ${data.user.username}`
+          : "Bienvenido"
+    );
+    setShowSplash(true);
+    setTimeout(() => setShowSplash(false), SPLASH_DURATION);
     return data.user;
   };
 
@@ -51,6 +85,15 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
+    setSplashSubtitle(
+      data.user?.name
+        ? `Bienvenido ${data.user.name}`
+        : data.user?.username
+          ? `Bienvenido ${data.user.username}`
+          : "Bienvenido"
+    );
+    setShowSplash(true);
+    setTimeout(() => setShowSplash(false), SPLASH_DURATION);
     return data.user;
   };
 
@@ -72,14 +115,16 @@ export function AuthProvider({ children }) {
       setUser,
       showSplash,
       setShowSplash,
+      splashSubtitle,
+      setSplashSubtitle,
     }),
-    [user, token, loading, showSplash]
+    [user, token, loading, showSplash, splashSubtitle]
   );
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-      <SplashLogo visible={showSplash} />
+      <SplashLogo visible={showSplash} subtitle={splashSubtitle} />
     </AuthContext.Provider>
   );
 }
