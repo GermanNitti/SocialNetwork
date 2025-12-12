@@ -18,7 +18,7 @@ import TagFeed from "./pages/TagFeed";
 import MobileBottomNav from "./components/MobileBottomNav";
 import MobileHeader from "./components/MobileHeader";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserSearch from "./components/UserSearch";
 
 function App() {
@@ -26,6 +26,26 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const forcedDarkRef = useRef(false);
+
+  // Fuerza modo oscuro en mobile (< md) sin alterar desktop.
+  useEffect(() => {
+    const html = document.documentElement;
+    const apply = () => {
+      if (window.innerWidth < 768) {
+        if (!html.classList.contains("dark")) {
+          html.classList.add("dark");
+          forcedDarkRef.current = true;
+        }
+      } else if (forcedDarkRef.current) {
+        html.classList.remove("dark");
+        forcedDarkRef.current = false;
+      }
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, []);
 
   const resolveTab = () => {
     if (location.pathname.startsWith("/chat")) return "chat";
