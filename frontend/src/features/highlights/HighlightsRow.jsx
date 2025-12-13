@@ -23,7 +23,6 @@ export default function HighlightsRow() {
           <span className="h-2 w-2 rounded-full" style={{ background: accent }} />
           Reels: {MODES[mode]?.label}
         </span>
-        <span className="text-[11px] text-slate-500">Feed: Cerca</span>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-3">
         {isLoading &&
