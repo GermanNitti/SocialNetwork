@@ -43,8 +43,12 @@ export default function HighlightsRow() {
                 className="h-16 w-16 rounded-full border-2 flex items-center justify-center overflow-hidden"
                 style={{ borderColor: accent, boxShadow: `0 0 0 2px ${accent}22` }}
               >
-                {item.thumbUrl ? (
-                  <img src={item.thumbUrl} alt={item.title} className="h-full w-full object-cover" />
+                {item.thumbUrl || item.thumbnail || item.imageUrl ? (
+                  <img
+                    src={item.thumbUrl || item.thumbnail || item.imageUrl}
+                    alt={item.title}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <span className="text-xs text-slate-400">Reel</span>
                 )}

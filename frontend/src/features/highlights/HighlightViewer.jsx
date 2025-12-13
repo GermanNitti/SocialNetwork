@@ -21,6 +21,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
 
   const item = items?.[activeIndex];
   const accent = MODES[mode]?.accent || "#3B82F6";
+  const thumb = item?.thumbUrl || item?.thumbnail || item?.imageUrl;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -112,27 +113,23 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
           className="flex-1 relative"
           onClick={handleTap}
         >
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-slate-900">
             {item.type === "video" && item.url ? (
               <video
                 ref={videoRef}
                 src={item.url || ""}
-                poster={item.thumbUrl}
+                poster={thumb}
                 muted
                 loop
                 playsInline
                 className="w-full h-full object-cover"
               />
+            ) : thumb ? (
+              <img src={thumb} alt={item.title} className="w-full h-full object-cover" />
             ) : (
-              <>
-                {item.thumbUrl ? (
-                  <img src={item.thumbUrl} alt={item.title} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
-                    Highlight
-                  </div>
-                )}
-              </>
+              <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
+                Highlight
+              </div>
             )}
           </div>
           {/* Gradient for text/readability */}
