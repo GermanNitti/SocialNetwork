@@ -54,9 +54,10 @@ export default function NotificationBell({ label = "Notificaciones", iconOnly = 
         }
         aria-label={label}
       >
-        <span aria-hidden className="text-indigo-500">
+        <span aria-hidden>
           <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.657A2 2 0 0112.917 19h-1.834a2 2 0 01-1.94-1.343L8 15H4a2 2 0 01-2-2V9a2 2 0 012-2h1.172a2 2 0 001.414-.586l2.828-2.828a2 2 0 012.828 0l2.828 2.828A2 2 0 0016.828 7H18a2 2 0 012 2v4a2 2 0 01-2 2h-4l-.143.657z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 10V6a4 4 0 10-8 0v4H5a1 1 0 00-1 1v5a2 2 0 002 2h10a2 2 0 002-2v-5a1 1 0 00-1-1h-1z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 16h2m-1 3a2 2 0 002-2H8a2 2 0 002 2z" />
           </svg>
         </span>
         {!iconOnly && <span>{label}</span>}
