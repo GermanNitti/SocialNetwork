@@ -10,6 +10,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
   const [isCommentsOpen, setCommentsOpen] = useState(false);
   const [isReactionsOpen, setReactionsOpen] = useState(false);
   const [isPaused, setPaused] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchDelta = useRef({ x: 0, y: 0 });
@@ -22,6 +23,10 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
   const item = items?.[activeIndex];
   const accent = MODES[mode]?.accent || "#3B82F6";
   const thumb = item?.thumbUrl || item?.thumbnail || item?.imageUrl;
+  useEffect(() => {
+    setVideoReady(false);
+    setPaused(false);
+  }, [activeIndex]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -103,7 +108,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
     >
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
-          key={item.id}
+          key={item.id ?? activeIndex}
           custom={direction}
           variants={variants}
           initial="enter"
@@ -113,25 +118,43 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
           className="flex-1 relative"
           onClick={handleTap}
         >
-          <div className="absolute inset-0 bg-slate-900">
-            {item.type === "video" && item.url ? (
-              <video
-                ref={videoRef}
-                src={item.url || ""}
-                poster={thumb}
-                muted
-                loop
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            ) : thumb ? (
-              <img src={thumb} alt={item.title} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
-                Highlight
+          {(() => {
+            const isPlayableVideo =
+              item?.type === "video" &&
+              typeof item?.url === "string" &&
+              /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
+            return (
+              <div className="absolute inset-0 bg-slate-900">
+                {thumb ? (
+                  <img
+                    src={thumb}
+                    alt={item.title || "Reel"}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
+                    Highlight
+                  </div>
+                )}
+
+                {isPlayableVideo && (
+                  <video
+                    ref={videoRef}
+                    src={item.url}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ opacity: videoReady ? 1 : 0 }}
+                    onCanPlay={() => setVideoReady(true)}
+                    onError={() => setVideoReady(false)}
+                  />
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
           {/* Gradient for text/readability */}
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
           <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
