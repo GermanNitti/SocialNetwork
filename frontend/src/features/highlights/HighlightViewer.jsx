@@ -27,6 +27,12 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
     setVideoReady(false);
     setPaused(false);
   }, [activeIndex]);
+  useEffect(() => {
+    if (open) {
+      setDirection(0);
+      setActiveIndex(index || 0);
+    }
+  }, [open, index]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -94,7 +100,10 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
   const cards = useMemo(() => items || [], [items]);
 
   const variants = {
-    enter: (dir) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
+    enter: (dir) =>
+      dir === 0
+        ? { x: 0, opacity: 1 }
+        : { x: dir > 0 ? "-100%" : "100%", opacity: 0 },
     center: { x: 0, opacity: 1 },
     exit: (dir) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
   };
@@ -124,12 +133,12 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
               typeof item?.url === "string" &&
               /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
             return (
-              <div className="absolute inset-0 bg-slate-900">
+              <div className="absolute inset-0 bg-slate-900 z-0">
                 {thumb ? (
                   <img
                     src={thumb}
                     alt={item.title || "Reel"}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none"
                     draggable={false}
                   />
                 ) : (
@@ -146,7 +155,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
                     loop
                     playsInline
                     autoPlay
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                     style={{ opacity: videoReady ? 1 : 0 }}
                     onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoReady(false)}
@@ -156,8 +165,8 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
             );
           })()}
           {/* Gradient for text/readability */}
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
-          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none z-10" />
+          <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between">
             <div className="text-left space-y-1">
               <div className="text-sm font-semibold">{item.title}</div>
               <div className="text-xs text-slate-200">por {item.authorName}</div>
@@ -192,7 +201,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="absolute bottom-20 right-4 flex flex-col gap-2 bg-black/70 border border-white/10 rounded-2xl p-2"
+                className="absolute bottom-20 right-4 z-30 flex flex-col gap-2 bg-black/70 border border-white/10 rounded-2xl p-2"
               >
                 {REACTIONS.map((r) => (
                   <button
@@ -219,7 +228,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
             animate={{ y: "40%" }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.25, ease: [0.22, 0.61, 0.36, 1] }}
-            className="absolute inset-x-0 bottom-0 bg-slate-900 rounded-t-3xl border-t border-slate-800 p-4 flex flex-col"
+            className="absolute inset-x-0 bottom-0 z-40 bg-slate-900 rounded-t-3xl border-t border-slate-800 p-4 flex flex-col"
             style={{ height: "60%" }}
           >
             <div className="flex items-center justify-between mb-3">
