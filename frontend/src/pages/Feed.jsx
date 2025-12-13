@@ -5,6 +5,7 @@ import PostComposer from "../components/PostComposer";
 import PostCard from "../components/PostCard";
 import { FeedTabs } from "../components/feed/FeedTabs";
 import { RightSidebar } from "../components/layout/RightSidebar";
+import MobileHighlightsSection from "../features/highlights/MobileHighlightsSection";
 
 export default function Feed() {
   const [mode, setMode] = useState("forYou"); // forYou | squads | help | explore
@@ -36,6 +37,8 @@ export default function Feed() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 space-y-4">
+      {import.meta.env.VITE_ENABLE_HIGHLIGHTS === "1" && <MobileHighlightsSection />}
+
       <div id="composer" className="pt-2">
         <PostComposer />
       </div>
