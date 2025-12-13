@@ -27,19 +27,12 @@ function App() {
   const navigate = useNavigate();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  // Fuerza modo oscuro en mobile (< md) sin alterar desktop.
+  // Fuerza modo oscuro en toda la app (mobile y desktop).
   useEffect(() => {
     const html = document.documentElement;
-    const apply = () => {
-      if (window.innerWidth < 768) {
-        if (!html.classList.contains("dark")) {
-          html.classList.add("dark");
-        }
-      }
-    };
-    apply();
-    window.addEventListener("resize", apply);
-    return () => window.removeEventListener("resize", apply);
+    if (!html.classList.contains("dark")) {
+      html.classList.add("dark");
+    }
   }, []);
 
   const resolveTab = () => {
@@ -96,7 +89,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen pb-16 md:pb-0">
+    <div className="min-h-screen pb-16 md:pb-0 bg-slate-950 text-slate-50">
       {user && (
         <>
           <div className="hidden md:block">

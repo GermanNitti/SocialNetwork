@@ -25,6 +25,8 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
   const [loadingComments, setLoadingComments] = useState(false);
   const commentsFetchedRef = useRef(false);
   const commentInputRef = useRef(null);
+  const [reactionHint, setReactionHint] = useState("");
+  const reactionHintTimeout = useRef(null);
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
   const currentReaction = post.userReaction;
   const { style } = useCardStyle();
@@ -275,7 +277,12 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
             {REACTION_ORDER.map((key) => (
               <button
                 key={key}
-                onClick={() => setReaction(key)}
+                onClick={() => {
+                  setReaction(key);
+                  if (reactionHintTimeout.current) clearTimeout(reactionHintTimeout.current);
+                  setReactionHint(REACTIONS[key].label);
+                  reactionHintTimeout.current = setTimeout(() => setReactionHint(""), 900);
+                }}
                 disabled={reacting}
                 className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition border ${
                   currentReaction === key
@@ -304,6 +311,16 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
           </div>
 
           <div className="space-y-3">
+            {reactionHint && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                className="md:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 text-slate-100 text-xs font-semibold shadow"
+              >
+                <span>{reactionHint}</span>
+              </motion.div>
+            )}
             {!showComments && (
               <div className="hidden md:block text-xs text-slate-500 dark:text-slate-300">
                 Pasá el mouse para ver comentarios (#{commentCount})

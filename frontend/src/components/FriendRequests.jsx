@@ -71,13 +71,7 @@ export default function FriendRequests({ iconOnly = false }) {
         }
         aria-label="Solicitudes de amistad"
       >
-        <span aria-hidden>
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c1.657 0 3-1.79 3-4s-1.343-4-3-4-3 1.79-3 4 1.343 4 3 4z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8 13h8a4 4 0 014 4v1a1 1 0 01-1 1h-3.5l-1.3 2.167a1 1 0 01-1.7 0L10.5 19H7a1 1 0 01-1-1v-1a4 4 0 014-4z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 15l-2 2m12-2l2 2m-12 0l2-2m8 2l2-2" />
-          </svg>
-        </span>
+        <span aria-hidden>{"\u{1F91D}"}</span>
         {!iconOnly && <span>Amigos</span>}
         <AnimatePresence>
           {badge > 0 && (

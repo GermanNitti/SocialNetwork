@@ -54,12 +54,7 @@ export default function NotificationBell({ label = "Notificaciones", iconOnly = 
         }
         aria-label={label}
       >
-        <span aria-hidden>
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14 10V6a4 4 0 10-8 0v4H5a1 1 0 00-1 1v5a2 2 0 002 2h10a2 2 0 002-2v-5a1 1 0 00-1-1h-1z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 16h2m-1 3a2 2 0 002-2H8a2 2 0 002 2z" />
-          </svg>
-        </span>
+        <span aria-hidden>{"\u{1F514}"}</span>
         {!iconOnly && <span>{label}</span>}
         <AnimatePresence>
           {unread > 0 && (
@@ -100,13 +95,23 @@ export default function NotificationBell({ label = "Notificaciones", iconOnly = 
                 key={n.id}
                 className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-100"
               >
-                {n.link ? (
-                  <Link to={n.link} onClick={() => setOpen(false)} className="hover:underline">
-                    {n.message || n.type}
-                  </Link>
-                ) : (
-                  <span>{n.message || n.type}</span>
-                )}
+                {(() => {
+                  const actor = n.user?.name || n.actorName || n.actorUsername || "Alguien";
+                  const post = n.postTitle ? ` en "${n.postTitle}"` : n.postId ? ` en tu post #${n.postId}` : "";
+                  let desc = n.message || n.type || "Notificación";
+                  if (!n.message) {
+                    if (n.type === "REACTION") desc = `${actor} reaccionó${post}`;
+                    else if (n.type === "COMMENT") desc = `${actor} comentó${post}`;
+                    else if (n.type === "FOLLOW" || n.type === "FRIEND_REQUEST") desc = `${actor} quiere conectar`;
+                  }
+                  return n.link ? (
+                    <Link to={n.link} onClick={() => setOpen(false)} className="hover:underline">
+                      {desc}
+                    </Link>
+                  ) : (
+                    <span>{desc}</span>
+                  );
+                })()}
               </div>
             ))}
           </motion.div>
