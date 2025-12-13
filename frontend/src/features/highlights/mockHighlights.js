@@ -1,5 +1,25 @@
 const baseItems = [
   {
+    id: "test1-mp4",
+    title: "Test1 MP4",
+    authorName: "Demo",
+    thumbUrl: "https://picsum.photos/800/1401",
+    type: "video",
+    contentType: "CERCA",
+    provider: "internal",
+    url: "https://img-9gag-fun.9cache.com/photo/a9y4GWK_460svav1.mp4",
+  },
+  {
+    id: "test2-mp4",
+    title: "Test2 MP4",
+    authorName: "Demo",
+    thumbUrl: "https://picsum.photos/800/1402",
+    type: "video",
+    contentType: "CERCA",
+    provider: "internal",
+    url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+  },
+  {
     id: "h1",
     title: "Sketch cómico",
     authorName: "Lau C.",

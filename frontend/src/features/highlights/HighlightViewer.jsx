@@ -159,6 +159,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
                     style={{ opacity: videoReady ? 1 : 0 }}
                     onCanPlay={() => setVideoReady(true)}
                     onError={() => setVideoReady(false)}
+                    poster={thumb}
                   />
                 )}
               </div>
