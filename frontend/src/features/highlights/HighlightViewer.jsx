@@ -113,7 +113,7 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
           onClick={handleTap}
         >
           <div className="absolute inset-0">
-            {item.type === "video" ? (
+            {item.type === "video" && item.url ? (
               <video
                 ref={videoRef}
                 src={item.url || ""}
@@ -123,12 +123,16 @@ export default function HighlightViewer({ open, items, index, onClose, mode }) {
                 playsInline
                 className="w-full h-full object-cover"
               />
-            ) : item.thumbUrl ? (
-              <img src={item.thumbUrl} alt={item.title} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
-                Highlight
-              </div>
+              <>
+                {item.thumbUrl ? (
+                  <img src={item.thumbUrl} alt={item.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
+                    Highlight
+                  </div>
+                )}
+              </>
             )}
           </div>
           {/* Gradient for text/readability */}
