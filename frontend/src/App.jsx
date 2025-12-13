@@ -18,7 +18,7 @@ import TagFeed from "./pages/TagFeed";
 import MobileBottomNav from "./components/MobileBottomNav";
 import MobileHeader from "./components/MobileHeader";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UserSearch from "./components/UserSearch";
 
 function App() {
@@ -26,14 +26,6 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-
-  // Fuerza modo oscuro en toda la app (mobile y desktop).
-  useEffect(() => {
-    const html = document.documentElement;
-    if (!html.classList.contains("dark")) {
-      html.classList.add("dark");
-    }
-  }, []);
 
   const resolveTab = () => {
     if (location.pathname.startsWith("/chat")) return "chat";
@@ -89,7 +81,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen pb-16 md:pb-0 bg-slate-950 text-slate-50">
+    <div className="min-h-screen pb-16 md:pb-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
       {user && (
         <>
           <div className="hidden md:block">
