@@ -180,12 +180,14 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
             <Avatar user={post.author} size={48} />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <div>
-                  <div className="font-semibold text-slate-900 dark:text-white leading-tight">
-                    {post.author?.name}
+                <Link to={`/profile/${post.author?.username || ""}`} className="hover:opacity-90">
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white leading-tight">
+                      {post.author?.name}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">@{post.author?.username}</div>
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">@{post.author?.username}</div>
-                </div>
+                </Link>
                 {post.type === "HELP_REQUEST" && (
                   <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-100 px-3 py-1 text-[11px] font-semibold">
                     ⚡ Ayuda
@@ -303,8 +305,8 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
 
           <div className="space-y-3">
             {!showComments && (
-              <div className="text-xs text-slate-500 dark:text-slate-300">
-                Pasá el mouse para ver comentarios (#{post._count?.comments ?? allComments.length ?? 0})
+              <div className="hidden md:block text-xs text-slate-500 dark:text-slate-300">
+                Pasá el mouse para ver comentarios (#{commentCount})
               </div>
             )}
             <div
@@ -342,8 +344,10 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
                           >
                             <Avatar user={c.author} size={32} />
                             <div className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-3 py-2 space-y-1">
-                              <div className="flex items-center justify-between">
-                                <div className="font-semibold text-slate-800 dark:text-slate-100">{c.author?.name}</div>
+                                <div className="flex items-center justify-between">
+                                <Link to={`/profile/${c.author?.username || ""}`} className="font-semibold text-slate-800 dark:text-slate-100 hover:underline">
+                                  {c.author?.name}
+                                </Link>
                                 {isAuthor && !isEditingThis && (
                                   <button
                                     onClick={() => {
