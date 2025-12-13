@@ -54,6 +54,16 @@ const baseItems = [
     provider: "internal",
   },
   {
+    id: "test-9gag-mp4",
+    title: "Test MP4 9gag",
+    authorName: "Demo",
+    thumbUrl: "https://picsum.photos/800/1400",
+    type: "video",
+    contentType: "CERCA",
+    provider: "internal",
+    url: "https://img-9gag-fun.9cache.com/photo/a9y4GWK_460svav1.mp4",
+  },
+  {
     id: "h7",
     title: "Deep dive",
     authorName: "Profe",
