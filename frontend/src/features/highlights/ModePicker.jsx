@@ -7,6 +7,17 @@ export default function ModePicker({ open, onClose }) {
   const { mode, setMode, chaosEndsAt } = useReelsMode();
   if (!open) return null;
 
+  const DESCRIPTIONS = {
+    CERCA: "Amigos, familia y círculos.",
+    DESCUBRIR: "Gente/ideas fuera de tu burbuja.",
+    AHORA: "Lo reciente y lo que está pasando.",
+    PROFUNDO: "Lecturas e hilos con sustancia.",
+    CALMA: "Contenido liviano, cero bardo.",
+    HUMOR: "Memes y ocurrencias bien a tu gusto.",
+    APRENDER: "Tips, guías y data aplicable.",
+    CAOS: "Mezcla sin freno, algoritmo estándar (10 min).",
+  };
+
   const body = (
     <div
       className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm md:hidden"
@@ -46,11 +57,7 @@ export default function ModePicker({ open, onClose }) {
                   />
                   <div>
                     <div className="text-sm font-semibold">{m.label}</div>
-                    <div className="text-[12px] text-slate-400">
-                      {key === "CAOS"
-                        ? "Adictivo, 10 min"
-                        : `Tipo: ${m.autoplay ? "Autoplay" : "Tap para ver"}`}
-                    </div>
+                    <div className="text-[12px] text-slate-400">{DESCRIPTIONS[key]}</div>
                   </div>
                 </div>
                 {active && <span className="text-[10px] uppercase text-indigo-300 font-semibold">Activo</span>}
