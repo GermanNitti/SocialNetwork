@@ -65,14 +65,11 @@ export function getReels(mode) {
   // We return a new shuffled array every time.
   const reels = filteredData.map(r => ({
     id: r.url, // Use URL as a unique ID
-    user: {
-      name: r.category,
-      avatar: `https://avatars.dicebear.com/api/jdenticon/${r.category}.svg`
-    },
-    media: {
-      type: 'video',
-      url: r.url,
-    },
+    authorName: r.category,
+    title: `Reel de ${r.category}`,
+    type: 'video',
+    url: r.url,
+    thumbUrl: `https://avatars.dicebear.com/api/jdenticon/${r.category}.svg`, // Placeholder thumbnail
     contentType: categoryToModeMap[r.category] || 'CAOS'
   }));
 
