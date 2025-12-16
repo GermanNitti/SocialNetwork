@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from "../../constants/reactions";
+import api from "../../api/client";
 
 export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
@@ -11,6 +12,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [progress, setProgress] = useState(0);
   const videoRef = useRef(null);
   const statusTimeoutRef = useRef(null);
+  const touchStartX = useRef(null);
+  const touchDeltaX = useRef(0);
+  const [showShare, setShowShare] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [sharingTo, setSharingTo] = useState(null);
+  const [localReaction, setLocalReaction] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -72,6 +79,65 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     showStatusIndicator();
   };
 
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches?.[0]?.clientX ?? null;
+    touchDeltaX.current = 0;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartX.current) return;
+    const currentX = e.touches?.[0]?.clientX ?? 0;
+    touchDeltaX.current = currentX - touchStartX.current;
+  };
+
+  const handleTouchEnd = () => {
+    const delta = touchDeltaX.current || 0;
+    const THRESHOLD = 50; // pixels
+    if (delta > THRESHOLD) {
+      // swipe right -> previous
+      handlePrev();
+    } else if (delta < -THRESHOLD) {
+      // swipe left -> next
+      handleNext();
+    }
+    touchStartX.current = null;
+    touchDeltaX.current = 0;
+  };
+
+  const openShare = async () => {
+    setShowShare(true);
+    try {
+      const { data } = await api.get("/friends");
+      const list = Array.isArray(data) ? data : Array.isArray(data?.friends) ? data.friends : [];
+      setFriends(list);
+    } catch (err) {
+      console.warn("Error loading friends", err);
+      setFriends([]);
+    }
+  };
+
+  const shareToFriend = async (friend) => {
+    if (!friend || !friend.username) return;
+    try {
+      await api.post(`/chat/to/${encodeURIComponent(friend.username)}`, {
+        content: `Te compartí este reel: ${item.url}`,
+      });
+      setSharingTo(friend.username);
+      setTimeout(() => {
+        setShowShare(false);
+        setSharingTo(null);
+      }, 1000);
+    } catch (err) {
+      console.error("Error sharing reel:", err);
+    }
+  };
+
+  const reactWith = (type) => {
+    // local visual feedback for reels (not persisted)
+    if (localReaction === type) setLocalReaction(null);
+    else setLocalReaction(type);
+  };
+
   const handleTimeUpdate = (e) => {
     const video = e.target;
     if (video.duration) {
@@ -82,7 +148,13 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   return createPortal(
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div className="relative flex-1 overflow-hidden bg-slate-900" onClick={togglePlayPause}>
+      <div
+        className="relative flex-1 overflow-hidden bg-slate-900"
+        onClick={togglePlayPause}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {isPlayableVideo ? (
           <video
             key={item.id ?? activeIndex}
@@ -91,7 +163,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             autoPlay
             playsInline
             poster={thumb}
-            className="absolute inset-0 w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
             style={{ opacity: videoReady ? 1 : 0 }}
             onCanPlay={() => setVideoReady(true)}
             onError={() => setVideoReady(false)}
@@ -119,7 +191,32 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         </div>
 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
-        <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button>
+
+        {/* Reactions / share column */}
+        <div className="absolute right-3 top-1/3 z-30 flex flex-col items-center gap-3">
+          {REACTION_ORDER.map((key) => {
+            const reaction = REACTIONS[key];
+            if (!reaction) return null;
+            const active = localReaction === key;
+            return (
+              <button
+                key={key}
+                onClick={(e) => { e.stopPropagation(); reactWith(key); }}
+                className={`flex items-center justify-center w-11 h-11 rounded-full border ${active ? "bg-emerald-400 text-white" : "bg-black/40 text-white/90"}`}
+                title={reaction.label}
+              >
+                <span className="text-lg">{reaction.icon}</span>
+              </button>
+            );
+          })}
+          <button
+            onClick={(e) => { e.stopPropagation(); openShare(); }}
+            className="flex items-center justify-center w-11 h-11 rounded-full border bg-black/40 text-white/90"
+            title="Enviar a un amigo"
+          >
+            📤
+          </button>
+        </div>
         
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">
@@ -137,6 +234,34 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         <div className="px-3 py-1 rounded-full border border-white/20" style={{ color: accent }}>Reels: {MODES[mode]?.label || "Modo"}</div>
         <div className="text-slate-400">{item.contentType || item.type || ""}</div>
       </div>
+      {showShare && (
+        <div className="fixed inset-0 z-40 flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowShare(false)} />
+          <div className="bg-white dark:bg-slate-900 rounded-t-2xl p-4 w-full max-w-md mx-4 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold">Enviar a...</h3>
+              <button className="text-xs text-indigo-600" onClick={() => setShowShare(false)}>Cerrar</button>
+            </div>
+            {sharingTo && <div className="mb-2 text-sm text-green-600">Enviado a {sharingTo}</div>}
+            <div className="max-h-60 overflow-auto space-y-2">
+              {friends.length === 0 && <div className="text-sm text-slate-500">No hay amigos para mostrar.</div>}
+              {friends.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => shareToFriend(f)}
+                  className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
+                >
+                  <div>
+                    <div className="font-medium text-sm">{f.name || f.username}</div>
+                    <div className="text-xs text-slate-500">@{f.username}</div>
+                  </div>
+                  <div className="text-xs text-slate-400">Enviar</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   );
