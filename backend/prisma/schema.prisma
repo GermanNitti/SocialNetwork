@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,82 +7,84 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  username  String    @unique
-  email     String    @unique
-  bio       String?
-  location  String?
-  interests String[]  @default([])
-  password  String
-  avatar    String?
-  hasCompletedOnboarding Boolean @default(false)
-  themeId   Int?
-  customThemeSettings Json?
-  points    Int       @default(0)
-  totalPointsEarned Int @default(0)
-  loginStreak Int     @default(0)
-  lastLoginAt DateTime?
-  createdAt DateTime  @default(now())
-  posts     Post[]
-  comments  Comment[]
-  likes     Like[]
-  reactions Reaction[]
-  commentReactions CommentReaction[]
-  requestedFriendships Friendship[] @relation("friendRequester")
-  receivedFriendships  Friendship[] @relation("friendAddressee")
-  notifications        Notification[]
-  messages             Message[]
-  conversations        ConversationParticipant[]
-  preferences          UserPreference?
-  projects             Project[]
-  squadMemberships     SquadMember[]
-  userBadges           UserBadge[]
-  feedbackAuthored     Feedback[]
-  feedbackVotes        FeedbackVote[]
-  theme                Theme?     @relation(fields: [themeId], references: [id])
-  userItems            UserItem[]
-  interactions         UserInteraction[]
-  profileVideoUrl          String?
-  profileVideoThumbnailUrl String?
-  useVideoAvatar           Boolean @default(false)
-  coverImageUrl            String?
-  coverVideoUrl            String?
-  termStats               UserTermStats[]
-  relationsAsUser1        UserRelation[] @relation("UserRelationUser1")
-  relationsAsUser2        UserRelation[] @relation("UserRelationUser2")
-  ambiguousReferencesAuthored AmbiguousReference[] @relation("AmbiguousReferenceAuthor")
+  id                           Int                           @id @default(autoincrement())
+  name                         String
+  username                     String                        @unique
+  email                        String                        @unique
+  bio                          String?
+  location                     String?
+  interests                    String[]                      @default([])
+  password                     String
+  avatar                       String?
+  hasCompletedOnboarding       Boolean                       @default(false)
+  themeId                      Int?
+  customThemeSettings          Json?
+  points                       Int                           @default(0)
+  totalPointsEarned            Int                           @default(0)
+  loginStreak                  Int                           @default(0)
+  lastLoginAt                  DateTime?
+  createdAt                    DateTime                      @default(now())
+  profileVideoUrl              String?
+  profileVideoThumbnailUrl     String?
+  useVideoAvatar               Boolean                       @default(false)
+  coverImageUrl                String?
+  coverVideoUrl                String?
+  ambiguousReferencesAuthored  AmbiguousReference[]          @relation("AmbiguousReferenceAuthor")
   ambiguousReferenceCandidates AmbiguousReferenceCandidate[] @relation("AmbiguousReferenceTarget")
+  comments                     Comment[]
+  commentReactions             CommentReaction[]
+  conversations                ConversationParticipant[]
+  feedbackAuthored             Feedback[]
+  feedbackVotes                FeedbackVote[]
+  receivedFriendships          Friendship[]                  @relation("friendAddressee")
+  requestedFriendships         Friendship[]                  @relation("friendRequester")
+  likes                        Like[]
+  messages                     Message[]
+  notifications                Notification[]
+  posts                        Post[]
+  projects                     Project[]
+  reactions                    Reaction[]
+  reelReactions                ReelReaction[]
+  squadMemberships             SquadMember[]
+  theme                        Theme?                        @relation(fields: [themeId], references: [id])
+  userBadges                   UserBadge[]
+  interactions                 UserInteraction[]
+  userItems                    UserItem[]
+  preferences                  UserPreference?
+  relationsAsUser1             UserRelation[]                @relation("UserRelationUser1")
+  relationsAsUser2             UserRelation[]                @relation("UserRelationUser2")
+  termStats                    UserTermStats[]
+  reels                        Reel[]
 }
 
 model Post {
-  id        Int        @id @default(autoincrement())
-  content   String
-  image     String?
-  createdAt DateTime   @default(now())
-  authorId  Int
-  author    User       @relation(fields: [authorId], references: [id])
-  comments  Comment[]
-  likes     Like[]
-  reactions Reaction[]
-  tags      String[]   @default([])
-  hashtags  String[]   @default([])
-  type      PostType   @default(NORMAL)
-  squadId   Int?
-  squad     Squad?     @relation(fields: [squadId], references: [id])
-  projectId Int?
-  project   Project?   @relation(fields: [projectId], references: [id])
+  id                  Int                  @id @default(autoincrement())
+  content             String
+  image               String?
+  createdAt           DateTime             @default(now())
+  authorId            Int
+  tags                String[]             @default([])
+  hashtags            String[]             @default([])
+  type                PostType             @default(NORMAL)
+  squadId             Int?
+  projectId           Int?
   ambiguousReferences AmbiguousReference[] @relation("PostAmbiguousReferences")
+  comments            Comment[]
+  likes               Like[]
+  author              User                 @relation(fields: [authorId], references: [id])
+  project             Project?             @relation(fields: [projectId], references: [id])
+  squad               Squad?               @relation(fields: [squadId], references: [id])
+  reactions           Reaction[]
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
+  id        Int               @id @default(autoincrement())
   content   String
-  createdAt DateTime  @default(now())
+  createdAt DateTime          @default(now())
   authorId  Int
   postId    Int
-  author    User      @relation(fields: [authorId], references: [id])
-  post      Post      @relation(fields: [postId], references: [id])
+  author    User              @relation(fields: [authorId], references: [id])
+  post      Post              @relation(fields: [postId], references: [id])
   reactions CommentReaction[]
 }
 
@@ -97,25 +93,10 @@ model Like {
   createdAt DateTime @default(now())
   userId    Int
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
-}
-
-enum ReactionType {
-  MACANUDO
-  MESSIRVE
-  JAJAJA
-  DE_UNA
-  QUE_BOLUDO
-  QUE_BAJON
-}
-
-enum PostType {
-  NORMAL
-  HELP_REQUEST
-  PROJECT_UPDATE
 }
 
 model Reaction {
@@ -124,8 +105,8 @@ model Reaction {
   createdAt DateTime     @default(now())
   userId    Int
   postId    Int
-  user      User         @relation(fields: [userId], references: [id])
   post      Post         @relation(fields: [postId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
 }
@@ -136,36 +117,50 @@ model CommentReaction {
   createdAt DateTime     @default(now())
   userId    Int
   commentId Int
-  user      User         @relation(fields: [userId], references: [id])
   comment   Comment      @relation(fields: [commentId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
 
   @@unique([userId, commentId])
 }
 
-enum FriendshipStatus {
-  PENDING
-  ACCEPTED
+model Reel {
+  id              Int           @id @default(autoincrement())
+  url             String        // URL of the video content
+  thumbnailUrl    String?       // URL of the video thumbnail
+  title           String?
+  authorId        Int
+  createdAt       DateTime      @default(now())
+  views           Int           @default(0) // Optional: to track views
+  author          User          @relation(fields: [authorId], references: [id])
+  reactions       ReelReaction[]
+  // Add other fields as needed, e.g., description, tags, etc.
+}
+
+model ReelReaction {
+  id        Int          @id @default(autoincrement())
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  userId    Int
+  reelId    Int
+  reel      Reel         @relation(fields: [reelId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
+
+  @@unique([userId, reelId])
 }
 
 model Friendship {
-  id           Int               @id @default(autoincrement())
-  requesterId  Int
-  addresseeId  Int
-  status       FriendshipStatus  @default(PENDING)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  requester    User              @relation("friendRequester", fields: [requesterId], references: [id])
-  addressee    User              @relation("friendAddressee", fields: [addresseeId], references: [id])
-  relationCategory String?       // amigo, familia, trabajo, deporte, pareja, etc
-  relationDetail   String?       // primo, hermana, colega, etc
+  id               Int              @id @default(autoincrement())
+  requesterId      Int
+  addresseeId      Int
+  status           FriendshipStatus @default(PENDING)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  relationCategory String?
+  relationDetail   String?
+  addressee        User             @relation("friendAddressee", fields: [addresseeId], references: [id])
+  requester        User             @relation("friendRequester", fields: [requesterId], references: [id])
 
   @@unique([requesterId, addresseeId])
-}
-
-enum NotificationType {
-  REACTION
-  MENTION
-  MESSAGE
 }
 
 model Notification {
@@ -179,20 +174,12 @@ model Notification {
 }
 
 model UserPreference {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @unique
-  cardStyle   Json?
-  theme       String?  // "light" | "dark" | custom palette key
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-enum InteractionType {
-  REGISTER
-  LOGIN
-  POST_CREATED
-  COMMENT_CREATED
-  LIKE_GIVEN
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  cardStyle Json?
+  theme     String?
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model UserInteraction {
@@ -201,63 +188,43 @@ model UserInteraction {
   type      InteractionType
   weight    Int
   createdAt DateTime        @default(now())
-
   user      User            @relation(fields: [userId], references: [id])
 }
 
 model Theme {
-  id                 Int      @id @default(autoincrement())
-  key                String   @unique
+  id                 Int        @id @default(autoincrement())
+  key                String     @unique
   name               String
   primaryColor       String?
   secondaryColor     String?
   backgroundGradient String?
   decorations        Json?
-  createdAt          DateTime @default(now())
-
-  users              User[]
+  createdAt          DateTime   @default(now())
   shopItems          ShopItem[]
-}
-
-enum ShopItemCategory {
-  THEME
-  DECORATION
+  users              User[]
 }
 
 model ShopItem {
-  id          Int               @id @default(autoincrement())
-  key         String            @unique
+  id          Int              @id @default(autoincrement())
+  key         String           @unique
   name        String
   description String?
   category    ShopItemCategory
   pricePoints Int
   assetData   Json?
   themeKey    String?
-  theme       Theme?            @relation(fields: [themeKey], references: [key])
+  theme       Theme?           @relation(fields: [themeKey], references: [key])
   userItems   UserItem[]
 }
 
 model UserItem {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   userId     Int
   itemId     Int
-  acquiredAt DateTime  @default(now())
-  equipped   Boolean   @default(false)
-
-  user       User      @relation(fields: [userId], references: [id])
-  item       ShopItem  @relation(fields: [itemId], references: [id])
-}
-
-enum SquadType {
-  FOTO
-  FITNESS
-  IDIOMAS
-  GENERAL
-}
-
-enum SquadRole {
-  MEMBER
-  ADMIN
+  acquiredAt DateTime @default(now())
+  equipped   Boolean  @default(false)
+  item       ShopItem @relation(fields: [itemId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Squad {
@@ -268,9 +235,8 @@ model Squad {
   tags        String[]      @default([])
   type        SquadType     @default(GENERAL)
   createdAt   DateTime      @default(now())
-
-  members     SquadMember[]
   posts       Post[]
+  members     SquadMember[]
 }
 
 model SquadMember {
@@ -278,25 +244,10 @@ model SquadMember {
   squadId  Int
   role     SquadRole @default(MEMBER)
   joinedAt DateTime  @default(now())
-
-  user  User  @relation(fields: [userId], references: [id])
-  squad Squad @relation(fields: [squadId], references: [id])
+  squad    Squad     @relation(fields: [squadId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
 
   @@id([userId, squadId])
-}
-
-enum ProjectCategory {
-  PERSONAL
-  CREATIVO
-  SALUD
-  ESTUDIO
-  OTRO
-}
-
-enum ProjectVisibility {
-  PUBLIC
-  FRIENDS
-  PRIVATE
 }
 
 model Project {
@@ -309,9 +260,8 @@ model Project {
   visibility  ProjectVisibility @default(PUBLIC)
   needsHelp   Boolean           @default(false)
   progress    Int               @default(0)
-
-  user   User  @relation(fields: [userId], references: [id])
-  posts  Post[]
+  posts       Post[]
+  user        User              @relation(fields: [userId], references: [id])
 }
 
 model Badge {
@@ -321,37 +271,27 @@ model Badge {
   description String?
   icon        String?
   createdAt   DateTime    @default(now())
-
   userBadges  UserBadge[]
 }
 
 model UserBadge {
-  userId   Int
-  badgeId  Int
+  userId    Int
+  badgeId   Int
   grantedAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id])
-  badge Badge @relation(fields: [badgeId], references: [id])
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@id([userId, badgeId])
 }
 
-enum FeedbackStatus {
-  NEW
-  REVIEWING
-  IN_PROGRESS
-  DONE
-}
-
 model Feedback {
-  id          Int            @id @default(autoincrement())
-  authorId    Int
-  title       String
-  description String
-  votes       Int            @default(0)
-  status      FeedbackStatus @default(NEW)
-  createdAt   DateTime       @default(now())
-
+  id            Int            @id @default(autoincrement())
+  authorId      Int
+  title         String
+  description   String
+  votes         Int            @default(0)
+  status        FeedbackStatus @default(NEW)
+  createdAt     DateTime       @default(now())
   author        User           @relation(fields: [authorId], references: [id])
   feedbackVotes FeedbackVote[]
 }
@@ -360,9 +300,8 @@ model FeedbackVote {
   userId     Int
   feedbackId Int
   createdAt  DateTime @default(now())
-
-  user     User     @relation(fields: [userId], references: [id])
-  feedback Feedback @relation(fields: [feedbackId], references: [id])
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 
   @@id([userId, feedbackId])
 }
@@ -401,8 +340,7 @@ model UserTermStats {
   isProperName Boolean  @default(false)
   count        Int      @default(0)
   lastSeenAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, normalized])
   @@index([userId, normalized])
@@ -414,42 +352,38 @@ model UserRelation {
   user2Id           Int
   score             Float    @default(0)
   lastInteractionAt DateTime @default(now())
-
-  user1 User @relation("UserRelationUser1", fields: [user1Id], references: [id])
-  user2 User @relation("UserRelationUser2", fields: [user2Id], references: [id])
+  user1             User     @relation("UserRelationUser1", fields: [user1Id], references: [id])
+  user2             User     @relation("UserRelationUser2", fields: [user2Id], references: [id])
 
   @@unique([user1Id, user2Id])
 }
 
 model AmbiguousReference {
-  id        Int      @id @default(autoincrement())
-  postId    Int
-  authorId  Int
-  label     String
-  sentiment String
-  kind      String
-  createdAt DateTime @default(now())
-
-  post   Post @relation("PostAmbiguousReferences", fields: [postId], references: [id])
-  author User @relation("AmbiguousReferenceAuthor", fields: [authorId], references: [id])
-
+  id         Int                           @id @default(autoincrement())
+  postId     Int
+  authorId   Int
+  label      String
+  sentiment  String
+  kind       String
+  createdAt  DateTime                      @default(now())
+  author     User                          @relation("AmbiguousReferenceAuthor", fields: [authorId], references: [id])
+  post       Post                          @relation("PostAmbiguousReferences", fields: [postId], references: [id])
   candidates AmbiguousReferenceCandidate[]
 }
 
 model AmbiguousReferenceCandidate {
-  id           Int      @id @default(autoincrement())
+  id           Int                @id @default(autoincrement())
   referenceId  Int
   targetUserId Int
-  confidence   Float    @default(0)
-
-  reference AmbiguousReference @relation(fields: [referenceId], references: [id])
-  target    User               @relation("AmbiguousReferenceTarget", fields: [targetUserId], references: [id])
+  confidence   Float              @default(0)
+  reference    AmbiguousReference @relation(fields: [referenceId], references: [id])
+  target       User               @relation("AmbiguousReferenceTarget", fields: [targetUserId], references: [id])
 }
 
 model Conversation {
-  id           Int                        @id @default(autoincrement())
-  isDirect     Boolean                    @default(true)
-  createdAt    DateTime                   @default(now())
+  id           Int                       @id @default(autoincrement())
+  isDirect     Boolean                   @default(true)
+  createdAt    DateTime                  @default(now())
   participants ConversationParticipant[]
   messages     Message[]
 }
@@ -470,6 +404,79 @@ model Message {
   createdAt      DateTime     @default(now())
   senderId       Int
   conversationId Int
-  sender         User         @relation(fields: [senderId], references: [id])
   conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         User         @relation(fields: [senderId], references: [id])
+}
+
+enum ReactionType {
+  MACANUDO
+  MESSIRVE
+  JAJAJA
+  DE_UNA
+  QUE_BOLUDO
+  QUE_BAJON
+}
+
+enum PostType {
+  NORMAL
+  HELP_REQUEST
+  PROJECT_UPDATE
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum NotificationType {
+  REACTION
+  MENTION
+  MESSAGE
+  REEL_SHARED
+}
+
+enum InteractionType {
+  REGISTER
+  LOGIN
+  POST_CREATED
+  COMMENT_CREATED
+  LIKE_GIVEN
+}
+
+enum ShopItemCategory {
+  THEME
+  DECORATION
+}
+
+enum SquadType {
+  FOTO
+  FITNESS
+  IDIOMAS
+  GENERAL
+}
+
+enum SquadRole {
+  MEMBER
+  ADMIN
+}
+
+enum ProjectCategory {
+  PERSONAL
+  CREATIVO
+  SALUD
+  ESTUDIO
+  OTRO
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  FRIENDS
+  PRIVATE
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWING
+  IN_PROGRESS
+  DONE
 }
