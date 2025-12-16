@@ -64,7 +64,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             key={item.id ?? activeIndex}
             ref={videoRef}
             src={item.url}
-            muted
             loop
             autoPlay
             playsInline
