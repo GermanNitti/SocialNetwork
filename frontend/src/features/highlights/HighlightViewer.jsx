@@ -29,19 +29,19 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (isPaused) {
-      v.pause();
-    } else {
-      v.play().catch(() => {});
+    // This effect handles the play/pause logic based on isPaused and videoReady states.
+    if (videoReady) {
+      if (isPaused) {
+        v.pause();
+      } else {
+        v.play().catch(error => {
+          console.error("Autoplay was prevented:", error);
+          // If autoplay fails, we update the state to reflect that the video is paused.
+          setIsPaused(true);
+        });
+      }
     }
-  }, [isPaused]);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (v && !isPaused) {
-      v.play().catch(() => {});
-    }
-  }, [activeIndex]);
+  }, [isPaused, videoReady]);
 
   const item = items[activeIndex];
   if (!open || !item) return null;
@@ -89,6 +89,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             key={item.id ?? activeIndex}
             ref={videoRef}
             src={item.url}
+            autoPlay
             playsInline
             poster={thumb}
             className="absolute inset-0 w-full h-full object-contain"
