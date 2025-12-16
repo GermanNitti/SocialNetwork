@@ -15,7 +15,6 @@ const preferenceRoutes = require("./routes/preferences");
 const squadRoutes = require("./routes/squads");
 const feedbackRoutes = require("./routes/feedback");
 const hashtagRoutes = require("./routes/hashtags");
-const reelsRoutes = require("./routes/reels");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -49,7 +48,6 @@ app.use("/api/preferences", preferenceRoutes);
 app.use("/api/squads", squadRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/hashtags", hashtagRoutes);
-app.use("/api/reels", reelsRoutes);
 
 // -------------------------
 // Servir frontend SOLO si existe el build
