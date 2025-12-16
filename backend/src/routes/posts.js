@@ -11,6 +11,7 @@ const { updateTermStatsFromPost } = require("../utils/termStatsUpdater");
 const { registerUserInteraction } = require("../utils/userRelations");
 const { createAmbiguousReferenceFromAI } = require("../utils/ambiguousReferencesAI");
 const { GROQ_ENABLED } = require("../services/aiClient");
+const { uploadToCloudinary } = require("../services/cloudinaryService");
 
 const router = express.Router();
 
@@ -253,9 +254,15 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
       return res.status(400).json({ message: "El contenido es obligatorio" });
     }
 
-    const imagePath = req.file
-      ? path.join("uploads/posts", req.file.filename).replace(/\\/g, "/")
-      : null;
+    let imageUrl = null;
+    if (req.file) {
+      try {
+        imageUrl = await uploadToCloudinary(req.file.buffer, "posts", "image");
+      } catch (uploadError) {
+        console.error("Image upload error:", uploadError);
+        return res.status(500).json({ message: "Error al subir imagen" });
+      }
+    }
 
     if (squadId) {
       const squadExists = await prisma.squad.findUnique({ where: { id: Number(squadId) } });
@@ -307,7 +314,7 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
         squadId: squadId ? Number(squadId) : null,
         projectId: projectId ? Number(projectId) : null,
         authorId: req.userId,
-        image: imagePath,
+        image: imageUrl,
       },
       include: {
         author: true,

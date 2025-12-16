@@ -16,13 +16,14 @@ export function AuthProvider({ children }) {
   const [splashSubtitle, setSplashSubtitle] = useState("SOCIAL EXPERIENCE");
 
   useEffect(() => {
+    let timerRef = null;
     const initialize = async () => {
       if (!token) {
         // Mostrar intro inicial aunque no haya sesión
         setSplashSubtitle("SOCIAL EXPERIENCE");
-        const timer = setTimeout(() => setShowSplash(false), SPLASH_DURATION);
+        timerRef = setTimeout(() => setShowSplash(false), SPLASH_DURATION);
         setLoading(false);
-        return () => clearTimeout(timer);
+        return;
       }
       // Mostrar el splash apenas detectamos token para evitar ver el feed antes del efecto
       // Si ya lo ocultamos por haber token en localStorage, no lo volvemos a mostrar
@@ -56,6 +57,9 @@ export function AuthProvider({ children }) {
       }
     };
     initialize();
+    return () => {
+      if (timerRef) clearTimeout(timerRef);
+    };
   }, [token]);
 
   const login = async (identifier, password) => {

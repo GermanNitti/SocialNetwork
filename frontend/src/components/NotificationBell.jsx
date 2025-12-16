@@ -102,7 +102,6 @@ export default function NotificationBell({ label = "Notificaciones", iconOnly = 
                   if (!n.message) {
                     if (n.type === "REACTION") desc = `${actor} reaccionó${post}`;
                     else if (n.type === "COMMENT") desc = `${actor} comentó${post}`;
-                    else if (n.type === "REEL_SHARED") desc = `${n.metadata?.sharerUsername || actor} compartió un reel contigo.`;
                     else if (n.type === "FOLLOW" || n.type === "FRIEND_REQUEST") desc = `${actor} quiere conectar`;
                   }
                   return n.link ? (

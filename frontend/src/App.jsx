@@ -20,7 +20,6 @@ import MobileHeader from "./components/MobileHeader";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import UserSearch from "./components/UserSearch";
-import ReelViewerPage from "./pages/ReelViewerPage";
 
 function App() {
   const { user, loading } = useAuth();
@@ -167,14 +166,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TagFeed />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reels/:reelId"
-              element={
-                <ProtectedRoute>
-                  <ReelViewerPage />
                 </ProtectedRoute>
               }
             />

@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const prisma = require("../prisma");
 const { requireAuth, optionalAuth } = require("../middleware/auth");
+const { uploadToCloudinary } = require("../services/cloudinaryService");
 
 const router = express.Router();
 
@@ -253,14 +254,19 @@ router.put("/me/avatar", requireAuth, uploadAvatar.single("avatar"), async (req,
     return res.status(400).json({ message: "No se adjuntó archivo" });
   }
 
-  const avatarPath = path.join("uploads/avatars", req.file.filename).replace(/\\/g, "/");
+  try {
+    const avatarUrl = await uploadToCloudinary(req.file.buffer, "avatars", "image");
 
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { avatar: avatarPath },
-  });
+    const updated = await prisma.user.update({
+      where: { id: req.userId },
+      data: { avatar: avatarUrl },
+    });
 
-  res.json({ user: sanitizeUser(updated) });
+    res.json({ user: sanitizeUser(updated) });
+  } catch (error) {
+    console.error("Avatar upload error:", error);
+    res.status(500).json({ message: "Error al subir avatar" });
+  }
 });
 
 router.put("/me/profile-video", requireAuth, uploadProfileVideo.single("profileVideo"), async (req, res) => {
@@ -311,37 +317,47 @@ router.put("/me/cover", requireAuth, uploadCover.single("coverImage"), async (re
   if (!req.file) {
     return res.status(400).json({ message: "No se adjuntó archivo de portada" });
   }
-  const coverPath = path.join("uploads/covers", req.file.filename).replace(/\\/g, "/");
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { coverImageUrl: coverPath },
-  });
-  res.json({ user: sanitizeUser(updated) });
+  try {
+    const coverUrl = await uploadToCloudinary(req.file.buffer, "covers", "image");
+    const updated = await prisma.user.update({
+      where: { id: req.userId },
+      data: { coverImageUrl: coverUrl },
+    });
+    res.json({ user: sanitizeUser(updated) });
+  } catch (error) {
+    console.error("Cover upload error:", error);
+    res.status(500).json({ message: "Error al subir portada" });
+  }
 });
 
 router.put("/me/cover-video", requireAuth, uploadCoverVideo.single("coverVideo"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No se adjuntó archivo de video de portada" });
   }
-  const rawStart = Number(req.body.start);
-  const rawEnd = Number(req.body.end);
-  const rawLength = Number(req.body.length);
-  const start = Number.isFinite(rawStart) && rawStart >= 0 ? rawStart : 0;
-  const desiredLength = Number.isFinite(rawLength)
-    ? rawLength
-    : Number.isFinite(rawEnd)
-      ? rawEnd - start
-      : 3;
-  const clipLength = Math.min(5, Math.max(3, desiredLength || 3));
-  const computedEnd = Number.isFinite(rawEnd) ? rawEnd : start + clipLength;
-  const end = Math.min(start + 5, computedEnd);
-  const coverPath = path.join("uploads/covers", req.file.filename).replace(/\\/g, "/");
-  const finalPath = end ? `${coverPath}#t=${Math.max(0, start)},${Math.max(0, end)}` : coverPath;
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { coverVideoUrl: finalPath },
-  });
-  res.json({ user: sanitizeUser(updated) });
+  try {
+    const videoUrl = await uploadToCloudinary(req.file.buffer, "covers", "video");
+    const rawStart = Number(req.body.start);
+    const rawEnd = Number(req.body.end);
+    const rawLength = Number(req.body.length);
+    const start = Number.isFinite(rawStart) && rawStart >= 0 ? rawStart : 0;
+    const desiredLength = Number.isFinite(rawLength)
+      ? rawLength
+      : Number.isFinite(rawEnd)
+        ? rawEnd - start
+        : 3;
+    const clipLength = Math.min(5, Math.max(3, desiredLength || 3));
+    const computedEnd = Number.isFinite(rawEnd) ? rawEnd : start + clipLength;
+    const end = Math.min(start + 5, computedEnd);
+    const finalPath = end ? `${videoUrl}#t=${Math.max(0, start)},${Math.max(0, end)}` : videoUrl;
+    const updated = await prisma.user.update({
+      where: { id: req.userId },
+      data: { coverVideoUrl: finalPath },
+    });
+    res.json({ user: sanitizeUser(updated) });
+  } catch (error) {
+    console.error("Cover video upload error:", error);
+    res.status(500).json({ message: "Error al subir video de portada" });
+  }
 });
 
 router.put("/me/interests", requireAuth, async (req, res) => {

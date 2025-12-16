@@ -34,6 +34,18 @@ function detectTopicsFromText(rawText = "") {
   return Array.from(foundTags);
 }
 
+function categorizeAndAggregateTags(tags) {
+  if (!Array.isArray(tags)) {
+    return [];
+  }
+  return tags.map(tag => {
+    const category = tag && tag.category ? tag.category.toLowerCase() : 'uncategorized';
+    const name = tag && tag.name ? tag.name.toLowerCase() : 'unnamed';
+    return { ...tag, category, name };
+  });
+}
+
 module.exports = {
   detectTopicsFromText,
+  categorizeAndAggregateTags,
 };

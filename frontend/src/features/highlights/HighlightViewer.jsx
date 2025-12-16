@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../api/client";
-import { useAuth } from "../../context/AuthContext";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from "../../constants/reactions";
-import FriendSelector from "../../components/FriendSelector";
 
 export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
@@ -13,27 +9,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [isPaused, setIsPaused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [showShareModal, setShowShareModal] = useState(false);
   const videoRef = useRef(null);
   const statusTimeoutRef = useRef(null);
-
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  const { mutateAsync: setReaction, isPending: reacting } = useMutation({
-    mutationFn: async (type) => {
-      // Assuming a similar API endpoint structure for reels as for posts
-      // This will need to be implemented in the backend
-      const { data } = await api.post(`/reels/${item.id}/reactions`, { type });
-      return data;
-    },
-    onSuccess: () => {
-      // Invalidate reels queries to refetch data
-      queryClient.invalidateQueries({ queryKey: ["reels"] });
-      // Potentially, we might want to refetch the specific highlight item
-      // queryClient.invalidateQueries({ queryKey: ["highlight", item.id] });
-    },
-  });
 
   useEffect(() => {
     if (open) {
@@ -103,10 +80,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   };
 
-  const handleReaction = (type) => {
-    setReaction(type);
-  };
-
   return createPortal(
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
       <div className="relative flex-1 overflow-hidden bg-slate-900" onClick={togglePlayPause}>
@@ -148,52 +121,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
         <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button>
         
-        {/* Reactions Pillar */}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-4">
-          {/*
-            NOTE: For reactions to work, the 'item' object passed to HighlightViewer
-            must include 'item.reactions' (an object like {LIKE: 5, LAUGH: 2})
-            and 'item.userReaction' (a string like 'LIKE' if the user reacted).
-            This data will need to be fetched/provided from the API when retrieving reels.
-          */}
-          {REACTION_ORDER.map((key) => {
-            const currentReaction = item.userReaction; // Assuming item has userReaction
-            const reactionCount = item.reactions?.[key] ?? 0; // Assuming item has reactions
-            return (
-              <button
-                key={key}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleReaction(key);
-                }}
-                disabled={reacting}
-                className={`flex flex-col items-center justify-center gap-1 text-white drop-shadow transition ${
-                  currentReaction === key
-                    ? "text-indigo-400 scale-110" // Highlight selected reaction
-                    : "hover:scale-105" // Basic hover effect
-                }`}
-              >
-                <span className="text-3xl">{REACTIONS[key].icon}</span>
-                <span className="text-[10px] font-bold">{reactionCount}</span>
-              </button>
-            );
-          })}
-
-          {/* Share Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowShareModal(true);
-            }}
-            className="flex flex-col items-center justify-center gap-1 text-white drop-shadow transition hover:scale-105 mt-4"
-            aria-label="Compartir"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186A2.25 2.25 0 0116.5 10.5c.896 0 1.7-.198 2.403-.584m-2.403.584a2.25 2.25 0 00-2.186 2.186m-2.186 0a2.25 2.25 0 002.186 2.186m7.217-2.186c0 .896-.198 1.7-.584 2.403m.584-2.403a2.25 2.25 0 01-2.186 2.186M3.75 10.5c.896 0 1.7-.198 2.403-.584M6.153 4.54a2.25 2.25 0 012.186-2.186m0 0c-.896 0-1.7.198-2.403.584m2.403-.584a2.25 2.25 0 00-2.186 2.186m0 7.217a2.25 2.25 0 01-2.186 2.186m0 0c.896 0 1.7-.198 2.403-.584m-2.403.584a2.25 2.25 0 002.186 2.186m-2.186 0c-.896 0-1.7.198-2.403.584M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186A2.25 2.25 0 0116.5 10.5c.896 0 1.7-.198 2.403-.584m-2.403.584a2.25 2.25 0 00-2.186 2.186m-2.186 0a2.25 2.25 0 002.186 2.186m7.217-2.186c0 .896-.198 1.7-.584 2.403m.584-2.403a2.25 2.25 0 01-2.186 2.186M3.75 10.5c.896 0 1.7-.198 2.403-.584M6.153 4.54a2.25 2.25 0 012.186-2.186m0 0c-.896 0-1.7.198-2.403.584m2.403-.584a2.25 2.25 0 00-2.186 2.186m0 7.217a2.25 2.25 0 01-2.186 2.186m0 0c.896 0 1.7-.198 2.403-.584m-2.403.584a2.25 2.25 0 002.186 2.186m-2.186 0c-.896 0-1.7.198-2.403.584" />
-            </svg>
-          </button>
-        </div>
-
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">
             <div className="text-sm font-semibold">{item.title || "Highlight"}</div>
@@ -214,26 +141,3 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     document.body
   );
 }
-
-{showShareModal &&
-  createPortal(
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4" onClick={() => setShowShareModal(false)}>
-      <div
-        className="relative w-full max-w-md rounded-lg bg-white dark:bg-slate-800 shadow-xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Compartir Reel</h3>
-          <button onClick={() => setShowShareModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="p-4">
-          <FriendSelector reelId={item.id} onClose={() => setShowShareModal(false)} />
-        </div>
-      </div>
-    </div>,
-    document.body
-  )}
