@@ -218,7 +218,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
+    <div className="fixed inset-0 z-50 bg-slate-950 text-slate-50 flex flex-col">
       <div
         className="relative flex-1 overflow-hidden bg-slate-900"
         onClick={togglePlayPause}
