@@ -40,18 +40,16 @@ export default function HighlightsRow() {
               className="flex flex-col items-center gap-2 flex-shrink-0"
             >
               <span
-                className="h-16 w-16 rounded-full border-2 flex items-center justify-center overflow-hidden"
+                className="h-16 w-16 rounded-full border-2 flex items-center justify-center overflow-hidden bg-slate-900"
                 style={{ borderColor: accent, boxShadow: `0 0 0 2px ${accent}22` }}
               >
-                {item.thumbUrl || item.thumbnail || item.imageUrl ? (
-                  <img
-                    src={item.thumbUrl || item.thumbnail || item.imageUrl}
-                    alt={item.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-xs text-slate-400">Reel</span>
-                )}
+                <video
+                  src={item.url}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="h-full w-full object-cover"
+                />
               </span>
               <span className="text-[11px] text-slate-100 line-clamp-1">{item.authorName}</span>
             </button>
