@@ -553,6 +553,27 @@ router.post("/:id/reactions", requireAuth, async (req, res) => {
   });
 });
 
+// Obtener reacciones detalladas de un post (usuarios + tipo)
+router.get("/:id/reactions", requireAuth, async (req, res) => {
+  const postId = Number(req.params.id);
+  if (Number.isNaN(postId)) return res.status(400).json({ message: "ID inválido" });
+
+  try {
+    const reactions = await prisma.reaction.findMany({
+      where: { postId },
+      include: { user: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const mapped = reactions.map((r) => ({ user: sanitizeUser(r.user), type: r.type, createdAt: r.createdAt }));
+    res.json(mapped);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: 'Error cargando reacciones' });
+  }
+});
+
 router.get("/:id/comments", async (req, res) => {
   const postId = Number(req.params.id);
   if (Number.isNaN(postId)) {

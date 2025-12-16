@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from "../../constants/reactions";
 import api from "../../api/client";
+import { AirplaneIcon, ChevronIcon, CloseIcon } from "../../components/icons/Icons";
+import Burst from "../../components/Burst";
 
 export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
@@ -17,7 +20,11 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [showShare, setShowShare] = useState(false);
   const [friends, setFriends] = useState([]);
   const [sharingTo, setSharingTo] = useState(null);
-  const [localReaction, setLocalReaction] = useState(null);
+  // map of reaction by item id (or index fallback)
+  const [localReactions, setLocalReactions] = useState({});
+  const [reactionsExpanded, setReactionsExpanded] = useState(true);
+  const [friendsReactions, setFriendsReactions] = useState([]);
+  const [showFriendsModal, setShowFriendsModal] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -33,6 +40,29 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setIsPaused(false);
     setProgress(0);
   }, [activeIndex]);
+
+  // load friend reactions for the current item when index changes
+  useEffect(() => {
+    if (!open) return;
+    const item = items[activeIndex];
+    if (!item || !item.id) {
+      setFriendsReactions([]);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await api.get(`/posts/${encodeURIComponent(item.id)}/reactions`);
+        if (!mounted) return;
+        // expected data: array of { user, type }
+        setFriendsReactions(Array.isArray(data) ? data : []);
+      } catch (err) {
+        // fallback: empty
+        setFriendsReactions([]);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [open, activeIndex, items]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -133,9 +163,43 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   };
 
   const reactWith = (type) => {
-    // local visual feedback for reels (not persisted)
-    if (localReaction === type) setLocalReaction(null);
-    else setLocalReaction(type);
+    // Optimistic UI: set local reaction for this specific item and trigger burst
+    const id = item?.id ?? `index_${activeIndex}`;
+    const prev = localReactions[id];
+    const willRemove = prev === type;
+
+    // optimistic update
+    setLocalReactions((prevMap) => {
+      const next = { ...prevMap };
+      if (willRemove) delete next[id];
+      else next[id] = type;
+      return next;
+    });
+
+    // show burst animation
+    setBurst({ id, type });
+
+    // persist on server (POST toggles if same type)
+    (async () => {
+      try {
+        const res = await api.post(`/posts/${encodeURIComponent(id)}/reactions`, { type });
+        const serverUserReaction = res?.data?.userReaction ?? res?.userReaction ?? null;
+        setLocalReactions((prevMap) => {
+          const next = { ...prevMap };
+          if (serverUserReaction) next[id] = serverUserReaction;
+          else delete next[id];
+          return next;
+        });
+      } catch (err) {
+        // rollback optimistic change on error
+        console.error('Error persisting reaction', err);
+        setLocalReactions((prevMap) => {
+          const next = { ...prevMap };
+          if (prev) next[id] = prev; else delete next[id];
+          return next;
+        });
+      }
+    })();
   };
 
   const handleTimeUpdate = (e) => {
@@ -144,6 +208,13 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       const percentage = (video.currentTime / video.duration) * 100;
       setProgress(percentage);
     }
+  };
+
+  const [burst, setBurst] = useState(null);
+
+  const onBurstComplete = () => {
+    // clear burst after animation completes
+    setBurst(null);
   };
 
   return createPortal(
@@ -190,33 +261,71 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
           <div className="h-full bg-white" style={{ width: `${progress}%` }} />
         </div>
 
-        <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
+        <motion.button
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          aria-label="Cerrar"
+          whileTap={{ scale: 0.95 }}
+          className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg"
+        >
+          <CloseIcon className="w-4 h-4 text-white" />
+        </motion.button>
 
-        {/* Reactions / share column */}
-        <div className="absolute right-3 top-1/3 z-30 flex flex-col items-center gap-3">
-          {REACTION_ORDER.map((key) => {
-            const reaction = REACTIONS[key];
-            if (!reaction) return null;
-            const active = localReaction === key;
-            return (
-              <button
-                key={key}
-                onClick={(e) => { e.stopPropagation(); reactWith(key); }}
-                className={`flex items-center justify-center w-11 h-11 rounded-full border ${active ? "bg-emerald-400 text-white" : "bg-black/40 text-white/90"}`}
-                title={reaction.label}
+        {/* Reactions / share column (collapsible) */}
+        <AnimatePresence>
+          {reactionsExpanded && (
+            <motion.div
+              initial={{ x: 36, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 36, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="absolute right-3 top-1/3 z-30 flex flex-col items-center gap-3"
+            >
+              {REACTION_ORDER.map((key) => {
+                const reaction = REACTIONS[key];
+                if (!reaction) return null;
+                const id = item?.id ?? `index_${activeIndex}`;
+                const active = localReactions[id] === key;
+                return (
+                  <motion.button
+                    key={key}
+                    onClick={(e) => { e.stopPropagation(); reactWith(key); }}
+                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }}
+                    animate={active ? { scale: 1.05 } : { scale: 1 }}
+                    className={`flex items-center justify-center w-11 h-11 rounded-full border ${active ? "bg-emerald-400 text-white" : "bg-black/40 text-white/90"}`}
+                    title={reaction.label}
+                    aria-pressed={active}
+                    aria-label={`Reaccionar: ${reaction.label}`}
+                  >
+                    <span className="text-lg" aria-hidden>{reaction.icon}</span>
+                  </motion.button>
+                );
+              })}
+
+              <motion.button
+                onClick={(e) => { e.stopPropagation(); openShare(); }}
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.03 }}
+                className="flex items-center justify-center w-11 h-11 rounded-full border bg-black/40 text-white/90"
+                title="Enviar a un amigo"
+                aria-label="Enviar a un amigo"
               >
-                <span className="text-lg">{reaction.icon}</span>
-              </button>
-            );
-          })}
-          <button
-            onClick={(e) => { e.stopPropagation(); openShare(); }}
-            className="flex items-center justify-center w-11 h-11 rounded-full border bg-black/40 text-white/90"
-            title="Enviar a un amigo"
-          >
-            📤
-          </button>
-        </div>
+                <AirplaneIcon className="w-4 h-4 text-white" />
+              </motion.button>
+
+              {/* toggle collapse/expand reactions list */}
+              <motion.button
+                onClick={(e) => { e.stopPropagation(); setReactionsExpanded((s) => !s); }}
+                whileTap={{ scale: 0.92 }}
+                className="flex items-center justify-center w-11 h-11 rounded-full border bg-black/30 text-white/90"
+                title={reactionsExpanded ? "Ocultar reacciones" : "Mostrar reacciones"}
+                aria-expanded={reactionsExpanded}
+              >
+                <ChevronIcon direction={reactionsExpanded ? 'down' : 'right'} />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">
@@ -228,40 +337,75 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             <span>{activeIndex + 1}/{items.length}</span>
           </div>
         </div>
+        {/* Burst animation over the active reel when reacting */}
+        {burst && burst.id === (item?.id ?? `index_${activeIndex}`) && (
+          <Burst icon={REACTIONS[burst.type]?.icon || '❤'} color="#ff7a7a" onComplete={onBurstComplete} />
+        )}
       </div>
 
       <div className="px-4 py-3 flex items-center justify-between text-xs text-slate-200">
         <div className="px-3 py-1 rounded-full border border-white/20" style={{ color: accent }}>Reels: {MODES[mode]?.label || "Modo"}</div>
         <div className="text-slate-400">{item.contentType || item.type || ""}</div>
       </div>
-      {showShare && (
-        <div className="fixed inset-0 z-40 flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowShare(false)} />
-          <div className="bg-white dark:bg-slate-900 rounded-t-2xl p-4 w-full max-w-md mx-4 mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold">Enviar a...</h3>
-              <button className="text-xs text-indigo-600" onClick={() => setShowShare(false)}>Cerrar</button>
-            </div>
-            {sharingTo && <div className="mb-2 text-sm text-green-600">Enviado a {sharingTo}</div>}
-            <div className="max-h-60 overflow-auto space-y-2">
-              {friends.length === 0 && <div className="text-sm text-slate-500">No hay amigos para mostrar.</div>}
-              {friends.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => shareToFriend(f)}
-                  className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="font-medium text-sm">{f.name || f.username}</div>
-                    <div className="text-xs text-slate-500">@{f.username}</div>
+      <AnimatePresence>
+        {showShare && (
+          <motion.div className="fixed inset-0 z-40 flex items-end justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div className="absolute inset-0 bg-black/60" onClick={() => setShowShare(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+            <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 30 }} className="bg-white dark:bg-slate-900 rounded-t-2xl p-4 w-full max-w-md mx-4 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold">Enviar a...</h3>
+                <button className="text-xs text-indigo-600" onClick={() => setShowShare(false)}>Cerrar</button>
+              </div>
+              {sharingTo && <div className="mb-2 text-sm text-green-600">Enviado a {sharingTo}</div>}
+              <div className="max-h-60 overflow-auto space-y-2">
+                {friends.length === 0 && <div className="text-sm text-slate-500">No hay amigos para mostrar.</div>}
+                {friends.map((f) => (
+                  <motion.button
+                    key={f.id}
+                    onClick={() => shareToFriend(f)}
+                    whileTap={{ scale: 0.99 }}
+                    className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="font-medium text-sm">{f.name || f.username}</div>
+                      <div className="text-xs text-slate-500">@{f.username}</div>
+                    </div>
+                    <div className="text-xs text-slate-400">Enviar</div>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* friends reactions modal (expanded list) */}
+      <AnimatePresence>
+        {showFriendsModal && (
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div className="absolute inset-0 bg-black/60" onClick={() => setShowFriendsModal(false)} initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 28 }} className="bg-white dark:bg-slate-900 rounded-lg p-4 w-full max-w-sm z-60">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-sm">Reacciones de amigos</h4>
+                <button className="text-xs text-slate-500" onClick={() => setShowFriendsModal(false)}>Cerrar</button>
+              </div>
+              <div className="max-h-64 overflow-auto space-y-2">
+                {friendsReactions.map((r, i) => (
+                  <div key={i} className="flex items-center gap-3 px-2 py-1">
+                    <img src={r.user?.avatar || r.user?.avatarUrl || '/public/default-avatar.png'} alt={r.user?.name || r.user?.username} className="h-8 w-8 rounded-full object-cover" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{r.user?.name || r.user?.username}</div>
+                      <div className="text-xs text-slate-500">{REACTIONS[r.type]?.label || r.type}</div>
+                    </div>
+                    <div className="text-lg">{REACTIONS[r.type]?.icon || '❤'}</div>
                   </div>
-                  <div className="text-xs text-slate-400">Enviar</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+                ))}
+                {friendsReactions.length === 0 && <div className="text-sm text-slate-500">No hay reacciones de amigos.</div>}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>,
     document.body
   );
