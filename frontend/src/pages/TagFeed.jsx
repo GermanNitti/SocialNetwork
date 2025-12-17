@@ -30,7 +30,7 @@ export default function TagFeed() {
   async function handleFollowTag() {
     try {
       const currentInterests = user?.interests || [];
-      const canonical = tagName ? tagName.toLowerCase() : '';
+      const canonical = tagName.toLowerCase();
       if (currentInterests.includes(canonical)) return;
       setFollowing(true);
       const updated = [...currentInterests, canonical];
@@ -54,7 +54,7 @@ export default function TagFeed() {
         {user && (
           <button
             onClick={handleFollowTag}
-            disabled={following || (user.interests || []).includes(tagName ? tagName.toLowerCase() : '')}
+            disabled={following || (user.interests || []).includes(tagName.toLowerCase())}
             className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 disabled:opacity-50"
           >
             {(user.interests || []).includes(tagName.toLowerCase()) ? "Ya sigues este tema" : `Seguir tema #${tagName}`}

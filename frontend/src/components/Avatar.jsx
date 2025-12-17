@@ -13,17 +13,8 @@ function parseTimeRange(src = "") {
 
 export default function Avatar({ user, size = 48, className = "" }) {
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
-  const isAbsoluteUrl = (u) => typeof u === "string" && /^(https?:)?\/\//i.test(u);
-  const imgSrc = user?.avatar
-    ? isAbsoluteUrl(user.avatar)
-      ? user.avatar
-      : `${mediaBase}/${user.avatar}`
-    : null;
-  const videoSrc = user?.profileVideoUrl
-    ? isAbsoluteUrl(user.profileVideoUrl)
-      ? user.profileVideoUrl
-      : `${mediaBase}/${user.profileVideoUrl}`
-    : null;
+  const imgSrc = user?.avatar ? `${mediaBase}/${user.avatar}` : null;
+  const videoSrc = user?.profileVideoUrl ? `${mediaBase}/${user.profileVideoUrl}` : null;
   const useVideo = user?.useVideoAvatar && videoSrc;
   const initials = user?.name ? user.name.charAt(0).toUpperCase() : "?";
   const { open } = useLightbox();

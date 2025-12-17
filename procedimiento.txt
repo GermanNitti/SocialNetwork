@@ -1,4 +1,5 @@
-quiero que las reacciones que tiene ya la red social las implementes en los reels, que esten del  
-  lado derecho como en un pilar. Tambien quiero que agregues un boton que sea para enviar a alguno  
-  de tus amigos ese reel y que eso le llegue a ese amigo que elegis en notifiacion que diga "(nombre  de usuario) compartio un reel" y que cuando el usuario toque en esa notificacion lo lleve
-  directamente al reel en cuestion.
+quiero que mires en la raiz que deje un archivo llamada 9gag_urls.csv
+Este archivo tine una AMPLIA lista de urls para los videos de los reels. La red social debe tomarlos desde esta lista.
+Tambien estan tageados. En base a eso podriamos agregar esas categorias a los reels. o bien, asignarlas acorde a las categorias que ya estan, por ejemplo. Las categorias que estan ahora en el csv son
+Lifestyle, food, oldmeme, sports, science, animals, motorehicles, music, relationship, wtf, games, memes, politics, cosplay, news, anime.
+DONDE CREES QUE DEBERIA IR CADA UNA DE ESAS CATEGORIAS EN LAS CATEGORIAS ACTUALES?, EPXLICAME DOND ELAS PONDRIA SY POR QUE Y UNA VEZ QUE ESTEMOS DE ACUERDO TE DIDRE SI PROCEDEMOS
