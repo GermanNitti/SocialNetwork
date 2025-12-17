@@ -2,7 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getReels } from "./reelService";
 
 export function useHighlights(mode) {
-  const enabled = import.meta.env.VITE_ENABLE_HIGHLIGHTS === "1";
+  // Default to enabled unless the env explicitly sets it to "0".
+  // This avoids a production build unintentionally disabling highlights when
+  // the VITE_ENABLE_HIGHLIGHTS variable is not present in the deploy environment.
+  const enabled = typeof import.meta.env.VITE_ENABLE_HIGHLIGHTS === 'string'
+    ? import.meta.env.VITE_ENABLE_HIGHLIGHTS !== "0"
+    : true;
+
   return useQuery({
     queryKey: ["highlights", mode],
     queryFn: () => {
