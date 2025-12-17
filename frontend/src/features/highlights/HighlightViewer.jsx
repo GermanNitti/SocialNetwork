@@ -77,6 +77,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     } catch (err) {
       // ignore
     }
+    
+    // Solo permitir toggle si el video está listo
+    if (!videoReady) return;
+    
     setIsPaused((p) => !p);
     showStatusIndicator();
   };
