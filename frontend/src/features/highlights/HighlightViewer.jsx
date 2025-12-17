@@ -83,6 +83,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   if (!open || !item) return null;
 
   const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
+  // derive a poster image for common video urls when explicit thumb missing
+  const derivedPoster = (!thumb && typeof item?.url === 'string' && item.url.match(/\.mp4(\?.*)?$/i))
+    ? item.url.replace(/\.mp4(\?.*)?$/i, '.jpg')
+    : null;
   const accent = MODES[mode]?.accent || "#3B82F6";
 
   const isPlayableVideo =
@@ -219,6 +223,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   return createPortal(
     <div className="fixed inset-0 z-50 bg-slate-950 text-slate-50 flex flex-col">
+      {/* DEBUG: visible badge to confirm HighlightViewer is mounted */}
+      <div className="absolute left-3 top-3 z-70 bg-red-600 text-white text-xs px-2 py-1 rounded">Viewer active — idx: {activeIndex} id: {item?.id ?? 'n/a'}</div>
       <div
         className="relative flex-1 overflow-hidden bg-slate-900"
         onClick={togglePlayPause}
@@ -232,6 +238,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             ref={videoRef}
             src={item.url}
             autoPlay
+            muted
+            preload="metadata"
             playsInline
             poster={thumb}
             className="absolute inset-0 w-full h-full object-cover"
