@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
+import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
+import api from '../../api/client';
 
 export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
@@ -10,6 +12,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [progress, setProgress] = useState(0);
   const videoRef = useRef(null);
   const statusTimeoutRef = useRef(null);
+  const [userReaction, setUserReaction] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -24,7 +27,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setVideoReady(false);
     setIsPaused(false);
     setProgress(0);
-  }, [activeIndex]);
+    setUserReaction(null);
+  }, [activeIndex, item]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -44,6 +48,21 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   }, [isPaused, videoReady]);
 
   const item = items[activeIndex];
+
+  const handleReaction = async (e, type) => {
+    e.stopPropagation(); // CRÍTICO: Evita que el click pause el video
+    setUserReaction(type); // Feedback visual inmediato (Optimistic UI)
+    try {
+      // El item.id es la URL en los reels actuales, pero si el backend espera un ID numérico esto fallará. 
+      // Por ahora, solo haz el console.log para probar la UI sin romper nada:
+      console.log('Reaccionando:', type, 'al item:', item.id);
+      // Descomentar cuando el backend soporte reacciones por URL o ID real:
+      // await api.post(`/posts/${item.id}/reactions`, { type }); 
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (!open || !item) return null;
 
   const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
@@ -112,6 +131,29 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
           </div>
         )}
+
+        {/* Reacciones Flotantes */}
+        <div className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center">
+          {REACTION_ORDER.map((key) => {
+            const reaction = REACTIONS[key];
+            const isActive = userReaction === key;
+            return (
+              <button
+                key={key}
+                onClick={(e) => handleReaction(e, key)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
+                  isActive 
+                    ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" 
+                    : "bg-black/40 hover:bg-black/60 border border-white/10"
+                }`}
+              >
+                <span className="text-xl" role="img" aria-label={reaction.label}>
+                  {reaction.icon}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
         
