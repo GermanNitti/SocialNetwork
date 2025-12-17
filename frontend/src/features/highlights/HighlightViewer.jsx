@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { REACTIONS, REACTION_ORDER } from "../../constants/reactions";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
 
@@ -9,12 +8,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [isPaused, setIsPaused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [reactionsVisible, setReactionsVisible] = useState(true);
-  const [reactionsOpacity, setReactionsOpacity] = useState(1);
   const videoRef = useRef(null);
   const statusTimeoutRef = useRef(null);
-  const touchState = useRef({ startX: 0, startY: 0, moved: false });
-  const reactionsIdleTimeout = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -48,19 +43,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   }, [isPaused, videoReady]);
 
-  useEffect(() => {
-    // ensure reactions start visible when viewer opens
-    if (open) {
-      setReactionsVisible(true);
-      setReactionsOpacity(1);
-      if (reactionsIdleTimeout.current) clearTimeout(reactionsIdleTimeout.current);
-      reactionsIdleTimeout.current = setTimeout(() => setReactionsOpacity(0.35), 3000);
-    }
-    return () => {
-      if (reactionsIdleTimeout.current) clearTimeout(reactionsIdleTimeout.current);
-    };
-  }, [open, activeIndex]);
-
   const item = items[activeIndex];
   if (!open || !item) return null;
 
@@ -91,75 +73,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     showStatusIndicator();
   };
 
-  const resetReactionsIdle = () => {
-    setReactionsOpacity(1);
-    if (reactionsIdleTimeout.current) clearTimeout(reactionsIdleTimeout.current);
-    reactionsIdleTimeout.current = setTimeout(() => setReactionsOpacity(0.35), 3000);
-  };
-
-  const onTouchStart = (e) => {
-    resetReactionsIdle();
-    const t = e.touches ? e.touches[0] : e;
-    touchState.current.startX = t.clientX;
-    touchState.current.startY = t.clientY;
-    touchState.current.moved = false;
-  };
-
-  const onTouchMove = (e) => {
-    const t = e.touches ? e.touches[0] : e;
-    const dx = t.clientX - touchState.current.startX;
-    const dy = t.clientY - touchState.current.startY;
-    if (Math.abs(dx) > 15 && Math.abs(dx) > Math.abs(dy)) {
-      touchState.current.moved = true;
-      e.stopPropagation();
-      e.preventDefault?.();
-    }
-  };
-
-  const onTouchEnd = (e) => {
-    resetReactionsIdle();
-    if (touchState.current.ignoreTap) {
-      // interaction started on reactions; consume and reset
-      touchState.current.ignoreTap = false;
-      return;
-    }
-    if (!touchState.current.moved) {
-      // tap
-      togglePlayPause();
-      return;
-    }
-    const lastTouch = (e.changedTouches && e.changedTouches[0]) || e;
-    const dx = lastTouch.clientX - touchState.current.startX;
-    const threshold = 50;
-    if (dx > threshold) {
-      handlePrev();
-    } else if (dx < -threshold) {
-      handleNext();
-    }
-  };
-
-  const [selectedReactions, setSelectedReactions] = useState({});
-
-  const applyReaction = async (reactionKey, ev) => {
-    ev.stopPropagation();
-    // mark locally
-    setSelectedReactions((s) => ({ ...s, [activeIndex]: reactionKey }));
-    // TODO: call API to persist reaction for `item` (if API available)
-    try {
-      if (item?.id) {
-        // best-effort: try POSTing to a known-ish endpoint; ignore errors
-        await fetch(`/api/posts/${item.id}/reaction`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reaction: reactionKey }),
-        });
-      }
-    } catch (err) {
-      // ignore network errors here; developer can wire proper endpoint
-      console.debug('applyReaction failed', err);
-    }
-  };
-
   const handleTimeUpdate = (e) => {
     const video = e.target;
     if (video.duration) {
@@ -170,15 +83,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   return createPortal(
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div
-        className="relative flex-1 overflow-hidden bg-slate-900"
-        onClick={(e) => { /* keep click handlers on tap handled in touchend */ }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onPointerDown={resetReactionsIdle}
-        onMouseMove={resetReactionsIdle}
-      >
+      <div className="relative flex-1 overflow-hidden bg-slate-900" onClick={togglePlayPause}>
         {isPlayableVideo ? (
           <video
             key={item.id ?? activeIndex}
@@ -215,31 +120,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         </div>
 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
-
-        {/* Reactions column (right side) */}
-        <div
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3"
-          style={{ opacity: reactionsOpacity, transition: 'opacity 300ms' }}
-          aria-hidden={!reactionsVisible}
-        >
-          {REACTION_ORDER.map((key) => {
-            const r = REACTIONS[key];
-            const selected = selectedReactions[activeIndex] === key;
-            return (
-              <button
-                key={key}
-                onClick={(ev) => applyReaction(key, ev)}
-                onTouchStart={(ev) => { ev.stopPropagation(); touchState.current.ignoreTap = true; }}
-                onPointerDown={(ev) => { ev.stopPropagation(); touchState.current.ignoreTap = true; }}
-                onMouseDown={(ev) => { ev.stopPropagation(); touchState.current.ignoreTap = true; }}
-                className={`h-12 w-12 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-xl ${selected ? 'scale-110 ring-2 ring-white/30' : ''}`}
-                aria-label={key}
-              >
-                <span>{r?.icon || r?.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button>
+        <button onClick={(e) => { e.stopPropagation(); handleNext(); }} aria-label="Siguiente" className="absolute right-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">›</button>
 
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">
