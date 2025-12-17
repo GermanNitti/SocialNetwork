@@ -166,9 +166,7 @@ enum NotificationType {
   REACTION
   MENTION
   MESSAGE
-  REEL_SHARED
 }
-
 
 model Notification {
   id        Int              @id @default(autoincrement())
