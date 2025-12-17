@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { REACTIONS, REACTION_ORDER } from "../../constants/reactions";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
 
@@ -117,6 +118,11 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   const onTouchEnd = (e) => {
     resetReactionsIdle();
+    if (touchState.current.ignoreTap) {
+      // interaction started on reactions; consume and reset
+      touchState.current.ignoreTap = false;
+      return;
+    }
     if (!touchState.current.moved) {
       // tap
       togglePlayPause();
@@ -129,6 +135,28 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       handlePrev();
     } else if (dx < -threshold) {
       handleNext();
+    }
+  };
+
+  const [selectedReactions, setSelectedReactions] = useState({});
+
+  const applyReaction = async (reactionKey, ev) => {
+    ev.stopPropagation();
+    // mark locally
+    setSelectedReactions((s) => ({ ...s, [activeIndex]: reactionKey }));
+    // TODO: call API to persist reaction for `item` (if API available)
+    try {
+      if (item?.id) {
+        // best-effort: try POSTing to a known-ish endpoint; ignore errors
+        await fetch(`/api/posts/${item.id}/reaction`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reaction: reactionKey }),
+        });
+      }
+    } catch (err) {
+      // ignore network errors here; developer can wire proper endpoint
+      console.debug('applyReaction failed', err);
     }
   };
 
@@ -194,23 +222,23 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
           style={{ opacity: reactionsOpacity, transition: 'opacity 300ms' }}
           aria-hidden={!reactionsVisible}
         >
-          {[
-            { key: 'MACANUDO', label: '🔥' },
-            { key: 'MESSIRVE', label: '👍' },
-            { key: 'JAJAJA', label: '😂' },
-            { key: 'DE_UNA', label: '✅' },
-            { key: 'QUE_BOLUDO', label: '😅' },
-            { key: 'QUE_BAJON', label: '😢' },
-          ].map((r) => (
-            <button
-              key={r.key}
-              onClick={(ev) => { ev.stopPropagation(); /* TODO: wire react action */ }}
-              className="h-12 w-12 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-xl"
-              aria-label={r.key}
-            >
-              <span>{r.label}</span>
-            </button>
-          ))}
+          {REACTION_ORDER.map((key) => {
+            const r = REACTIONS[key];
+            const selected = selectedReactions[activeIndex] === key;
+            return (
+              <button
+                key={key}
+                onClick={(ev) => applyReaction(key, ev)}
+                onTouchStart={(ev) => { ev.stopPropagation(); touchState.current.ignoreTap = true; }}
+                onPointerDown={(ev) => { ev.stopPropagation(); touchState.current.ignoreTap = true; }}
+                onMouseDown={(ev) => { ev.stopPropagation(); touchState.current.ignoreTap = true; }}
+                className={`h-12 w-12 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-xl ${selected ? 'scale-110 ring-2 ring-white/30' : ''}`}
+                aria-label={key}
+              >
+                <span>{r?.icon || r?.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
