@@ -5,9 +5,7 @@ export function useHighlights(mode) {
   // Default to enabled unless the env explicitly sets it to "0".
   // This avoids a production build unintentionally disabling highlights when
   // the VITE_ENABLE_HIGHLIGHTS variable is not present in the deploy environment.
-  const enabled = typeof import.meta.env.VITE_ENABLE_HIGHLIGHTS === 'string'
-    ? import.meta.env.VITE_ENABLE_HIGHLIGHTS !== "0"
-    : true;
+  const enabled = true;
 
   return useQuery({
     queryKey: ["highlights", mode],
