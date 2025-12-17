@@ -68,20 +68,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     statusTimeoutRef.current = setTimeout(() => setShowStatus(false), 800);
   };
 
-  const [selectedReactions, setSelectedReactions] = useState({});
-
-  const togglePlayPause = (e) => {
-    // Ignore taps that originate from reaction buttons so they don't pause the video
-    try {
-      if (e && e.target && e.target.closest && e.target.closest('.reaction-button')) return;
-    } catch (err) {
-      // ignore
-    }
-    
-    // Solo permitir toggle si el video está listo
-    if (!videoReady) return;
-    
-    setIsPaused((p) => !p);
+  const togglePlayPause = () => {
+    setIsPaused(!isPaused);
     showStatusIndicator();
   };
 
@@ -90,35 +78,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     if (video.duration) {
       const percentage = (video.currentTime / video.duration) * 100;
       setProgress(percentage);
-    }
-  };
-
-  const applyReaction = async (type) => {
-    // Optimistic UI: set locally
-    setSelectedReactions((s) => ({ ...s, [activeIndex]: type }));
-
-    // Background persist: best-effort calls depending on type
-    try {
-      if (!item?.id) return;
-      if (type === 'SEND') {
-        // Try native share first
-        if (navigator && navigator.share) {
-          await navigator.share({ title: item.title || 'Reel', url: item.url || window.location.href });
-          return;
-        }
-        // Fallback: POST to share endpoint (no-op if not implemented)
-        await fetch(`/api/posts/${item.id}/share`, { method: 'POST' });
-        return;
-      }
-
-      // For LIKE / DISLIKE
-      await fetch(`/api/posts/${item.id}/reaction`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reaction: type }),
-      });
-    } catch (err) {
-      console.debug('applyReaction error', err);
     }
   };
 
@@ -163,25 +122,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
         <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button>
         <button onClick={(e) => { e.stopPropagation(); handleNext(); }} aria-label="Siguiente" className="absolute right-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">›</button>
-
-        {/* Reactions column: container doesn't block swipe gestures */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3" style={{ pointerEvents: 'none' }}>
-          {['LIKE', 'DISLIKE', 'SEND'].map((key) => {
-            const label = key === 'LIKE' ? '👍' : key === 'DISLIKE' ? '👎' : '📤';
-            const selected = selectedReactions[activeIndex] === key;
-            return (
-              <button
-                key={key}
-                className={`reaction-button h-12 w-12 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-xl ${selected ? 'scale-110 ring-2 ring-white/30' : ''}`}
-                style={{ pointerEvents: 'auto' }}
-                onClick={() => applyReaction(key)}
-                aria-label={key}
-              >
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
 
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">
