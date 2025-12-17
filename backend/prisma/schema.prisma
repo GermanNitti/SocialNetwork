@@ -166,6 +166,7 @@ enum NotificationType {
   REACTION
   MENTION
   MESSAGE
+  REEL_SHARED
 }
 
 model Notification {
