@@ -28,7 +28,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setIsPaused(false);
     setProgress(0);
     setUserReaction(null);
-  }, [activeIndex, item]);
+  }, [activeIndex]);
 
   useEffect(() => {
     const v = videoRef.current;
