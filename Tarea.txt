@@ -1,18 +1,36 @@
-El intento anterior con `useMemo` no solucionó el parpadeo del video. Al actualizar el estado de las reacciones, React sigue afectando al elemento de video.
+El problema persiste. Aunque usamos `React.memo`, el componente `ReelPlayer` se sigue re-renderizando porque las funciones que recibe como props (`onNext`, `togglePlayPause`, etc.) cambian de referencia en cada render del padre.
 
-Vamos a aplicar la estrategia de **Extracción de Componente Memoizado**. Por favor, refactoriza `frontend/src/features/highlights/HighlightViewer.jsx` siguiendo estos pasos estrictos:
+Necesito aplicar un **"Hard Memo"** con una función de comparación personalizada.
 
-1. **CREA UN SUB-COMPONENTE INTERNO:**
-   - Define un nuevo componente llamado `ReelPlayer` (puedes definirlo en el mismo archivo, fuera del componente principal, o en uno nuevo si prefieres, pero mantengámoslo simple).
-   - Este componente debe recibir SOLO las props esenciales para el video: `src`, `poster`, `isActive` (booleano), `onNext`, `onPrev`, `onTimeUpdate`.
-   - **CRÍTICO:** Envuelve este componente en `React.memo`.
+Por favor, modifica la definición del `ReelPlayer` en `HighlightViewer.jsx` para que use un segundo argumento en `memo`.
 
+Sigue esta estructura EXACTA:
+
+1. **DEFINICIÓN DEL COMPARADOR:**
    ```javascript
-   const ReelPlayer = memo(({ src, poster, isActive, onNext, onPrev, onTimeUpdate }) => {
-      // Mueve aquí toda la lógica de useRef del video, useEffect de play/pause, y el JSX del <video>
-      // ...
+   const ReelPlayer = memo(({ src, poster, isActive, onNext, onPrev, togglePlayPause, onTimeUpdate }) => {
+       // ... todo tu código del player (useRef, useEffects, video tag) ...
    }, (prevProps, nextProps) => {
-      // Custom comparison (opcional pero recomendado):
-      // Solo renderizar si cambia la URL o el estado de isActive
-      return prevProps.src === nextProps.src && prevProps.isActive === nextProps.isActive;
+       // ESTA ES LA CLAVE: Devuelve true si NO queremos que se re-renderice.
+       // Solo permitimos re-render si cambia la URL o el estado activo.
+       // Ignoramos deliberadamente los cambios en las funciones (onNext, etc).
+       
+       return (
+           prevProps.src === nextProps.src &&
+           prevProps.isActive === nextProps.isActive
+       );
    });
+
+
+
+   REVISIÓN DE PROPS:
+
+        Asegúrate de que ReelPlayer reciba src (o url) y isActive.
+
+        Verifica que dentro del HighlightViewer (el padre), el ReelPlayer esté recibiendo correctamente estas props.
+
+    SIN CAMBIOS EN LA LÓGICA:
+
+        No muevas ni cambies la lógica de handleReaction ni el estado de reactionCounts. Solo blinda el componente del video.
+
+Objetivo: Quiero que al dar like, el padre se actualice, pero el ReelPlayer sea COMPLETAMENTE IGNORADO por React gracias a la función de comparación personalizada.
