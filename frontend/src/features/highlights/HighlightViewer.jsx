@@ -172,7 +172,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         )}
 
         {/* Reacciones Flotantes */}
-        <div className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center">
+        <div
+          className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center"
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           {REACTION_ORDER.map((key) => {
             const reaction = REACTIONS[key];
             const isActive = userReaction === key;
