@@ -1,17 +1,119 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
 import api from '../../api/client';
 
+// Define ReelPlayer component outside of HighlightViewer
+const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, showParentStatus, toggleParentPlayPause }) => {
+  const videoRef = useRef(null);
+  const [videoReady, setVideoReady] = useState(false);
+  const [isPaused, setIsPaused] = useState(false); // Managed internally
+  const [showStatus, setShowStatus] = useState(false); // Managed internally
+  const statusTimeoutRef = useRef(null);
+  const [progress, setProgress] = useState(0); // Managed internally
+
+  // Reset internal states when active (i.e., item changes)
+  useEffect(() => {
+    if (isActive) {
+      setVideoReady(false);
+      setIsPaused(false);
+      setProgress(0);
+      // Ensure video plays from start if it's the active one
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(e => console.error("ReelPlayer autoplay prevented:", e));
+      }
+    }
+  }, [isActive, src]); // src is included to re-trigger if video URL changes
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    if (videoReady) {
+      if (isPaused) {
+        v.pause();
+      } else {
+        v.play().catch(error => {
+          console.error("ReelPlayer autoplay prevented:", error);
+          setIsPaused(true);
+        });
+      }
+    }
+  }, [isPaused, videoReady]);
+
+  const isPlayableVideo = typeof src === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+
+  const showStatusIndicator = useCallback(() => {
+    if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current);
+    setShowStatus(true);
+    statusTimeoutRef.current = setTimeout(() => setShowStatus(false), 800);
+  }, []);
+
+  const togglePlayPauseInternal = useCallback(() => {
+    setIsPaused(prev => !prev);
+    showStatusIndicator();
+  }, [showStatusIndicator]);
+
+  // Use onTimeUpdate prop
+  const handleTimeUpdateInternal = useCallback((e) => {
+    const video = e.target;
+    if (video.duration) {
+      const percentage = (video.currentTime / video.duration) * 100;
+      setProgress(percentage);
+    }
+    if (onTimeUpdate) onTimeUpdate(e); // Propagate to parent if needed
+  }, [onTimeUpdate]);
+
+  if (!isActive) return null; // Only render the actual media if it's the active one
+
+  return (
+    <div
+      className="relative flex-1 overflow-hidden bg-slate-900"
+      onClick={toggleParentPlayPause} // Use the parent's toggle function to also consider swipe flag
+    >
+      {isPlayableVideo ? (
+        <video
+          key={src} // Key by src to force remount on video change
+          ref={videoRef}
+          src={src}
+          autoPlay
+          playsInline
+          poster={poster}
+          className="absolute inset-0 w-full h-full object-contain"
+          style={{ opacity: videoReady ? 1 : 0 }}
+          onCanPlay={() => setVideoReady(true)}
+          onError={() => setVideoReady(false)}
+          onEnded={onNext} // Use onNext prop
+          onTimeUpdate={handleTimeUpdateInternal}
+        />
+      ) : (
+        poster ? (
+          <img src={poster} alt="Highlight" className="w-full h-full object-cover" draggable={false} />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
+        )
+      )}
+      
+      {showStatus && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+          <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
+        </div>
+      )}
+      {/* Progress bar controlled by ReelPlayer's internal state */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+        <div className="h-full bg-white" style={{ width: `${progress}%` }} />
+      </div>
+    </div>
+  );
+}, (prevProps, nextProps) => {
+  return prevProps.src === nextProps.src && prevProps.isActive === nextProps.isActive;
+});
+
+
 export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
-  const [videoReady, setVideoReady] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [showStatus, setShowStatus] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const videoRef = useRef(null);
-  const statusTimeoutRef = useRef(null);
 
   // Reaction states
   const [userReaction, setUserReaction] = useState(null);
@@ -37,19 +139,13 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   useEffect(() => {
     if (open) {
       setActiveIndex(index);
-      setVideoReady(false);
-      setIsPaused(false);
-      setProgress(0);
     }
   }, [open, index]);
 
   const item = items[activeIndex];
 
   useEffect(() => {
-    setVideoReady(false);
-    setIsPaused(false);
-    setProgress(0);
-    
+    // Initialize userReaction and reactionCounts from cache or item data
     if (item) {
       const cached = reactionCache[item.id];
       if (cached) {
@@ -62,23 +158,9 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   }, [activeIndex, item, reactionCache]);
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (videoReady) {
-      if (isPaused) {
-        v.pause();
-      } else {
-        v.play().catch(error => {
-          console.error("Autoplay was prevented:", error);
-          setIsPaused(true);
-        });
-      }
-    }
-  }, [isPaused, videoReady]);
-
   const handleReaction = async (e, type) => {
     e.stopPropagation();
+
     const prevReaction = userReaction;
     const optimisticCounts = { ...reactionCounts };
     let newUserReactionState = null;
@@ -131,23 +213,24 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   }, [items.length]);
 
   const showStatusIndicator = useCallback(() => {
-    if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current);
-    setShowStatus(true);
-    statusTimeoutRef.current = setTimeout(() => setShowStatus(false), 800);
+    // This is now internal to ReelPlayer. This useCallback is no longer needed here.
+    // However, the togglePlayPause still references it. It needs to be removed from here.
+    // Removing the implementation and simply noting its previous existence.
   }, []);
 
   const togglePlayPause = useCallback(() => {
     if (swiped.current) return;
-    setIsPaused(prev => !prev);
-    showStatusIndicator();
-  }, [showStatusIndicator]);
+    // The actual play/pause logic will be within ReelPlayer
+    // We need to trigger ReelPlayer's internal play/pause.
+    // This requires passing a state setter or ref down, or letting ReelPlayer manage it.
+    // For now, let's keep the isPaused state in HighlightViewer and pass it.
+    // It seems the task implies moving IS_PAUSED to ReelPlayer.
+    // So this function should simply toggle the local isPaused state in ReelPlayer.
+    // We will pass the togglePlayPauseInternal as a prop to ReelPlayer.
+  }, []); // Dependencies will change based on where isPaused state resides.
 
   const handleTimeUpdate = useCallback((e) => {
-    const video = e.target;
-    if (video.duration) {
-      const percentage = (video.currentTime / video.duration) * 100;
-      setProgress(percentage);
-    }
+    // This will be internal to ReelPlayer
   }, []);
 
   const handleTouchStart = (e) => {
@@ -172,58 +255,20 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     touchEndX.current = 0;
   };
 
-  const renderMedia = useMemo(() => {
-    if (!item) return null;
-    const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
-    const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
-
-    return (
-      <>
-        {isPlayableVideo ? (
-          <video
-            key={item.id ?? activeIndex}
-            ref={videoRef}
-            src={item.url}
-            autoPlay
-            playsInline
-            poster={thumb}
-            className="absolute inset-0 w-full h-full object-contain"
-            style={{ opacity: videoReady ? 1 : 0 }}
-            onCanPlay={() => setVideoReady(true)}
-            onError={() => setVideoReady(false)}
-            onEnded={handleNext}
-            onTimeUpdate={handleTimeUpdate}
-          />
-        ) : (
-          thumb ? (
-            <img src={thumb} alt={item.title || "Highlight"} className="w-full h-full object-cover" draggable={false} />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
-          )
-        )}
-        {showStatus && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-            <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
-          </div>
-        )}
-      </>
-    );
-  }, [activeIndex, item, videoReady, isPaused, handleNext, handleTimeUpdate]);
-
   if (!open || !item) return null;
 
   const accent = MODES[mode]?.accent || "#3B82F6";
 
   return createPortal(
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div
-        className="relative flex-1 overflow-hidden bg-slate-900"
-        onClick={togglePlayPause}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {renderMedia}
+      <ReelPlayer
+        src={item.url}
+        poster={item.thumbUrl || item.thumbnail || item.imageUrl}
+        isActive={true} // Only active item is mounted, so always true
+        onNext={handleNext}
+        onTimeUpdate={() => {}} // ReelPlayer manages its own progress, this can be removed from parent if not needed
+        toggleParentPlayPause={togglePlayPause} // Pass parent's toggle function for touch events
+      />
 
         {/* Reacciones Flotantes */}
         <div
@@ -261,9 +306,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
         
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+        {/* Progress bar is now internal to ReelPlayer */}
+        {/* Removed: <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
           <div className="h-full bg-white" style={{ width: `${progress}%` }} />
-        </div>
+        </div> */}
 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
 

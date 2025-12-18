@@ -1,19 +1,18 @@
-Tengo un bug visual en `HighlightViewer.jsx`: al tocar una reacción, el estado se actualiza y el componente se re-renderiza. Esto provoca que el elemento `<video>` reciba nuevas referencias de funciones (como `onEnded`), lo que causa que el video parpadee, se ponga negro o se reinicie visualmente, aunque el audio sigue.
+El intento anterior con `useMemo` no solucionó el parpadeo del video. Al actualizar el estado de las reacciones, React sigue afectando al elemento de video.
 
-Por favor, optimiza el componente para **aislar el renderizado del video**. Sigue estos pasos:
+Vamos a aplicar la estrategia de **Extracción de Componente Memoizado**. Por favor, refactoriza `frontend/src/features/highlights/HighlightViewer.jsx` siguiendo estos pasos estrictos:
 
-1. **ESTABILIZAR HANDLERS (useCallback):**
-   - Envuelve las funciones `handleNext`, `handlePrev`, `togglePlayPause`, y `handleTimeUpdate` dentro de `useCallback`.
-   - Asegúrate de que sus dependencias sean correctas (ej: `[items.length]` para next/prev).
+1. **CREA UN SUB-COMPONENTE INTERNO:**
+   - Define un nuevo componente llamado `ReelPlayer` (puedes definirlo en el mismo archivo, fuera del componente principal, o en uno nuevo si prefieres, pero mantengámoslo simple).
+   - Este componente debe recibir SOLO las props esenciales para el video: `src`, `poster`, `isActive` (booleano), `onNext`, `onPrev`, `onTimeUpdate`.
+   - **CRÍTICO:** Envuelve este componente en `React.memo`.
 
-2. **MEMOIZAR EL VIDEO (useMemo):**
-   - Extrae el bloque JSX del `<video>` (y su contenedor inmediato si es necesario, o la lógica de renderizado condicional video/imagen) dentro de un `useMemo`.
-   - Llámalo `renderMedia`.
-   - **Dependencias del useMemo:** Solo debe depender de variables que REQUIERAN que el video cambie, es decir: `[activeIndex, item.url, videoReady, isPaused, handleNext, handleTimeUpdate]`.
-   - **IMPORTANTE:** NO incluyas `userReaction`, `reactionCounts` o `reactionCache` en las dependencias de este `useMemo`. Esto es la clave para que el video no se entere de que diste like.
-
-3. **INTEGRACIÓN:**
-   - En el `return` del componente, reemplaza el bloque del video/imagen original por `{renderMedia}`.
-   - Mantén la capa de reacciones (el overlay absoluto) FUERA de este `useMemo`, para que las reacciones sí puedan actualizarse libremente sin afectar al video.
-
-**Objetivo:** Que al dar click en una reacción, los contadores se actualicen instantáneamente, pero el video de fondo siga reproduciéndose sin ningún parpadeo ni glitch visual.
+   ```javascript
+   const ReelPlayer = memo(({ src, poster, isActive, onNext, onPrev, onTimeUpdate }) => {
+      // Mueve aquí toda la lógica de useRef del video, useEffect de play/pause, y el JSX del <video>
+      // ...
+   }, (prevProps, nextProps) => {
+      // Custom comparison (opcional pero recomendado):
+      // Solo renderizar si cambia la URL o el estado de isActive
+      return prevProps.src === nextProps.src && prevProps.isActive === nextProps.isActive;
+   });
