@@ -12,13 +12,24 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [progress, setProgress] = useState(0);
   const videoRef = useRef(null);
   const statusTimeoutRef = useRef(null);
+
+  // Reaction states
   const [userReaction, setUserReaction] = useState(null);
+  const [reactionCounts, setReactionCounts] = useState({});
 
   // Swipe logic states/refs
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const swiped = useRef(false); // Flag to differentiate swipe from tap
   const swipeThreshold = 50; // Minimum distance for a swipe
+
+  // Helper function for formatting numbers
+  const formatCount = (num) => {
+    if (num > 9999) {
+      return (num / 1000).toFixed(1) + "mil";
+    }
+    return num;
+  };
 
   useEffect(() => {
     if (open) {
@@ -33,8 +44,11 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setVideoReady(false);
     setIsPaused(false);
     setProgress(0);
-    setUserReaction(null);
-  }, [activeIndex]);
+    // Initialize userReaction and reactionCounts when activeItem changes
+    const currentItem = items[activeIndex];
+    setUserReaction(currentItem?.userReaction || null);
+    setReactionCounts(currentItem?.reactions || {});
+  }, [activeIndex, items]); // Added 'items' to dependencies for currentItem reference
 
   useEffect(() => {
     const v = videoRef.current;
@@ -57,15 +71,40 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   const handleReaction = async (e, type) => {
     e.stopPropagation(); // CRÍTICO: Evita que el click pause el video
-    setUserReaction(type); // Feedback visual inmediato (Optimistic UI)
+
+    const prevReaction = userReaction;
+    const optimisticCounts = { ...reactionCounts }; // Create a mutable copy
+
+    // Update optimistic UI
+    if (prevReaction === type) {
+      // User is un-reacting
+      setUserReaction(null);
+      if (optimisticCounts[type]) {
+        optimisticCounts[type]--;
+      }
+    } else if (prevReaction !== null) {
+      // User is changing reaction
+      if (optimisticCounts[prevReaction]) {
+        optimisticCounts[prevReaction]--;
+      }
+      setUserReaction(type);
+      optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
+    } else {
+      // User is adding a new reaction
+      setUserReaction(type);
+      optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
+    }
+    setReactionCounts(optimisticCounts); // Apply optimistic update
+
     try {
-      // El item.id es la URL en los reels actuales, pero si el backend espera un ID numérico esto fallará. 
-      // Por ahora, solo haz el console.log para probar la UI sin romper nada:
-      console.log('Reaccionando:', type, 'al item:', item.id);
+      console.log('Reaccionando (optimistic):', type, 'al item:', item.id);
       // Descomentar cuando el backend soporte reacciones por URL o ID real:
       // await api.post(`/posts/${item.id}/reactions`, { type }); 
     } catch (error) {
-      console.error(error);
+      console.error("Error sending reaction:", error);
+      // Revert UI on error
+      setUserReaction(prevReaction);
+      setReactionCounts(reactionCounts); // Revert to original state
     }
   };
 
@@ -179,20 +218,28 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
           {REACTION_ORDER.map((key) => {
             const reaction = REACTIONS[key];
             const isActive = userReaction === key;
+            const count = reactionCounts[key] || 0; // Get count for current reaction
+
             return (
-              <button
-                key={key}
-                onClick={(e) => handleReaction(e, key)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
-                  isActive 
-                    ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" 
-                    : "bg-black/40 hover:bg-black/60 border border-white/10"
-                }`}
-              >
-                <span className="text-xl" role="img" aria-label={reaction.label}>
-                  {reaction.icon}
-                </span>
-              </button>
+              <div key={key} className="flex flex-col items-center"> {/* New wrapper div */}
+                <button
+                  onClick={(e) => handleReaction(e, key)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
+                    isActive 
+                      ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" 
+                      : "bg-black/40 hover:bg-black/60 border border-white/10"
+                  }`}
+                >
+                  <span className="text-xl" role="img" aria-label={reaction.label}>
+                    {reaction.icon}
+                  </span>
+                </button>
+                {count > 0 && ( // Only show count if greater than 0
+                    <span className="text-xs text-white drop-shadow-md mt-1">
+                        {formatCount(count)}
+                    </span>
+                )}
+              </div>
             );
           })}
         </div>

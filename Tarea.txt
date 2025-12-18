@@ -1,26 +1,33 @@
-Funciona perfecto. Ahora necesito refinar la navegación en `frontend/src/features/highlights/HighlightViewer.jsx`.
+Tengo el componente `frontend/src/features/highlights/HighlightViewer.jsx` funcionando bien con Swipe y Reacciones flotantes.
 
-Quiero reemplazar los botones de flechas ("<" y ">") por gestos de deslizamiento (SWIPE) nativos para móviles, manteniendo el video fluido.
+Ahora necesito implementar la **Lógica de Conteo y Persistencia de Reacciones**.
 
-Por favor, realiza los siguientes cambios:
+Por favor, modifica el componente siguiendo estas instrucciones precisas:
 
-1. **LÓGICA DE SWIPE (Sin librerías extra):**
-   - Agrega 3 estados locales (o refs) para manejar las coordenadas del toque: `touchStart`, `touchEnd`.
-   - Define una distancia mínima de swipe (ej: 50px).
-   - Implementa los handlers:
-     - `onTouchStart`: Guarda la posición X inicial.
-     - `onTouchMove`: Actualiza la posición X final.
-     - `onTouchEnd`: Calcula la diferencia. Si es > 50px a la izquierda -> `onNext()`. Si es > 50px a la derecha -> `onPrev()`.
+1. **FUNCIÓN HELPER (Formato de números):**
+   - Crea una función `formatCount(number)` fuera del componente o dentro.
+   - Si el número es > 9999, debe mostrarse como miles con el sufijo "mil" (ej: 10500 -> "10.5mil", 100000 -> "100mil").
+   - Si es menor, muestra el número normal.
 
-2. **INTEGRACIÓN EN EL JSX:**
-   - Agrega los eventos `onTouchStart`, `onTouchMove` y `onTouchEnd` al contenedor principal del video (el mismo `div` que tiene `className="relative flex-1..."` y el `onClick={togglePlayPause}`).
-   - **IMPORTANTE:** Asegúrate de que el `onClick` del video (pausa/play) NO se dispare si el usuario hizo un swipe. Puedes usar una pequeña bandera o lógica simple (si `distance > 10` no hacer toggle).
+2. **ESTADO LOCAL INTELIGENTE:**
+   - Actualmente tengo `const [userReaction, setUserReaction] = useState(null)`.
+   - Agrega un nuevo estado para los contadores: `const [reactionCounts, setReactionCounts] = useState({})`.
+   - **IMPORTANTE:** Al cargar un nuevo video (`useEffect` que depende de `item` o `activeIndex`), inicializa estos estados usando los datos que vienen en `item` (ej: `item.userReaction` y `item.reactions`). Si no existen datos, usa `null` y `{}` por defecto.
 
-3. **LIMPIEZA DE UI:**
-   - **Elimina** (o comenta) los botones `<button>` de "Anterior" y "Siguiente" que están flotando a la izquierda y derecha. Ya no los necesitamos en la vista móvil porque usaremos el swipe.
+3. **ACTUALIZACIÓN OPTIMISTA (En `handleReaction`):**
+   - Modifica `handleReaction` para calcular los nuevos contadores al instante antes de llamar a la API:
+     - **Caso 1 (Quitar):** Si el usuario toca la misma reacción que ya tiene, pon `userReaction` en null y resta 1 a ese contador.
+     - **Caso 2 (Cambiar):** Si el usuario cambia de reacción (ej: de Like a Love), resta 1 al anterior y suma 1 al nuevo.
+     - **Caso 3 (Nuevo):** Si no tenía reacción, suma 1 al nuevo.
+   - Actualiza `setReactionCounts` y `setUserReaction` inmediatamente.
+   - Luego haz la llamada a la API (`api.post(...)`) en segundo plano.
 
-4. **PRECAUCIÓN:**
-   - No toques la lógica de las Reacciones que acabamos de arreglar.
-   - Mantén el `e.stopPropagation()` en los botones de cierre y reacciones para que no interfieran con el swipe.
+4. **UI DEL CONTADOR:**
+   - En el mapeo de `REACTION_ORDER`, agrega un elemento `<span>` o `<div>` debajo de cada botón de reacción.
+   - Debe mostrar el número formateado usando `reactionCounts[key] || 0`.
+   - Estilo: Texto pequeño (`text-xs`), color blanco, sombreado (`drop-shadow-md`) para que se lea sobre el video, centrado con el botón.
 
-Genera el código actualizado del componente.
+5. **PRECAUCIÓN:**
+   - No rompas el layout `absolute` de la columna de reacciones. El contador debe ser parte del "bloque" de cada reacción (quizás envolver botón y contador en un `div` flex vertical).
+
+Genera el código actualizado manteniendo la funcionalidad de Swipe y Video intacta.
