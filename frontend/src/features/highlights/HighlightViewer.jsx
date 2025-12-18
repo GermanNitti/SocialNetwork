@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
@@ -43,147 +43,116 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   }, [open, index]);
 
+  const item = items[activeIndex];
+
   useEffect(() => {
     setVideoReady(false);
     setIsPaused(false);
     setProgress(0);
     
-    // Initialize userReaction and reactionCounts from cache or item data
-    const currentItem = items[activeIndex];
-    if (currentItem) {
-      const cached = reactionCache[currentItem.id]; // Use item.id as key
+    if (item) {
+      const cached = reactionCache[item.id];
       if (cached) {
         setUserReaction(cached.userReaction);
         setReactionCounts(cached.reactions);
       } else {
-        // Fallback to original item data if not in cache
-        setUserReaction(currentItem.userReaction || null);
-        setReactionCounts(currentItem.reactions || {});
+        setUserReaction(item.userReaction || null);
+        setReactionCounts(item.reactions || {});
       }
     }
-  }, [activeIndex, items, reactionCache]); // Added reactionCache to dependencies
+  }, [activeIndex, item, reactionCache]);
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    // This effect handles the play/pause logic based on isPaused and videoReady states.
     if (videoReady) {
       if (isPaused) {
         v.pause();
       } else {
         v.play().catch(error => {
           console.error("Autoplay was prevented:", error);
-          // If autoplay fails, we update the state to reflect that the video is paused.
           setIsPaused(true);
         });
       }
     }
   }, [isPaused, videoReady]);
 
-  const item = items[activeIndex];
-
   const handleReaction = async (e, type) => {
-    e.stopPropagation(); // CRÍTICO: Evita que el click pause el video
-
+    e.stopPropagation();
     const prevReaction = userReaction;
-    const optimisticCounts = { ...reactionCounts }; // Create a mutable copy
+    const optimisticCounts = { ...reactionCounts };
     let newUserReactionState = null;
 
-    // Update optimistic UI
     if (prevReaction === type) {
-      // User is un-reacting
       newUserReactionState = null;
-      if (optimisticCounts[type]) {
-        optimisticCounts[type]--;
-      }
-    } else if (prevReaction !== null) {
-      // User is changing reaction
-      if (optimisticCounts[prevReaction]) {
+      if (optimisticCounts[type]) optimisticCounts[type]--;
+    } else {
+      if (prevReaction && optimisticCounts[prevReaction]) {
         optimisticCounts[prevReaction]--;
       }
       newUserReactionState = type;
       optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
-    } else {
-      // User is adding a new reaction
-      newUserReactionState = type;
-      optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
     }
     
-    // Apply optimistic update to local states
     setUserReaction(newUserReactionState);
     setReactionCounts(optimisticCounts);
 
-    // Update reactionCache
     setReactionCache(prev => ({
         ...prev,
-        [item.id]: { // Use item.id as the key
+        [item.id]: {
             userReaction: newUserReactionState,
             reactions: optimisticCounts
         }
     }));
 
     try {
-      console.log('Reaccionando (optimistic):', type, 'al item:', item.id);
-      // Descomentar cuando el backend soporte reacciones por URL o ID real:
+      console.log('Reaccionando:', type, 'al item:', item.id);
       // await api.post(`/posts/${item.id}/reactions`, { type }); 
     } catch (error) {
       console.error("Error sending reaction:", error);
-      // Revert UI on error
       setUserReaction(prevReaction);
-      setReactionCounts(reactionCounts); // Revert to original counts
-      // Revert reactionCache as well
+      setReactionCounts(reactionCounts);
       setReactionCache(prev => ({
           ...prev,
           [item.id]: {
               userReaction: prevReaction,
-              reactions: reactionCounts // Original counts before optimistic update
+              reactions: reactionCounts
           }
       }));
     }
   };
 
-  if (!open || !item) return null;
-
-  const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
-  const accent = MODES[mode]?.accent || "#3B82F6";
-
-  const isPlayableVideo =
-    item?.type === "video" &&
-    typeof item?.url === "string" &&
-    /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
-
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
-  };
+  }, [items.length]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % items.length);
-  };
+  }, [items.length]);
 
-  const showStatusIndicator = () => {
+  const showStatusIndicator = useCallback(() => {
     if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current);
     setShowStatus(true);
     statusTimeoutRef.current = setTimeout(() => setShowStatus(false), 800);
-  };
+  }, []);
 
-  const togglePlayPause = () => {
-    if (swiped.current) return; // Do not toggle if it was a swipe
-    setIsPaused(!isPaused);
+  const togglePlayPause = useCallback(() => {
+    if (swiped.current) return;
+    setIsPaused(prev => !prev);
     showStatusIndicator();
-  };
+  }, [showStatusIndicator]);
 
-  const handleTimeUpdate = (e) => {
+  const handleTimeUpdate = useCallback((e) => {
     const video = e.target;
     if (video.duration) {
       const percentage = (video.currentTime / video.duration) * 100;
       setProgress(percentage);
     }
-  };
+  }, []);
 
-  // Touch event handlers
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
-    swiped.current = false; // Reset swipe flag
+    swiped.current = false;
   };
 
   const handleTouchMove = (e) => {
@@ -193,28 +162,23 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const handleTouchEnd = () => {
     const distance = touchStartX.current - touchEndX.current;
     if (distance > swipeThreshold) {
-      // Swiped left
       handleNext();
       swiped.current = true;
     } else if (distance < -swipeThreshold) {
-      // Swiped right
       handlePrev();
       swiped.current = true;
     }
-    // Reset touch positions for next interaction
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div
-        className="relative flex-1 overflow-hidden bg-slate-900"
-        onClick={togglePlayPause}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+  const renderMedia = useMemo(() => {
+    if (!item) return null;
+    const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
+    const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
+
+    return (
+      <>
         {isPlayableVideo ? (
           <video
             key={item.id ?? activeIndex}
@@ -237,12 +201,29 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
           )
         )}
-        
         {showStatus && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
             <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
           </div>
         )}
+      </>
+    );
+  }, [activeIndex, item, videoReady, isPaused, handleNext, handleTimeUpdate]);
+
+  if (!open || !item) return null;
+
+  const accent = MODES[mode]?.accent || "#3B82F6";
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
+      <div
+        className="relative flex-1 overflow-hidden bg-slate-900"
+        onClick={togglePlayPause}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {renderMedia}
 
         {/* Reacciones Flotantes */}
         <div
@@ -252,10 +233,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
           {REACTION_ORDER.map((key) => {
             const reaction = REACTIONS[key];
             const isActive = userReaction === key;
-            const count = reactionCounts[key] || 0; // Get count for current reaction
+            const count = reactionCounts[key] || 0;
 
             return (
-              <div key={key} className="flex flex-col items-center"> {/* New wrapper div */}
+              <div key={key} className="flex flex-col items-center">
                 <button
                   onClick={(e) => handleReaction(e, key)}
                   className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
@@ -268,7 +249,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
                     {reaction.icon}
                   </span>
                 </button>
-                {count > 0 && ( // Only show count if greater than 0
+                {count > 0 && (
                     <span className="text-xs text-white drop-shadow-md mt-1">
                         {formatCount(count)}
                     </span>
@@ -285,8 +266,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         </div>
 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
-        {/* Removed: <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button> */}
-        {/* Removed: <button onClick={(e) => { e.stopPropagation(); handleNext(); }} aria-label="Siguiente" className="absolute right-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">›</button> */}
 
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">

@@ -1,33 +1,19 @@
-Tengo un problema de persistencia en `HighlightViewer.jsx`. Cuando le doy reacción a un video, deslizo al siguiente y vuelvo al anterior, la reacción desaparece. Esto ocurre porque el componente reinicia su estado basándose en la prop `items` original, ignorando mis cambios recientes.
+Tengo un bug visual en `HighlightViewer.jsx`: al tocar una reacción, el estado se actualiza y el componente se re-renderiza. Esto provoca que el elemento `<video>` reciba nuevas referencias de funciones (como `onEnded`), lo que causa que el video parpadee, se ponga negro o se reinicie visualmente, aunque el audio sigue.
 
-Por favor, soluciona esto implementando un **"Local Cache de Reacciones"**. Sigue estos pasos:
+Por favor, optimiza el componente para **aislar el renderizado del video**. Sigue estos pasos:
 
-1. **NUEVO ESTADO DE CACHÉ:**
-   - Crea un estado para guardar los cambios de la sesión:
-     `const [reactionCache, setReactionCache] = useState({});`
-   - Este objeto almacenará las reacciones por ID: `{ [itemId]: { userReaction: '...', reactions: {...} } }`.
+1. **ESTABILIZAR HANDLERS (useCallback):**
+   - Envuelve las funciones `handleNext`, `handlePrev`, `togglePlayPause`, y `handleTimeUpdate` dentro de `useCallback`.
+   - Asegúrate de que sus dependencias sean correctas (ej: `[items.length]` para next/prev).
 
-2. **MODIFICAR EL `useEffect` DE CARGA:**
-   - En el `useEffect` que se ejecuta cuando cambia el `item` o `activeIndex`, cambia la lógica de asignación inicial.
-   - **Lógica:**
-     - Primero busca si existe datos para este `item.id` en `reactionCache`.
-     - Si existe en caché, usa ESOS datos para `setUserReaction` y `setReactionCounts`.
-     - Si NO existe en caché, usa los datos originales de `item.userReaction` e `item.reactions`.
+2. **MEMOIZAR EL VIDEO (useMemo):**
+   - Extrae el bloque JSX del `<video>` (y su contenedor inmediato si es necesario, o la lógica de renderizado condicional video/imagen) dentro de un `useMemo`.
+   - Llámalo `renderMedia`.
+   - **Dependencias del useMemo:** Solo debe depender de variables que REQUIERAN que el video cambie, es decir: `[activeIndex, item.url, videoReady, isPaused, handleNext, handleTimeUpdate]`.
+   - **IMPORTANTE:** NO incluyas `userReaction`, `reactionCounts` o `reactionCache` en las dependencias de este `useMemo`. Esto es la clave para que el video no se entere de que diste like.
 
-3. **MODIFICAR `handleReaction` (Escribir en Caché):**
-   - Dentro de la función `handleReaction`, además de actualizar el estado visual inmediato y llamar a la API, **actualiza el `reactionCache`**.
-   - Ejemplo conceptual:
-     ```javascript
-     setReactionCache(prev => ({
-       ...prev,
-       [item.id]: {
-         userReaction: nuevoTipo,
-         reactions: nuevosContadores
-       }
-     }));
-     ```
+3. **INTEGRACIÓN:**
+   - En el `return` del componente, reemplaza el bloque del video/imagen original por `{renderMedia}`.
+   - Mantén la capa de reacciones (el overlay absoluto) FUERA de este `useMemo`, para que las reacciones sí puedan actualizarse libremente sin afectar al video.
 
-4. **INTEGRIDAD DE DATOS:**
-   - Asegúrate de que `item.id` exista. Si tus items usan URLs como ID, usa `item.url` o `item.id` como clave consistente.
-
-**Objetivo:** Que al navegar entre videos (Swipe), el componente recuerde si ya reaccioné y muestre los contadores actualizados sin tener que volver a pedir datos al servidor.
+**Objetivo:** Que al dar click en una reacción, los contadores se actualicen instantáneamente, pero el video de fondo siga reproduciéndose sin ningún parpadeo ni glitch visual.
