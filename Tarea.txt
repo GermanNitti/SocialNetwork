@@ -1,63 +1,26 @@
-Actúa como un desarrollador Senior React. Tengo un historial de errores donde al agregar funcionalidades a `HighlightViewer.jsx`, el video desaparece o colapsa a altura 0.
+Funciona perfecto. Ahora necesito refinar la navegación en `frontend/src/features/highlights/HighlightViewer.jsx`.
 
-Tu tarea es modificar `frontend/src/features/highlights/HighlightViewer.jsx` para agregar una columna de reacciones flotantes, SIN alterar el contenedor del video ni su layout flexible.
+Quiero reemplazar los botones de flechas ("<" y ">") por gestos de deslizamiento (SWIPE) nativos para móviles, manteniendo el video fluido.
 
-Sigue estrictamente estos pasos técnicos:
+Por favor, realiza los siguientes cambios:
 
-1. IMPORTACIONES:
-   Agrega estas líneas al inicio del archivo:
-   import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
-   import api from '../../api/client';
+1. **LÓGICA DE SWIPE (Sin librerías extra):**
+   - Agrega 3 estados locales (o refs) para manejar las coordenadas del toque: `touchStart`, `touchEnd`.
+   - Define una distancia mínima de swipe (ej: 50px).
+   - Implementa los handlers:
+     - `onTouchStart`: Guarda la posición X inicial.
+     - `onTouchMove`: Actualiza la posición X final.
+     - `onTouchEnd`: Calcula la diferencia. Si es > 50px a la izquierda -> `onNext()`. Si es > 50px a la derecha -> `onPrev()`.
 
-2. LÓGICA (Dentro del componente HighlightViewer):
-   - Crea un estado local simple: `const [userReaction, setUserReaction] = useState(null);`
-   - Resetea este estado cuando cambia el `item` (dentro del useEffect existente o uno nuevo que dependa de `item`).
-   - Crea la función manejadora con stopPropagation OBLIGATORIO:
-     const handleReaction = async (e, type) => {
-       e.stopPropagation(); // CRÍTICO: Evita que el click pause el video
-       setUserReaction(type); // Feedback visual inmediato (Optimistic UI)
-       try {
-         // El item.id es la URL en los reels actuales, pero si el backend espera un ID numérico esto fallará. 
-         // Por ahora, solo haz el console.log para probar la UI sin romper nada:
-         console.log('Reaccionando:', type, 'al item:', item.id);
-         // Descomentar cuando el backend soporte reacciones por URL o ID real:
-         // await api.post(`/posts/${item.id}/reactions`, { type }); 
-       } catch (error) {
-         console.error(error);
-       }
-     };
+2. **INTEGRACIÓN EN EL JSX:**
+   - Agrega los eventos `onTouchStart`, `onTouchMove` y `onTouchEnd` al contenedor principal del video (el mismo `div` que tiene `className="relative flex-1..."` y el `onClick={togglePlayPause}`).
+   - **IMPORTANTE:** Asegúrate de que el `onClick` del video (pausa/play) NO se dispare si el usuario hizo un swipe. Puedes usar una pequeña bandera o lógica simple (si `distance > 10` no hacer toggle).
 
-3. JSX (ESTRATEGIA "OVERLAY ABSOLUTO"):
-   - No toques el `div` con `className="relative flex-1 overflow-hidden bg-slate-900"`.
-   - No toques el elemento `<video>`.
-   - Inserta el siguiente bloque de código JUSTO ANTES del `div` que tiene `className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t..."`:
+3. **LIMPIEZA DE UI:**
+   - **Elimina** (o comenta) los botones `<button>` de "Anterior" y "Siguiente" que están flotando a la izquierda y derecha. Ya no los necesitamos en la vista móvil porque usaremos el swipe.
 
-   {/* Reacciones Flotantes */}
-   <div className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center">
-     {REACTION_ORDER.map((key) => {
-       const reaction = REACTIONS[key];
-       const isActive = userReaction === key;
-       return (
-         <button
-           key={key}
-           onClick={(e) => handleReaction(e, key)}
-           className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
-             isActive 
-               ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" 
-               : "bg-black/40 hover:bg-black/60 border border-white/10"
-           }`}
-         >
-           <span className="text-xl" role="img" aria-label={reaction.label}>
-             {reaction.icon}
-           </span>
-         </button>
-       );
-     })}
-   </div>
+4. **PRECAUCIÓN:**
+   - No toques la lógica de las Reacciones que acabamos de arreglar.
+   - Mantén el `e.stopPropagation()` en los botones de cierre y reacciones para que no interfieran con el swipe.
 
-4. VERIFICACIÓN FINAL:
-   - Asegúrate de que el contenedor de reacciones tenga `absolute`, `right-4`, `bottom-24` y `z-40`.
-   - Asegúrate de que el botón tenga `onClick={(e) => handleReaction(e, key)}`.
-   - NO envuelvas el video en nuevos divs que puedan romper el `flex-1`.
-
-Genera el código completo del componente modificado.
+Genera el código actualizado del componente.

@@ -14,6 +14,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const statusTimeoutRef = useRef(null);
   const [userReaction, setUserReaction] = useState(null);
 
+  // Swipe logic states/refs
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const swiped = useRef(false); // Flag to differentiate swipe from tap
+  const swipeThreshold = 50; // Minimum distance for a swipe
+
   useEffect(() => {
     if (open) {
       setActiveIndex(index);
@@ -88,6 +94,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   };
 
   const togglePlayPause = () => {
+    if (swiped.current) return; // Do not toggle if it was a swipe
     setIsPaused(!isPaused);
     showStatusIndicator();
   };
@@ -100,9 +107,41 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   };
 
+  // Touch event handlers
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    swiped.current = false; // Reset swipe flag
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const distance = touchStartX.current - touchEndX.current;
+    if (distance > swipeThreshold) {
+      // Swiped left
+      handleNext();
+      swiped.current = true;
+    } else if (distance < -swipeThreshold) {
+      // Swiped right
+      handlePrev();
+      swiped.current = true;
+    }
+    // Reset touch positions for next interaction
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
   return createPortal(
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div className="relative flex-1 overflow-hidden bg-slate-900" onClick={togglePlayPause}>
+      <div
+        className="relative flex-1 overflow-hidden bg-slate-900"
+        onClick={togglePlayPause}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {isPlayableVideo ? (
           <video
             key={item.id ?? activeIndex}
@@ -162,15 +201,15 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         </div>
 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
-        <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button>
-        <button onClick={(e) => { e.stopPropagation(); handleNext(); }} aria-label="Siguiente" className="absolute right-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">›</button>
+        {/* Removed: <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} aria-label="Anterior" className="absolute left-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">‹</button> */}
+        {/* Removed: <button onClick={(e) => { e.stopPropagation(); handleNext(); }} aria-label="Siguiente" className="absolute right-3 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-xl">›</button> */}
 
         <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
           <div className="text-left space-y-1 drop-shadow">
             <div className="text-sm font-semibold">{item.title || "Highlight"}</div>
             <div className="text-xs text-slate-200">{item.authorName || ""}</div>
           </div>
-          <div className="text-xs text-slate-200 flex items-center gap-2">
+          <div className="text-xs text-slate-200 flex items-center justify-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
             <span>{activeIndex + 1}/{items.length}</span>
           </div>
