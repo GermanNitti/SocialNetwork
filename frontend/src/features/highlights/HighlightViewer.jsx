@@ -17,6 +17,9 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [userReaction, setUserReaction] = useState(null);
   const [reactionCounts, setReactionCounts] = useState({});
 
+  // Local cache for reactions
+  const [reactionCache, setReactionCache] = useState({});
+
   // Swipe logic states/refs
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -44,11 +47,21 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setVideoReady(false);
     setIsPaused(false);
     setProgress(0);
-    // Initialize userReaction and reactionCounts when activeItem changes
+    
+    // Initialize userReaction and reactionCounts from cache or item data
     const currentItem = items[activeIndex];
-    setUserReaction(currentItem?.userReaction || null);
-    setReactionCounts(currentItem?.reactions || {});
-  }, [activeIndex, items]); // Added 'items' to dependencies for currentItem reference
+    if (currentItem) {
+      const cached = reactionCache[currentItem.id]; // Use item.id as key
+      if (cached) {
+        setUserReaction(cached.userReaction);
+        setReactionCounts(cached.reactions);
+      } else {
+        // Fallback to original item data if not in cache
+        setUserReaction(currentItem.userReaction || null);
+        setReactionCounts(currentItem.reactions || {});
+      }
+    }
+  }, [activeIndex, items, reactionCache]); // Added reactionCache to dependencies
 
   useEffect(() => {
     const v = videoRef.current;
@@ -74,11 +87,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
     const prevReaction = userReaction;
     const optimisticCounts = { ...reactionCounts }; // Create a mutable copy
+    let newUserReactionState = null;
 
     // Update optimistic UI
     if (prevReaction === type) {
       // User is un-reacting
-      setUserReaction(null);
+      newUserReactionState = null;
       if (optimisticCounts[type]) {
         optimisticCounts[type]--;
       }
@@ -87,14 +101,26 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       if (optimisticCounts[prevReaction]) {
         optimisticCounts[prevReaction]--;
       }
-      setUserReaction(type);
+      newUserReactionState = type;
       optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
     } else {
       // User is adding a new reaction
-      setUserReaction(type);
+      newUserReactionState = type;
       optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
     }
-    setReactionCounts(optimisticCounts); // Apply optimistic update
+    
+    // Apply optimistic update to local states
+    setUserReaction(newUserReactionState);
+    setReactionCounts(optimisticCounts);
+
+    // Update reactionCache
+    setReactionCache(prev => ({
+        ...prev,
+        [item.id]: { // Use item.id as the key
+            userReaction: newUserReactionState,
+            reactions: optimisticCounts
+        }
+    }));
 
     try {
       console.log('Reaccionando (optimistic):', type, 'al item:', item.id);
@@ -104,7 +130,15 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       console.error("Error sending reaction:", error);
       // Revert UI on error
       setUserReaction(prevReaction);
-      setReactionCounts(reactionCounts); // Revert to original state
+      setReactionCounts(reactionCounts); // Revert to original counts
+      // Revert reactionCache as well
+      setReactionCache(prev => ({
+          ...prev,
+          [item.id]: {
+              userReaction: prevReaction,
+              reactions: reactionCounts // Original counts before optimistic update
+          }
+      }));
     }
   };
 

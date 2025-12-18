@@ -1,33 +1,33 @@
-Tengo el componente `frontend/src/features/highlights/HighlightViewer.jsx` funcionando bien con Swipe y Reacciones flotantes.
+Tengo un problema de persistencia en `HighlightViewer.jsx`. Cuando le doy reacción a un video, deslizo al siguiente y vuelvo al anterior, la reacción desaparece. Esto ocurre porque el componente reinicia su estado basándose en la prop `items` original, ignorando mis cambios recientes.
 
-Ahora necesito implementar la **Lógica de Conteo y Persistencia de Reacciones**.
+Por favor, soluciona esto implementando un **"Local Cache de Reacciones"**. Sigue estos pasos:
 
-Por favor, modifica el componente siguiendo estas instrucciones precisas:
+1. **NUEVO ESTADO DE CACHÉ:**
+   - Crea un estado para guardar los cambios de la sesión:
+     `const [reactionCache, setReactionCache] = useState({});`
+   - Este objeto almacenará las reacciones por ID: `{ [itemId]: { userReaction: '...', reactions: {...} } }`.
 
-1. **FUNCIÓN HELPER (Formato de números):**
-   - Crea una función `formatCount(number)` fuera del componente o dentro.
-   - Si el número es > 9999, debe mostrarse como miles con el sufijo "mil" (ej: 10500 -> "10.5mil", 100000 -> "100mil").
-   - Si es menor, muestra el número normal.
+2. **MODIFICAR EL `useEffect` DE CARGA:**
+   - En el `useEffect` que se ejecuta cuando cambia el `item` o `activeIndex`, cambia la lógica de asignación inicial.
+   - **Lógica:**
+     - Primero busca si existe datos para este `item.id` en `reactionCache`.
+     - Si existe en caché, usa ESOS datos para `setUserReaction` y `setReactionCounts`.
+     - Si NO existe en caché, usa los datos originales de `item.userReaction` e `item.reactions`.
 
-2. **ESTADO LOCAL INTELIGENTE:**
-   - Actualmente tengo `const [userReaction, setUserReaction] = useState(null)`.
-   - Agrega un nuevo estado para los contadores: `const [reactionCounts, setReactionCounts] = useState({})`.
-   - **IMPORTANTE:** Al cargar un nuevo video (`useEffect` que depende de `item` o `activeIndex`), inicializa estos estados usando los datos que vienen en `item` (ej: `item.userReaction` y `item.reactions`). Si no existen datos, usa `null` y `{}` por defecto.
+3. **MODIFICAR `handleReaction` (Escribir en Caché):**
+   - Dentro de la función `handleReaction`, además de actualizar el estado visual inmediato y llamar a la API, **actualiza el `reactionCache`**.
+   - Ejemplo conceptual:
+     ```javascript
+     setReactionCache(prev => ({
+       ...prev,
+       [item.id]: {
+         userReaction: nuevoTipo,
+         reactions: nuevosContadores
+       }
+     }));
+     ```
 
-3. **ACTUALIZACIÓN OPTIMISTA (En `handleReaction`):**
-   - Modifica `handleReaction` para calcular los nuevos contadores al instante antes de llamar a la API:
-     - **Caso 1 (Quitar):** Si el usuario toca la misma reacción que ya tiene, pon `userReaction` en null y resta 1 a ese contador.
-     - **Caso 2 (Cambiar):** Si el usuario cambia de reacción (ej: de Like a Love), resta 1 al anterior y suma 1 al nuevo.
-     - **Caso 3 (Nuevo):** Si no tenía reacción, suma 1 al nuevo.
-   - Actualiza `setReactionCounts` y `setUserReaction` inmediatamente.
-   - Luego haz la llamada a la API (`api.post(...)`) en segundo plano.
+4. **INTEGRIDAD DE DATOS:**
+   - Asegúrate de que `item.id` exista. Si tus items usan URLs como ID, usa `item.url` o `item.id` como clave consistente.
 
-4. **UI DEL CONTADOR:**
-   - En el mapeo de `REACTION_ORDER`, agrega un elemento `<span>` o `<div>` debajo de cada botón de reacción.
-   - Debe mostrar el número formateado usando `reactionCounts[key] || 0`.
-   - Estilo: Texto pequeño (`text-xs`), color blanco, sombreado (`drop-shadow-md`) para que se lea sobre el video, centrado con el botón.
-
-5. **PRECAUCIÓN:**
-   - No rompas el layout `absolute` de la columna de reacciones. El contador debe ser parte del "bloque" de cada reacción (quizás envolver botón y contador en un `div` flex vertical).
-
-Genera el código actualizado manteniendo la funcionalidad de Swipe y Video intacta.
+**Objetivo:** Que al navegar entre videos (Swipe), el componente recuerde si ya reaccioné y muestre los contadores actualizados sin tener que volver a pedir datos al servidor.
