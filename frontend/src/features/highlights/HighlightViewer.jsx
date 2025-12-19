@@ -5,12 +5,14 @@ import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
 import api from '../../api/client';
 
-const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, isPaused, videoReady, onVideoReady, onVideoError }) => {
+const ReelPlayer = memo(({ src, poster, isActive, onNext, isPaused, videoReady, onVideoReady, onVideoError }) => {
   const videoRef = useRef(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (isActive && videoRef.current) {
       videoRef.current.currentTime = 0;
+      setProgress(0);
     }
   }, [isActive, src]);
 
@@ -27,11 +29,16 @@ const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, isPaused
         });
       }
     }
-  }, [isPaused, videoReady, src]);
+  }, [isPaused, videoReady]);
 
+  const handleTimeUpdate = useCallback((e) => {
+    const video = e.target;
+    if (video.duration) {
+      setProgress((video.currentTime / video.duration) * 100);
+    }
+  }, []);
+  
   const isPlayableVideo = typeof src === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
-
-  if (!isActive) return null;
 
   return (
     <>
@@ -48,15 +55,14 @@ const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, isPaused
           onCanPlay={onVideoReady}
           onError={onVideoError}
           onEnded={onNext}
-          onTimeUpdate={onTimeUpdate}
+          onTimeUpdate={handleTimeUpdate}
         />
       ) : (
-        poster ? (
-          <img src={poster} alt="Highlight" className="w-full h-full object-cover" draggable={false} />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
-        )
+        poster ? <img src={poster} alt="Highlight" className="w-full h-full object-cover" draggable={false} /> : <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
       )}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+        <div className="h-full bg-white" style={{ width: `${progress}%` }} />
+      </div>
     </>
   );
 }, (prevProps, nextProps) => {
@@ -73,7 +79,6 @@ const HighlightViewer = memo(function HighlightViewer({ open, items = [], index 
   const [videoReady, setVideoReady] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [progress, setProgress] = useState(0);
   const statusTimeoutRef = useRef(null);
 
   const [userReaction, setUserReaction] = useState(null);
@@ -89,7 +94,9 @@ const HighlightViewer = memo(function HighlightViewer({ open, items = [], index 
   const formatCount = (num) => (num > 9999 ? `${(num / 1000).toFixed(1)}mil` : num);
 
   useEffect(() => {
-    if (open) setActiveIndex(index);
+    if (open) {
+      setActiveIndex(index);
+    }
   }, [open, index]);
 
   const item = items[activeIndex];
@@ -98,7 +105,6 @@ const HighlightViewer = memo(function HighlightViewer({ open, items = [], index 
     setVideoReady(false);
     setIsPaused(false);
     setShowStatus(false);
-    setProgress(0);
     if (item) {
       const cached = reactionCache[item.id];
       if (cached) {
@@ -160,11 +166,6 @@ const HighlightViewer = memo(function HighlightViewer({ open, items = [], index 
     showStatusIndicator();
   }, [showStatusIndicator]);
 
-  const handleTimeUpdate = useCallback((e) => {
-    const video = e.target;
-    if (video.duration) setProgress((video.currentTime / video.duration) * 100);
-  }, []);
-
   const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; swiped.current = false; };
   const handleTouchMove = (e) => { touchEndX.current = e.touches[0].clientX; };
   const handleTouchEnd = () => {
@@ -179,7 +180,7 @@ const HighlightViewer = memo(function HighlightViewer({ open, items = [], index 
     center: { x: 0, opacity: 1 },
     exit: (direction) => ({ x: direction < 0 ? '100%' : '-100%', opacity: 0 }),
   };
-
+  
   if (!item) return null;
 
   const accent = MODES[mode]?.accent || "#3B82F6";
@@ -208,13 +209,12 @@ const HighlightViewer = memo(function HighlightViewer({ open, items = [], index 
               poster={item.thumbUrl || item.thumbnail || item.imageUrl}
               isActive={true}
               onNext={handleNext}
-              onTimeUpdate={handleTimeUpdate}
-              togglePlayPause={togglePlayPause}
               isPaused={isPaused}
-              showStatus={showStatus}
               videoReady={videoReady}
               onVideoReady={useCallback(() => setVideoReady(true), [])}
               onVideoError={useCallback(() => setVideoReady(false), [])}
+              togglePlayPause={togglePlayPause}
+              showStatus={showStatus}
             />
 
             <div className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center" onTouchStart={(e) => e.stopPropagation()}>
