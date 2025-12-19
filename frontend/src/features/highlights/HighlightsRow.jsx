@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useHighlights } from "./useHighlights";
 import { MODES } from "./ModeConfig";
 import { useReelsMode } from "./ReelsModeProvider";
@@ -11,10 +11,10 @@ export default function HighlightsRow() {
   const accent = MODES[mode]?.accent || "#3B82F6";
   const [viewerIndex, setViewerIndex] = useState(null);
 
-  const openViewer = (idx) => setViewerIndex(idx);
-  const closeViewer = () => setViewerIndex(null);
-  const next = () => setViewerIndex((idx) => (idx === null ? 0 : (idx + 1) % items.length));
-  const prev = () => setViewerIndex((idx) => (idx === null ? 0 : (idx - 1 + items.length) % items.length));
+  const openViewer = useCallback((idx) => setViewerIndex(idx), []);
+  const closeViewer = useCallback(() => setViewerIndex(null), []);
+  const next = useCallback(() => setViewerIndex((idx) => (idx === null ? 0 : (idx + 1) % items.length)), [items.length]);
+  const prev = useCallback(() => setViewerIndex((idx) => (idx === null ? 0 : (idx - 1 + items.length) % items.length)), [items.length]);
 
   return (
     <div className="w-full">

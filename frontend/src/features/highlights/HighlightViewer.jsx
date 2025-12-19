@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
 import { createPortal } from "react-dom";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
 import api from '../../api/client';
 
-export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
+const HighlightViewer = memo(function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
   const [videoReady, setVideoReady] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -210,12 +210,15 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     );
   }, [activeIndex, item, videoReady, isPaused, handleNext, handleTimeUpdate]);
 
-  if (!open || !item) return null;
+  if (!item) return null;
 
   const accent = MODES[mode]?.accent || "#3B82F6";
 
   return createPortal(
-    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
+    <div 
+      className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col"
+      style={{ display: open ? 'flex' : 'none' }}
+    >
       <div
         className="relative flex-1 overflow-hidden bg-slate-900"
         onClick={togglePlayPause}
@@ -286,4 +289,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     </div>,
     document.body
   );
-}
+});
+
+export default HighlightViewer;
