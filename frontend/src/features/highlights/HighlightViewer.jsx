@@ -1,107 +1,55 @@
-import { useEffect, useRef, useState, useCallback, memo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
 import api from '../../api/client';
-
-const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, togglePlayPause, isPaused, showStatus, videoReady, onVideoReady, onVideoError }) => {
-  const videoRef = useRef(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (isActive) {
-      setProgress(0);
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(e => console.error("ReelPlayer autoplay prevented:", e));
-      }
-    }
-  }, [isActive, src]);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-
-    if (videoReady) {
-      if (isPaused) v.pause();
-      else v.play().catch(e => console.error("ReelPlayer autoplay prevented:", e));
-    }
-  }, [isPaused, videoReady]);
-
-  const isPlayableVideo = typeof src === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
-
-  const handleTimeUpdateInternal = useCallback((e) => {
-    const video = e.target;
-    if (video.duration) {
-      const percentage = (video.currentTime / video.duration) * 100;
-      setProgress(percentage);
-    }
-    if (onTimeUpdate) onTimeUpdate(e);
-  }, [onTimeUpdate]);
-
-  if (!isActive) return null;
-
-  return (
-    <div className="relative flex-1 overflow-hidden bg-slate-900 w-full h-full">
-      {isPlayableVideo ? (
-        <video
-          key={src}
-          ref={videoRef}
-          src={src}
-          autoPlay
-          playsInline
-          poster={poster}
-          className="absolute inset-0 w-full h-full object-contain"
-          style={{ opacity: videoReady ? 1 : 0 }}
-          onCanPlay={onVideoReady}
-          onError={onVideoError}
-          onEnded={onNext}
-          onTimeUpdate={handleTimeUpdateInternal}
-        />
-      ) : (
-        poster ? <img src={poster} alt="Highlight" className="w-full h-full object-cover" draggable={false} /> : <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
-      )}
-      
-      {showStatus && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-          <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
-        </div>
-      )}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-        <div className="h-full bg-white" style={{ width: `${progress}%` }} />
-      </div>
-    </div>
-  );
-}, (prevProps, nextProps) => {
-  return prevProps.src === nextProps.src && prevProps.isActive === nextProps.isActive && prevProps.isPaused === nextProps.isPaused && prevProps.showStatus === nextProps.showStatus && prevProps.videoReady === nextProps.videoReady;
-});
 
 export default function HighlightViewer({ open, items = [], index = 0, onClose, mode }) {
   const [activeIndex, setActiveIndex] = useState(index);
   const [videoReady, setVideoReady] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const videoRef = useRef(null);
   const statusTimeoutRef = useRef(null);
+
+  // Reaction states
   const [userReaction, setUserReaction] = useState(null);
   const [reactionCounts, setReactionCounts] = useState({});
+
+  // Local cache for reactions
   const [reactionCache, setReactionCache] = useState({});
-  const [swipeDirection, setSwipeDirection] = useState(0);
+
+  // Swipe logic states/refs
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
-  const swiped = useRef(false);
-  const swipeThreshold = 50;
+  const swiped = useRef(false); // Flag to differentiate swipe from tap
+  const swipeThreshold = 50; // Minimum distance for a swipe
 
-  const formatCount = (num) => (num > 9999 ? `${(num / 1000).toFixed(1)}mil` : num);
+  // Helper function for formatting numbers
+  const formatCount = (num) => {
+    if (num > 9999) {
+      return (num / 1000).toFixed(1) + "mil";
+    }
+    return num;
+  };
 
-  useEffect(() => { if (open) setActiveIndex(index); }, [open, index]);
+  useEffect(() => {
+    if (open) {
+      setActiveIndex(index);
+      setVideoReady(false);
+      setIsPaused(false);
+      setProgress(0);
+    }
+  }, [open, index]);
 
   const item = items[activeIndex];
 
   useEffect(() => {
     setVideoReady(false);
     setIsPaused(false);
-    setShowStatus(false);
+    setProgress(0);
+    
     if (item) {
       const cached = reactionCache[item.id];
       if (cached) {
@@ -114,6 +62,21 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   }, [activeIndex, item, reactionCache]);
 
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (videoReady) {
+      if (isPaused) {
+        v.pause();
+      } else {
+        v.play().catch(error => {
+          console.error("Autoplay was prevented:", error);
+          setIsPaused(true);
+        });
+      }
+    }
+  }, [isPaused, videoReady]);
+
   const handleReaction = async (e, type) => {
     e.stopPropagation();
     const prevReaction = userReaction;
@@ -124,7 +87,9 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       newUserReactionState = null;
       if (optimisticCounts[type]) optimisticCounts[type]--;
     } else {
-      if (prevReaction && optimisticCounts[prevReaction]) optimisticCounts[prevReaction]--;
+      if (prevReaction && optimisticCounts[prevReaction]) {
+        optimisticCounts[prevReaction]--;
+      }
       newUserReactionState = type;
       optimisticCounts[type] = (optimisticCounts[type] || 0) + 1;
     }
@@ -132,25 +97,36 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setUserReaction(newUserReactionState);
     setReactionCounts(optimisticCounts);
 
-    setReactionCache(prev => ({ ...prev, [item.id]: { userReaction: newUserReactionState, reactions: optimisticCounts } }));
+    setReactionCache(prev => ({
+        ...prev,
+        [item.id]: {
+            userReaction: newUserReactionState,
+            reactions: optimisticCounts
+        }
+    }));
 
     try {
       console.log('Reaccionando:', type, 'al item:', item.id);
+      // await api.post(`/posts/${item.id}/reactions`, { type }); 
     } catch (error) {
       console.error("Error sending reaction:", error);
       setUserReaction(prevReaction);
       setReactionCounts(reactionCounts);
-      setReactionCache(prev => ({ ...prev, [item.id]: { userReaction: prevReaction, reactions: reactionCounts } }));
+      setReactionCache(prev => ({
+          ...prev,
+          [item.id]: {
+              userReaction: prevReaction,
+              reactions: reactionCounts
+          }
+      }));
     }
   };
 
   const handlePrev = useCallback(() => {
-    setSwipeDirection(-1);
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
   }, [items.length]);
 
   const handleNext = useCallback(() => {
-    setSwipeDirection(1);
     setActiveIndex((prev) => (prev + 1) % items.length);
   }, [items.length]);
 
@@ -166,22 +142,75 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     showStatusIndicator();
   }, [showStatusIndicator]);
 
-  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; swiped.current = false; };
-  const handleTouchMove = (e) => { touchEndX.current = e.touches[0].clientX; };
+  const handleTimeUpdate = useCallback((e) => {
+    const video = e.target;
+    if (video.duration) {
+      const percentage = (video.currentTime / video.duration) * 100;
+      setProgress(percentage);
+    }
+  }, []);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    swiped.current = false;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
   const handleTouchEnd = () => {
     const distance = touchStartX.current - touchEndX.current;
-    if (distance > swipeThreshold) { handleNext(); swiped.current = true; } 
-    else if (distance < -swipeThreshold) { handlePrev(); swiped.current = true; }
-    touchStartX.current = 0; touchEndX.current = 0;
+    if (distance > swipeThreshold) {
+      handleNext();
+      swiped.current = true;
+    } else if (distance < -swipeThreshold) {
+      handlePrev();
+      swiped.current = true;
+    }
+    touchStartX.current = 0;
+    touchEndX.current = 0;
   };
 
-  const variants = {
-    enter: (direction) => ({ x: direction > 0 ? '100%' : '-100%', opacity: 0 }),
-    center: { x: 0, opacity: 1 },
-    exit: (direction) => ({ x: direction < 0 ? '100%' : '-100%', opacity: 0 }),
-  };
+  const renderMedia = useMemo(() => {
+    if (!item) return null;
+    const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
+    const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
 
-  if (!open) return null;
+    return (
+      <>
+        {isPlayableVideo ? (
+          <video
+            key={item.id ?? activeIndex}
+            ref={videoRef}
+            src={item.url}
+            autoPlay
+            playsInline
+            poster={thumb}
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ opacity: videoReady ? 1 : 0 }}
+            onCanPlay={() => setVideoReady(true)}
+            onError={() => setVideoReady(false)}
+            onEnded={handleNext}
+            onTimeUpdate={handleTimeUpdate}
+          />
+        ) : (
+          thumb ? (
+            <img src={thumb} alt={item.title || "Highlight"} className="w-full h-full object-cover" draggable={false} />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
+          )
+        )}
+        {showStatus && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+            <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
+          </div>
+        )}
+      </>
+    );
+  }, [activeIndex, item, videoReady, isPaused, handleNext, handleTimeUpdate]);
+
+  if (!open || !item) return null;
 
   const accent = MODES[mode]?.accent || "#3B82F6";
 
@@ -194,75 +223,65 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <AnimatePresence initial={false} custom={swipeDirection} mode="wait">
-          <motion.div
-            key={activeIndex}
-            custom={swipeDirection}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
-            className="absolute inset-0 w-full h-full"
-          >
-            {item && (
-              <ReelPlayer
-                src={item.url}
-                poster={item.thumbUrl || item.thumbnail || item.imageUrl}
-                isActive={true}
-                onNext={handleNext}
-                onTimeUpdate={() => {}}
-                togglePlayPause={togglePlayPause}
-                isPaused={isPaused}
-                showStatus={showStatus}
-                videoReady={videoReady}
-                onVideoReady={useCallback(() => setVideoReady(true), [])}
-                onVideoError={useCallback(() => setVideoReady(false), [])}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {renderMedia}
+
+        {/* Reacciones Flotantes */}
+        <div
+          className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center"
+          onTouchStart={(e) => e.stopPropagation()}
+        >
+          {REACTION_ORDER.map((key) => {
+            const reaction = REACTIONS[key];
+            const isActive = userReaction === key;
+            const count = reactionCounts[key] || 0;
+
+            return (
+              <div key={key} className="flex flex-col items-center">
+                <button
+                  onClick={(e) => handleReaction(e, key)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
+                    isActive 
+                      ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" 
+                      : "bg-black/40 hover:bg-black/60 border border-white/10"
+                  }`}
+                >
+                  <span className="text-xl" role="img" aria-label={reaction.label}>
+                    {reaction.icon}
+                  </span>
+                </button>
+                {count > 0 && (
+                    <span className="text-xs text-white drop-shadow-md mt-1">
+                        {formatCount(count)}
+                    </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
         
-        {/* UI elements outside animation to avoid rerender issues */}
-        {item && (
-          <>
-            <div className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center" onTouchStart={(e) => e.stopPropagation()}>
-              {REACTION_ORDER.map((key) => {
-                const reaction = REACTIONS[key];
-                const isActive = userReaction === key;
-                const count = reactionCounts[key] || 0;
-                return (
-                  <div key={key} className="flex flex-col items-center">
-                    <button onClick={(e) => handleReaction(e, key)} className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${isActive ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" : "bg-black/40 hover:bg-black/60 border border-white/10"}`}>
-                      <span className="text-xl" role="img" aria-label={reaction.label}>{reaction.icon}</span>
-                    </button>
-                    {count > 0 && <span className="text-xs text-white drop-shadow-md mt-1">{formatCount(count)}</span>}
-                  </div>
-                );
-              })}
-            </div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+          <div className="h-full bg-white" style={{ width: `${progress}%` }} />
+        </div>
 
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+        <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
 
-            <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
-
-            <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3 pointer-events-none">
-              <div className="text-left space-y-1 drop-shadow">
-                <div className="text-sm font-semibold">{item?.title || "Highlight"}</div>
-                <div className="text-xs text-slate-200">{item?.authorName || ""}</div>
-              </div>
-              <div className="text-xs text-slate-200 flex items-center justify-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
-                <span>{activeIndex + 1}/{items.length}</span>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
+          <div className="text-left space-y-1 drop-shadow">
+            <div className="text-sm font-semibold">{item.title || "Highlight"}</div>
+            <div className="text-xs text-slate-200">{item.authorName || ""}</div>
+          </div>
+          <div className="text-xs text-slate-200 flex items-center justify-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
+            <span>{activeIndex + 1}/{items.length}</span>
+          </div>
+        </div>
       </div>
 
       <div className="px-4 py-3 flex items-center justify-between text-xs text-slate-200">
         <div className="px-3 py-1 rounded-full border border-white/20" style={{ color: accent }}>Reels: {MODES[mode]?.label || "Modo"}</div>
-        <div className="text-slate-400">{item?.contentType || item?.type || ""}</div>
+        <div className="text-slate-400">{item.contentType || item.type || ""}</div>
       </div>
     </div>,
     document.body
