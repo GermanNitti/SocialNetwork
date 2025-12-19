@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
+import { useEffect, useRef, useState, useCallback, memo } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MODES } from "./ModeConfig";
@@ -43,7 +43,7 @@ const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, togglePl
   if (!isActive) return null;
 
   return (
-    <div className="relative flex-1 overflow-hidden bg-slate-900" onClick={togglePlayPause}>
+    <div className="relative flex-1 overflow-hidden bg-slate-900 w-full h-full">
       {isPlayableVideo ? (
         <video
           key={src}
@@ -189,11 +189,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
       <div
         className="relative flex-1 overflow-hidden bg-slate-900"
+        onClick={togglePlayPause}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <AnimatePresence initial={false} custom={swipeDirection}>
+        <AnimatePresence initial={false} custom={swipeDirection} mode="wait">
           <motion.div
             key={activeIndex}
             custom={swipeDirection}
@@ -202,8 +203,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             animate="center"
             exit="exit"
             transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
-            className="absolute inset-0 w-full h-full flex flex-col"
-            onClick={togglePlayPause}
+            className="absolute inset-0 w-full h-full"
           >
             {item && (
               <ReelPlayer
@@ -220,7 +220,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
                 onVideoError={useCallback(() => setVideoReady(false), [])}
               />
             )}
-            {/* Reacciones Flotantes and other UI elements must be inside motion.div to animate together */}
+          </motion.div>
+        </AnimatePresence>
+        
+        {/* UI elements outside animation to avoid rerender issues */}
+        {item && (
+          <>
             <div className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center" onTouchStart={(e) => e.stopPropagation()}>
               {REACTION_ORDER.map((key) => {
                 const reaction = REACTIONS[key];
@@ -241,7 +246,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
             <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
 
-            <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
+            <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3 pointer-events-none">
               <div className="text-left space-y-1 drop-shadow">
                 <div className="text-sm font-semibold">{item?.title || "Highlight"}</div>
                 <div className="text-xs text-slate-200">{item?.authorName || ""}</div>
@@ -251,8 +256,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
                 <span>{activeIndex + 1}/{items.length}</span>
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </>
+        )}
       </div>
 
       <div className="px-4 py-3 flex items-center justify-between text-xs text-slate-200">
