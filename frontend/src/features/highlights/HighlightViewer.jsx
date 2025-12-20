@@ -39,6 +39,11 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   const item = items[activeIndex];
 
+  // --- START MODIFICATION ---
+  // This useEffect now only depends on activeIndex and item.
+  // The 'reactionCache' dependency has been removed to prevent the video state
+  // from being reset (causing it to disappear) when only reaction data changes.
+  // The video state should only reset when a new video item is loaded.
   useEffect(() => {
     setVideoReady(false);
     setIsPaused(false);
@@ -54,7 +59,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         setReactionCounts(item.reactions || {});
       }
     }
-  }, [activeIndex, item, reactionCache]);
+  }, [activeIndex, item]); // 'reactionCache' removed from dependencies
+  // --- END MODIFICATION ---
 
   useEffect(() => {
     const v = videoRef.current;
@@ -171,28 +177,26 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   if (!open || !item) return null;
 
-  const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
+  const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm/ogg)(\?.*)?$/i.test(item.url);
   const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
 
   const accent = MODES[mode]?.accent || "#3B82F6";
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div
-        className="relative flex-1 overflow-hidden bg-slate-900"
-        onClick={togglePlayPause}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {isPlayableVideo ? (
+  const renderMedia = useMemo(() => {
+    if (!item) return null; // This check is redundant with the one outside of renderMedia but harmless.
+    const isPlayable = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
+    const thumbnail = item.thumbUrl || item.thumbnail || item.imageUrl;
+
+    return (
+      <>
+        {isPlayable ? (
           <video
             key={`${item.id}-${activeIndex}`}
             ref={videoRef}
             src={item.url}
             autoPlay
             playsInline
-            poster={thumb}
+            poster={thumbnail}
             className="absolute inset-0 w-full h-full object-contain"
             style={{ opacity: videoReady ? 1 : 0 }}
             onCanPlay={() => setVideoReady(true)}
@@ -201,18 +205,31 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             onTimeUpdate={handleTimeUpdate}
           />
         ) : (
-          thumb ? (
-            <img src={thumb} alt={item.title || "Highlight"} className="w-full h-full object-cover" draggable={false} />
+          thumbnail ? (
+            <img src={thumbnail} alt={item.title || "Highlight"} className="w-full h-full object-cover" draggable={false} />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
           )
         )}
-        
         {showStatus && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
             <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
           </div>
         )}
+      </>
+    );
+  }, [activeIndex, item, videoReady, isPaused, handleNext, handleTimeUpdate]);
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col" style={{ display: open ? 'flex' : 'none' }}>
+      <div
+        className="relative flex-1 overflow-hidden bg-slate-900"
+        onClick={togglePlayPause}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {renderMedia}
 
         <div
           className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center"
@@ -225,14 +242,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
             return (
               <div key={key} className="flex flex-col items-center">
-                <button
-                  onClick={(e) => handleReaction(e, key)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
-                    isActive 
-                      ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" 
-                      : "bg-black/40 hover:bg-black/60 border border-white/10"
-                  }`}
-                >
+                <button onClick={(e) => handleReaction(e, key)} className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${isActive ? "bg-indigo-600/90 scale-110 shadow-lg border border-indigo-400" : "bg-black/40 hover:bg-black/60 border border-white/10"}`}>
                   <span className="text-xl" role="img" aria-label={reaction.label}>
                     {reaction.icon}
                   </span>
@@ -250,7 +260,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
         
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-          <div className="h-full bg-white" style={{ width: `${progress}%` }} />
+          <div ref={progressBarRef} className="h-full bg-white" style={{ width: '0%' }} />
         </div>
 
         <button onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Cerrar" className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-lg">✕</button>
