@@ -177,7 +177,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   if (!open || !item) return null;
 
-  const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm/ogg)(\?.*)?$/i.test(item.url);
+  const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
   const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
 
   const accent = MODES[mode]?.accent || "#3B82F6";
