@@ -71,8 +71,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     }
   }, [isPaused, videoReady]);
 
-  const handleReaction = async (e, type) => {
+  const handleReaction = useCallback(async (e, type) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    if (!item?.id) return;
+    
     const prevReaction = userReaction;
     const optimisticCounts = { ...reactionCounts };
     let newUserReactionState = null;
@@ -113,7 +117,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
           }
       }));
     }
-  };
+  }, [item?.id, userReaction, reactionCounts]);
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
@@ -165,16 +169,25 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     touchEndX.current = 0;
   };
 
-  const renderMedia = useMemo(() => {
-    if (!item) return null;
-    const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
-    const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
+  if (!open || !item) return null;
 
-    return (
-      <>
+  const isPlayableVideo = item.type === "video" && typeof item.url === "string" && /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.url);
+  const thumb = item.thumbUrl || item.thumbnail || item.imageUrl;
+
+  const accent = MODES[mode]?.accent || "#3B82F6";
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
+      <div
+        className="relative flex-1 overflow-hidden bg-slate-900"
+        onClick={togglePlayPause}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {isPlayableVideo ? (
           <video
-            key={item.id ?? activeIndex}
+            key={`${item.id}-${activeIndex}`}
             ref={videoRef}
             src={item.url}
             autoPlay
@@ -194,29 +207,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
             <div className="w-full h-full flex items-center justify-center text-slate-400">Highlight</div>
           )
         )}
+        
         {showStatus && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
             <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
           </div>
         )}
-      </>
-    );
-  }, [activeIndex, item, videoReady, isPaused, showStatus, handleNext, handleTimeUpdate]);
-
-  if (!open || !item) return null;
-
-  const accent = MODES[mode]?.accent || "#3B82F6";
-
-  return createPortal(
-    <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
-      <div
-        className="relative flex-1 overflow-hidden bg-slate-900"
-        onClick={togglePlayPause}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {renderMedia}
 
         <div
           className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center"
