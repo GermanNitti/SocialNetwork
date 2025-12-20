@@ -28,7 +28,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     return num;
   };
 
-  // Sincronizar index cuando se abre
   useEffect(() => {
     if (open) {
       setActiveIndex(index);
@@ -38,7 +37,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const item = items[activeIndex];
   const itemId = item?.id;
 
-  // Resetear video SOLO cuando cambia el item (por ID)
   useEffect(() => {
     if (!itemId) return;
     
@@ -46,7 +44,6 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     setIsPaused(false);
     setProgress(0);
     
-    // Cargar reacciones del cache o inicializar vacías
     const cached = reactionCache[itemId];
     if (cached) {
       setUserReaction(cached.userReaction);
@@ -55,9 +52,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       setUserReaction(null);
       setReactionCounts({});
     }
-  }, [itemId]); // Solo depende del ID
+  }, [itemId]);
 
-  // Controlar play/pause
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !videoReady) return;
@@ -82,13 +78,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     const newCounts = { ...reactionCounts };
     let newReaction = null;
 
-    // Calcular nueva reacción
     if (prevReaction === type) {
-      // Quitar reacción
       newReaction = null;
       if (newCounts[type]) newCounts[type]--;
     } else {
-      // Cambiar/agregar reacción
       if (prevReaction && newCounts[prevReaction]) {
         newCounts[prevReaction]--;
       }
@@ -96,11 +89,9 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
       newCounts[type] = (newCounts[type] || 0) + 1;
     }
     
-    // Actualizar UI inmediatamente
     setUserReaction(newReaction);
     setReactionCounts(newCounts);
 
-    // Guardar en cache
     setReactionCache(prev => ({
       ...prev,
       [itemId]: {
@@ -111,10 +102,8 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
     try {
       console.log('Reacción:', type, 'Item:', itemId);
-      // Aquí iría la llamada a la API
     } catch (error) {
       console.error("Error sending reaction:", error);
-      // Revertir en caso de error
       setUserReaction(prevReaction);
       setReactionCounts(prevCounts);
       setReactionCache(prev => ({
@@ -128,10 +117,12 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   }, [itemId, userReaction, reactionCounts]);
 
   const handlePrev = useCallback(() => {
+    setSwipeDirection(-1);
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
   }, [items.length]);
 
   const handleNext = useCallback(() => {
+    setSwipeDirection(1);
     setActiveIndex((prev) => (prev + 1) % items.length);
   }, [items.length]);
 
@@ -141,8 +132,14 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     statusTimeoutRef.current = setTimeout(() => setShowStatus(false), 800);
   }, []);
 
-  const togglePlayPause = useCallback(() => {
-    if (swiped.current) return;
+  const togglePlayPause = useCallback((e) => {
+    // Solo toggle si NO es un swipe
+    if (swiped.current) {
+      swiped.current = false;
+      return;
+    }
+    
+    e.stopPropagation();
     setIsPaused(prev => !prev);
     showStatusIndicator();
   }, [showStatusIndicator]);
@@ -157,6 +154,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
     swiped.current = false;
   }, []);
 
@@ -166,13 +164,17 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
 
   const handleTouchEnd = useCallback(() => {
     const distance = touchStartX.current - touchEndX.current;
-    if (distance > swipeThreshold) {
-      handleNext();
+    const absDistance = Math.abs(distance);
+    
+    if (absDistance > swipeThreshold) {
       swiped.current = true;
-    } else if (distance < -swipeThreshold) {
-      handlePrev();
-      swiped.current = true;
+      if (distance > 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
     }
+    
     touchStartX.current = 0;
     touchEndX.current = 0;
   }, [handleNext, handlePrev]);
@@ -187,46 +189,75 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
     <div className="fixed inset-0 z-50 md:hidden bg-slate-950 text-slate-50 flex flex-col">
       <div
         className="relative flex-1 overflow-hidden bg-slate-900"
-        onClick={togglePlayPause}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Video/Image - NO usar key con activeIndex para evitar remount */}
-        {isPlayableVideo ? (
-          <video
+        <AnimatePresence initial={false} custom={swipeDirection} mode="wait">
+          <motion.div
             key={itemId}
-            ref={videoRef}
-            src={item.url}
-            autoPlay
-            playsInline
-            poster={thumb}
-            className="absolute inset-0 w-full h-full object-contain"
-            style={{ opacity: videoReady ? 1 : 0 }}
-            onCanPlay={() => setVideoReady(true)}
-            onError={() => setVideoReady(false)}
-            onEnded={handleNext}
-            onTimeUpdate={handleTimeUpdate}
-          />
-        ) : (
-          thumb ? (
-            <img src={thumb} alt={item.title || "Reel"} className="w-full h-full object-cover" draggable={false} />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-400">Reel</div>
-          )
-        )}
+            custom={swipeDirection}
+            initial={(direction) => ({
+              x: direction > 0 ? 300 : -300,
+              opacity: 0.5
+            })}
+            animate={{
+              x: 0,
+              opacity: 1
+            }}
+            exit={(direction) => ({
+              x: direction < 0 ? 300 : -300,
+              opacity: 0.5
+            })}
+            transition={{
+              x: { type: "tween", duration: 0.3, ease: "easeOut" },
+              opacity: { duration: 0.2 }
+            }}
+            className="absolute inset-0 w-full h-full"
+          >
+            {/* Área clickeable para pause/play */}
+            <div 
+              className="absolute inset-0 w-full h-full z-10"
+              onClick={togglePlayPause}
+            />
 
-        {/* Play/Pause indicator */}
-        {showStatus && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-20">
-            <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
-          </div>
-        )}
+            {/* Video/Image */}
+            {isPlayableVideo ? (
+              <video
+                ref={videoRef}
+                src={item.url}
+                autoPlay
+                playsInline
+                poster={thumb}
+                className="absolute inset-0 w-full h-full object-contain"
+                style={{ opacity: videoReady ? 1 : 0 }}
+                onCanPlay={() => setVideoReady(true)}
+                onError={() => setVideoReady(false)}
+                onEnded={handleNext}
+                onTimeUpdate={handleTimeUpdate}
+              />
+            ) : (
+              thumb ? (
+                <img src={thumb} alt={item.title || "Reel"} className="w-full h-full object-cover" draggable={false} />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-400">Reel</div>
+              )
+            )}
 
-        {/* Reacciones */}
+            {/* Play/Pause indicator */}
+            {showStatus && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-30">
+                <span className="text-white text-6xl drop-shadow-lg">{isPaused ? '❚❚' : '►'}</span>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Reacciones - fuera de motion.div para que no se animen */}
         <div
           className="absolute right-4 bottom-24 z-40 flex flex-col gap-4 items-center"
           onTouchStart={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
           {REACTION_ORDER.map((key) => {
             const reaction = REACTIONS[key];
@@ -258,10 +289,10 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         </div>
 
         {/* Gradiente inferior */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none z-20" />
         
         {/* Barra de progreso */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-10">
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-30">
           <div 
             className="h-full bg-white transition-all duration-100" 
             style={{ width: `${progress}%` }} 
@@ -278,7 +309,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         </button>
 
         {/* Info del video */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3 pointer-events-none">
+        <div className="absolute bottom-4 left-4 right-4 z-30 flex items-end justify-between gap-3 pointer-events-none">
           <div className="text-left space-y-1 drop-shadow">
             <div className="text-sm font-semibold">
               {item.title || item.authorName || "Reel"}
