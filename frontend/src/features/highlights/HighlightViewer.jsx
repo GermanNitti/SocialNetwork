@@ -193,25 +193,26 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <AnimatePresence initial={false} custom={swipeDirection} mode="wait">
+        <AnimatePresence initial={false} custom={swipeDirection} mode="popLayout">
           <motion.div
             key={itemId}
             custom={swipeDirection}
             initial={(direction) => ({
-              x: direction > 0 ? 300 : -300,
-              opacity: 0.5
+              x: direction > 0 ? '100%' : '-100%',
+              opacity: 0.8
             })}
             animate={{
               x: 0,
               opacity: 1
             }}
             exit={(direction) => ({
-              x: direction < 0 ? 300 : -300,
-              opacity: 0.5
+              x: direction > 0 ? '-100%' : '100%',
+              opacity: 0
             })}
             transition={{
-              x: { type: "tween", duration: 0.3, ease: "easeOut" },
-              opacity: { duration: 0.2 }
+              type: "tween",
+              duration: 0.25,
+              ease: [0.32, 0.72, 0, 1]
             }}
             className="absolute inset-0 w-full h-full"
           >
