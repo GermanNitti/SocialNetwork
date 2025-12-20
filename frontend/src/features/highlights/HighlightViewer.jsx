@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from '../../constants/reactions';
 
@@ -15,6 +16,7 @@ export default function HighlightViewer({ open, items = [], index = 0, onClose, 
   const [userReaction, setUserReaction] = useState(null);
   const [reactionCounts, setReactionCounts] = useState({});
   const [reactionCache, setReactionCache] = useState({});
+  const [swipeDirection, setSwipeDirection] = useState(0);
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
