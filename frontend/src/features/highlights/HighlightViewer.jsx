@@ -14,6 +14,7 @@ export default function HighlightViewer({
   const [activeIndex, setActiveIndex] = useState(index);
   const [videoReady, setVideoReady] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -57,13 +58,17 @@ export default function HighlightViewer({
     }
   }, [itemId]);
 
+  // 🎯 control centralizado de reproducción
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !videoReady) return;
 
-    if (isPaused) v.pause();
-    else v.play().catch(() => {});
-  }, [isPaused, videoReady]);
+    if (isPaused || isSwiping) {
+      v.pause();
+    } else {
+      v.play().catch(() => {});
+    }
+  }, [isPaused, isSwiping, videoReady]);
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
@@ -82,10 +87,11 @@ export default function HighlightViewer({
   const togglePlayPause = useCallback(
     (e) => {
       e.stopPropagation();
+      if (isSwiping) return;
       setIsPaused((prev) => !prev);
       showStatusIndicator();
     },
-    [showStatusIndicator]
+    [isSwiping, showStatusIndicator]
   );
 
   const handleTimeUpdate = useCallback((e) => {
@@ -101,7 +107,6 @@ export default function HighlightViewer({
       if (!itemId) return;
 
       const prevReaction = userReaction;
-      const prevCounts = { ...reactionCounts };
       const newCounts = { ...reactionCounts };
 
       let newReaction = null;
@@ -150,6 +155,9 @@ export default function HighlightViewer({
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
           style={{ x }}
+          onDragStart={() => {
+            setIsSwiping(true);
+          }}
           onDragEnd={(e, info) => {
             const { offset, velocity } = info;
 
@@ -160,6 +168,7 @@ export default function HighlightViewer({
             }
 
             x.set(0);
+            setIsSwiping(false);
           }}
           transition={{ type: "spring", stiffness: 320, damping: 32 }}
           className="absolute inset-0 w-full h-full"
@@ -175,7 +184,6 @@ export default function HighlightViewer({
             <video
               ref={videoRef}
               src={item.url}
-              autoPlay
               playsInline
               poster={thumb}
               className="absolute inset-0 w-full h-full object-contain"
