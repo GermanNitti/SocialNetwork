@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, AnimatePresence } from "framer-motion";
 import { MODES } from "./ModeConfig";
 import { REACTIONS, REACTION_ORDER } from "../../constants/reactions";
 
@@ -19,6 +19,7 @@ export default function HighlightViewer({
   const [progress, setProgress] = useState(0);
 
   const videoRef = useRef(null);
+  const preloadRef = useRef(null);
   const statusTimeoutRef = useRef(null);
 
   const [userReaction, setUserReaction] = useState(null);
@@ -29,8 +30,20 @@ export default function HighlightViewer({
   const x = useMotionValue(0);
 
   const item = items[activeIndex];
+  const nextItem = items[(activeIndex + 1) % items.length];
   const itemId = item?.id;
   const accent = MODES[mode]?.accent || "#3B82F6";
+
+  /* ================= BUFFER INTELIGENTE ================= */
+  const connection =
+    typeof navigator !== "undefined" ? navigator.connection?.effectiveType : null;
+
+  const preloadStrategy =
+    connection === "2g"
+      ? "none"
+      : connection === "3g"
+      ? "metadata"
+      : "auto";
 
   const formatCount = (num) => {
     if (num > 9999) return `${(num / 1000).toFixed(1)}mil`;
@@ -58,7 +71,7 @@ export default function HighlightViewer({
     }
   }, [itemId]);
 
-  // 🎯 control centralizado de reproducción
+  /* ================= CONTROL CENTRAL DE REPRODUCCIÓN ================= */
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !videoReady) return;
@@ -69,6 +82,16 @@ export default function HighlightViewer({
       v.play().catch(() => {});
     }
   }, [isPaused, isSwiping, videoReady]);
+
+  /* ================= PRECARGA DEL SIGUIENTE VIDEO ================= */
+  useEffect(() => {
+    if (!nextItem || nextItem.type !== "video") return;
+    if (!preloadRef.current) return;
+
+    preloadRef.current.src = nextItem.url;
+    preloadRef.current.preload = preloadStrategy;
+    preloadRef.current.muted = true;
+  }, [nextItem, preloadStrategy]);
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
@@ -153,24 +176,22 @@ export default function HighlightViewer({
           key={itemId}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.2}
+          dragElastic={0.15}
           style={{ x }}
-          onDragStart={() => {
-            setIsSwiping(true);
-          }}
+          onDragStart={() => setIsSwiping(true)}
           onDragEnd={(e, info) => {
             const { offset, velocity } = info;
 
-            if (offset.x < -80 || velocity.x < -500) {
+            if (offset.x < -80 || velocity.x < -600) {
               handleNext();
-            } else if (offset.x > 80 || velocity.x > 500) {
+            } else if (offset.x > 80 || velocity.x > 600) {
               handlePrev();
             }
 
             x.set(0);
             setIsSwiping(false);
           }}
-          transition={{ type: "spring", stiffness: 320, damping: 32 }}
+          transition={{ type: "spring", stiffness: 380, damping: 34 }}
           className="absolute inset-0 w-full h-full"
         >
           {/* Área pause/play */}
@@ -179,31 +200,43 @@ export default function HighlightViewer({
             onClick={togglePlayPause}
           />
 
-          {/* Video / Image */}
-          {isPlayableVideo ? (
-            <video
-              ref={videoRef}
-              src={item.url}
-              playsInline
-              poster={thumb}
-              className="absolute inset-0 w-full h-full object-contain"
-              style={{ opacity: videoReady ? 1 : 0 }}
-              onCanPlay={() => setVideoReady(true)}
-              onEnded={handleNext}
-              onTimeUpdate={handleTimeUpdate}
-            />
-          ) : thumb ? (
-            <img
-              src={thumb}
-              alt={item.title || "Reel"}
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-400">
-              Reel
-            </div>
-          )}
+          {/* Video / Image con crossfade */}
+          <AnimatePresence mode="wait">
+            {isPlayableVideo ? (
+              <motion.video
+                key={itemId}
+                ref={videoRef}
+                src={item.url}
+                playsInline
+                poster={thumb}
+                preload="auto"
+                className="absolute inset-0 w-full h-full object-contain"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: videoReady ? 1 : 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                onCanPlay={() => setVideoReady(true)}
+                onEnded={handleNext}
+                onTimeUpdate={handleTimeUpdate}
+              />
+            ) : thumb ? (
+              <motion.img
+                key={itemId}
+                src={thumb}
+                alt={item.title || "Reel"}
+                className="absolute inset-0 w-full h-full object-cover"
+                draggable={false}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-slate-400">
+                Reel
+              </div>
+            )}
+          </AnimatePresence>
 
           {/* Play / Pause indicator */}
           {showStatus && (
@@ -303,6 +336,9 @@ export default function HighlightViewer({
           {item.contentType || item.type || ""}
         </div>
       </div>
+
+      {/* PRELOAD INVISIBLE */}
+      <video ref={preloadRef} className="hidden" />
     </div>,
     document.body
   );
