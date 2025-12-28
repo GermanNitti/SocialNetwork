@@ -14,14 +14,6 @@ const avatarStorage = multer.diskStorage({
   },
 });
 
-const profileVideoStorage = multer.diskStorage({
-  destination: path.join(__dirname, "../../uploads/profile_videos"),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `profile-video-${req.userId}-${Date.now()}${ext}`);
-  },
-});
-
 const coverStorage = multer.diskStorage({
   destination: path.join(__dirname, "../../uploads/covers"),
   filename: (req, file, cb) => {
@@ -31,30 +23,7 @@ const coverStorage = multer.diskStorage({
 });
 
 const uploadAvatar = multer({ storage: avatarStorage });
-const uploadProfileVideo = multer({
-  storage: profileVideoStorage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
-  fileFilter: (req, file, cb) => {
-    const allowed = ["video/mp4", "video/webm"];
-    if (!allowed.includes(file.mimetype)) {
-      return cb(new Error("Tipo de video inválido"));
-    }
-    cb(null, true);
-  },
-});
-
 const uploadCover = multer({ storage: coverStorage });
-const uploadCoverVideo = multer({
-  storage: coverStorage,
-  limits: { fileSize: 20 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const allowed = ["video/mp4", "video/webm"];
-    if (!allowed.includes(file.mimetype)) {
-      return cb(new Error("Tipo de video inválido"));
-    }
-    cb(null, true);
-  },
-});
 
 const sanitizeUser = (user) => {
   if (!user) return null;
@@ -127,11 +96,7 @@ router.get("/:username", optionalAuth, async (req, res) => {
       location: true,
       interests: true,
       hasCompletedOnboarding: true,
-      profileVideoUrl: true,
-      profileVideoThumbnailUrl: true,
-      useVideoAvatar: true,
       coverImageUrl: true,
-      coverVideoUrl: true,
       createdAt: true,
       _count: { select: { posts: true } },
       userBadges: {
@@ -263,50 +228,6 @@ router.put("/me/avatar", requireAuth, uploadAvatar.single("avatar"), async (req,
   res.json({ user: sanitizeUser(updated) });
 });
 
-router.put("/me/profile-video", requireAuth, uploadProfileVideo.single("profileVideo"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No se adjuntó archivo de video" });
-  }
-  try {
-    const rawStart = Number(req.body.start);
-    const rawEnd = Number(req.body.end);
-    const rawLength = Number(req.body.length);
-    const start = Number.isFinite(rawStart) && rawStart >= 0 ? rawStart : 0;
-    const desiredLength = Number.isFinite(rawLength)
-      ? rawLength
-      : Number.isFinite(rawEnd)
-        ? rawEnd - start
-        : 3;
-    const clipLength = Math.min(5, Math.max(3, desiredLength || 3));
-    const computedEnd = Number.isFinite(rawEnd) ? rawEnd : start + clipLength;
-    const end = Math.min(start + 5, computedEnd);
-    const videoPath = path.join("uploads/profile_videos", req.file.filename).replace(/\\/g, "/");
-    const finalPath = end ? `${videoPath}#t=${Math.max(0, start)},${Math.max(0, end)}` : videoPath;
-    const updated = await prisma.user.update({
-      where: { id: req.userId },
-      data: { profileVideoUrl: finalPath, useVideoAvatar: true },
-    });
-    res.json({ user: sanitizeUser(updated) });
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error(err);
-    res.status(500).json({ message: "Error al subir video de perfil" });
-  }
-});
-
-router.put("/me/avatar-mode", requireAuth, async (req, res) => {
-  const { useVideoAvatar } = req.body;
-  const user = await prisma.user.findUnique({ where: { id: req.userId } });
-  if (useVideoAvatar && !user.profileVideoUrl) {
-    return res.status(400).json({ message: "No tienes video de perfil para activar el modo video" });
-  }
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { useVideoAvatar: !!useVideoAvatar },
-  });
-  res.json({ user: sanitizeUser(updated) });
-});
-
 router.put("/me/cover", requireAuth, uploadCover.single("coverImage"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No se adjuntó archivo de portada" });
@@ -315,31 +236,6 @@ router.put("/me/cover", requireAuth, uploadCover.single("coverImage"), async (re
   const updated = await prisma.user.update({
     where: { id: req.userId },
     data: { coverImageUrl: coverPath },
-  });
-  res.json({ user: sanitizeUser(updated) });
-});
-
-router.put("/me/cover-video", requireAuth, uploadCoverVideo.single("coverVideo"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No se adjuntó archivo de video de portada" });
-  }
-  const rawStart = Number(req.body.start);
-  const rawEnd = Number(req.body.end);
-  const rawLength = Number(req.body.length);
-  const start = Number.isFinite(rawStart) && rawStart >= 0 ? rawStart : 0;
-  const desiredLength = Number.isFinite(rawLength)
-    ? rawLength
-    : Number.isFinite(rawEnd)
-      ? rawEnd - start
-      : 3;
-  const clipLength = Math.min(5, Math.max(3, desiredLength || 3));
-  const computedEnd = Number.isFinite(rawEnd) ? rawEnd : start + clipLength;
-  const end = Math.min(start + 5, computedEnd);
-  const coverPath = path.join("uploads/covers", req.file.filename).replace(/\\/g, "/");
-  const finalPath = end ? `${coverPath}#t=${Math.max(0, start)},${Math.max(0, end)}` : coverPath;
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { coverVideoUrl: finalPath },
   });
   res.json({ user: sanitizeUser(updated) });
 });
@@ -560,6 +456,57 @@ router.get("/me/suggested", requireAuth, async (req, res) => {
     // eslint-disable-next-line no-console
     console.error(err);
     res.status(500).json({ error: "Error loading suggested users" });
+  }
+});
+
+router.get("/export", requireAuth, async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        username: true,
+        name: true,
+        email: true,
+        bio: true,
+        location: true,
+        interests: true,
+        createdAt: true,
+        points: true,
+        hasCompletedOnboarding: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    let content = "LISTA DE USUARIOS REGISTRADOS\n";
+    content += "=".repeat(50) + "\n\n";
+    content += `Total de usuarios: ${users.length}\n\n`;
+
+    users.forEach((user, index) => {
+      content += `${index + 1}. ${user.name} (@${user.username})\n`;
+      content += `   Email: ${user.email}\n`;
+      if (user.bio) {
+        content += `   Bio: ${user.bio}\n`;
+      }
+      if (user.location) {
+        content += `   Ubicación: ${user.location}\n`;
+      }
+      if (user.interests && user.interests.length > 0) {
+        content += `   Intereses: ${user.interests.join(", ")}\n`;
+      }
+      content += `   Puntos: ${user.points}\n`;
+      content += `   Onboarding completado: ${user.hasCompletedOnboarding ? "Sí" : "No"}\n`;
+      content += `   Fecha de registro: ${new Date(user.createdAt).toLocaleString()}\n`;
+      content += "-".repeat(40) + "\n";
+    });
+
+    const filename = `usuarios_export_${new Date().toISOString().split("T")[0]}.txt`;
+
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(content);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    res.status(500).json({ error: "Error al exportar usuarios" });
   }
 });
 

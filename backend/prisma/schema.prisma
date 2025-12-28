@@ -49,11 +49,7 @@ model User {
   theme                Theme?     @relation(fields: [themeId], references: [id])
   userItems            UserItem[]
   interactions         UserInteraction[]
-  profileVideoUrl          String?
-  profileVideoThumbnailUrl String?
-  useVideoAvatar           Boolean @default(false)
   coverImageUrl            String?
-  coverVideoUrl            String?
   termStats               UserTermStats[]
   relationsAsUser1        UserRelation[] @relation("UserRelationUser1")
   relationsAsUser2        UserRelation[] @relation("UserRelationUser2")

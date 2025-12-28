@@ -1,19 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import api, { API_BASE_URL } from "../api/client";
 import Avatar from "../components/Avatar";
 import PostCard from "../components/PostCard";
 import { useAuth } from "../context/AuthContext";
-
-const parseTimeRange = (src = "") => {
-  const match = src.match(/#t=([\d.]+),?([\d.]*)/);
-  if (!match) return { cleanSrc: src, start: 0, end: null };
-  const start = parseFloat(match[1]) || 0;
-  const end = match[2] ? parseFloat(match[2]) : null;
-  const cleanSrc = src.split("#")[0];
-  return { cleanSrc, start, end };
-};
 
 export default function Profile() {
   const { username } = useParams();
@@ -35,7 +26,6 @@ export default function Profile() {
   const [editingProject, setEditingProject] = useState(null);
   const [showProjectPosts, setShowProjectPosts] = useState(false);
   const [projectPosts, setProjectPosts] = useState([]);
-  const coverVideoRef = useRef(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["profile", username],
@@ -72,8 +62,6 @@ export default function Profile() {
   const profile = data?.user;
   const posts = data?.posts || [];
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
-  const coverVideoSrc = profile?.coverVideoUrl ? `${mediaBase}/${profile.coverVideoUrl}` : null;
-  const parsedCoverVideo = coverVideoSrc ? parseTimeRange(coverVideoSrc) : null;
 
   useEffect(() => {
     if (data?.user) {
@@ -85,28 +73,6 @@ export default function Profile() {
       setLocationDraft(data.user.location || "");
     }
   }, [data]);
-
-  useEffect(() => {
-    if (!parsedCoverVideo || !coverVideoRef.current) return;
-    const video = coverVideoRef.current;
-    const start = parsedCoverVideo.start || 0;
-    const end = parsedCoverVideo.end;
-    const handleLoaded = () => {
-      video.currentTime = start;
-    };
-    const handleTimeUpdate = () => {
-      if (end && video.currentTime >= end - 0.05) {
-        video.currentTime = start;
-        video.play();
-      }
-    };
-    video.addEventListener("loadedmetadata", handleLoaded);
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => {
-      video.removeEventListener("loadedmetadata", handleLoaded);
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-    };
-  }, [parsedCoverVideo]);
 
   const sendRequest = useMutation({
     mutationFn: async () => {
@@ -347,17 +313,7 @@ export default function Profile() {
     <div className="max-w-4xl mx-auto space-y-5">
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
         <div className="h-32 w-full rounded-t-2xl overflow-hidden bg-gradient-to-r from-indigo-100 to-slate-200 dark:from-slate-800 dark:to-slate-700">
-          {parsedCoverVideo ? (
-            <video
-              ref={coverVideoRef}
-              src={parsedCoverVideo.cleanSrc}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          ) : profile.coverImageUrl ? (
+          {profile.coverImageUrl ? (
             <img src={`${mediaBase}/${profile.coverImageUrl}`} alt="Portada" className="w-full h-full object-cover" />
           ) : null}
         </div>
