@@ -6,6 +6,7 @@ import PostCard from "../components/PostCard";
 import { FeedTabs } from "../components/feed/FeedTabs";
 import { RightSidebar } from "../components/layout/RightSidebar";
 import MobileHighlightsSection from "../features/highlights/MobileHighlightsSection";
+import { FeedSkeleton } from "../components/Skeleton";
 
 export default function Feed() {
   const [mode, setMode] = useState("forYou"); // forYou | squads | help | explore
@@ -47,11 +48,7 @@ export default function Feed() {
         <section className="space-y-4">
           <FeedTabs active={mode} onChange={setMode} />
 
-          {isLoading && (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center text-slate-500">
-              Cargando publicaciones...
-            </div>
-          )}
+          {isLoading && <FeedSkeleton count={3} />}
           {!isLoading && posts.length === 0 && (
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center text-slate-500">
               Aún no hay publicaciones. ¡Crea la primera!

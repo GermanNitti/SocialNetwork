@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "../api/client";
 import Avatar from "./Avatar";
+import { UserSkeleton } from "./Skeleton";
 
 export default function SuggestedUsers({ limit = 6 }) {
   const { data, isLoading } = useQuery({
@@ -15,13 +16,13 @@ export default function SuggestedUsers({ limit = 6 }) {
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
       <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Gente como vos</h3>
-      {isLoading && <div className="text-sm text-slate-500">Cargando...</div>}
+      {isLoading && <UserSkeleton count={3} />}
       <div className="space-y-3">
         {data?.map((u) => (
           <Link
             key={u.id}
             to={`/profile/${u.username}`}
-            className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors duration-200"
           >
             <Avatar user={{ ...u, avatar: u.avatar }} size={36} />
             <div className="flex-1">

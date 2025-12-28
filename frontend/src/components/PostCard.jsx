@@ -248,11 +248,15 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
 
           {post.image && (
             <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-              <img
+              <motion.img
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
                 src={getImageUrl(post.image)}
                 alt="Post"
                 className="w-full object-cover max-h-96 cursor-pointer"
                 onClick={() => open(getImageUrl(post.image), "Imagen")}
+                loading="lazy"
               />
             </div>
           )}
@@ -283,8 +287,10 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
           {/* Zona que controla el hover para desplegar comentarios (excluye el área del input) */}
           <div className="flex flex-wrap items-center gap-2">
             {REACTION_ORDER.map((key) => (
-              <button
+              <motion.button
                 key={key}
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.05 }}
                 onClick={() => {
                   setReaction(key);
                   if (reactionHintTimeout.current) clearTimeout(reactionHintTimeout.current);
@@ -301,12 +307,15 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
                 <span>{REACTIONS[key].icon}</span>
                 <span className="hidden sm:inline">{REACTIONS[key].label}</span>
                 <span className="font-semibold">{post.reactions?.[key] ?? 0}</span>
-              </button>
+              </motion.button>
             ))}
             <div className="ml-auto flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-100 dark:border-indigo-700 text-xs font-semibold">
+              <motion.span
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-100 dark:border-indigo-700 text-xs font-semibold"
+              >
                 💬 {post._count?.comments ?? allComments.length ?? 0}
-              </span>
+              </motion.span>
             </div>
             {post.author?.id === user?.id && !editingPost && (
               <button

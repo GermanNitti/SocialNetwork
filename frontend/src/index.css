@@ -174,4 +174,94 @@ a {
   }
 }
 
+/* Micro-interacciones optimizadas */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"] {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+button:active,
+a:active,
+[role="button"]:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* Animaciones 60fps optimizadas */
+.smooth-transition {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+/* Glassmorphism consistente */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar personalizado suave */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.6);
+}
+
+/* Skeleton animation */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.animate-skeleton {
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Optimización de imágenes img[loading="lazy"] {
+  content-visibility: auto;
+}
+
+/* Touch feedback en móvil */
+@media (pointer: coarse) {
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.94);
+  }
+}
 

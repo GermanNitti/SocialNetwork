@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "../api/client";
 import { useLightbox } from "../context/LightboxContext";
+import { motion } from "framer-motion";
 
 export default function Avatar({ user, size = 48, className = "" }) {
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
@@ -42,7 +43,9 @@ export default function Avatar({ user, size = 48, className = "" }) {
         }}
       />
       {/* Avatar */}
-      <div
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         className={`relative rounded-full bg-slate-200 overflow-hidden flex items-center justify-center text-slate-700 font-semibold ${
           imgSrc ? "cursor-pointer" : ""
         }`}
@@ -52,11 +55,16 @@ export default function Avatar({ user, size = 48, className = "" }) {
         }}
       >
         {imgSrc ? (
-          <img src={imgSrc} alt={user?.name || "avatar"} className="w-full h-full object-cover" />
+          <img
+            src={imgSrc}
+            alt={user?.name || "avatar"}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
         ) : (
           <span>{initials}</span>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
