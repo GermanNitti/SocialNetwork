@@ -1,34 +1,70 @@
-El problema persiste y estoy seguro de que es porque definimos el componente `ReelPlayer` DENTRO de `HighlightViewer`. Esto causa que el video se desmonte y remonte en cada render del padre.
-
-Por favor, reestructura `frontend/src/features/highlights/HighlightViewer.jsx` siguiendo estos pasos EXHAUSTIVOS:
-
-1. **MOVER EL COMPONENTE (CRÍTICO):**
-   - Mueve la definición de `const ReelPlayer = memo(...)` **FUERA** de la función `HighlightViewer`. Debe estar al nivel superior del archivo (top-level), antes o después del `export default`.
-
-2. **DEFINICIÓN DE `ReelPlayer`:**
-   - Asegúrate de que reciba las props: `({ src, poster, isActive, onNext, onTimeUpdate, togglePlayPause })`.
-   - Mantén el `useRef` del video y el `useEffect` de control de reproducción DENTRO de `ReelPlayer`.
-   - **IMPORTANTE:** Mantén el segundo argumento de `memo` (el comparador personalizado) para que solo se actualice si cambia `src` o `isActive`.
-
-   ```javascript
-   const ReelPlayer = memo(({ src, poster, isActive, onNext, onTimeUpdate, togglePlayPause }) => {
-       const videoRef = useRef(null);
-       
-       // Lógica de play/pause basada en isActive...
-       // useEffect para eventos...
-
-       return (
-           <div className="relative flex-1 overflow-hidden bg-slate-900" onClick={togglePlayPause}>
-               <video 
-                   ref={videoRef}
-                   src={src}
-                   className="absolute inset-0 w-full h-full object-contain"
-                   // ... atributos ...
-               />
-               {/* Poster o placeholder si es necesario */}
-           </div>
-       );
-   }, (prev, next) => {
-       // Retorna TRUE si NO debe renderizarse de nuevo
-       return prev.src === next.src && prev.isActive === next.isActive;
-   });
+The database is already in sync with the Prisma schema.
+==> Uploading build...
+==> Uploaded in 114.7s. Compression took 3.2s
+==> Build successful 🎉
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Deploying...
+==> Running 'npm start'
+> backend@1.0.0 start
+> node src/server.js
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+node:internal/modules/cjs/loader:1404
+  throw err;
+  ^
+Error: Cannot find module 'cloudinary'
+Require stack:
+- /opt/render/project/src/backend/src/services/cloudinaryService.js
+- /opt/render/project/src/backend/src/routes/users.js
+- /opt/render/project/src/backend/src/server.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (/opt/render/project/src/backend/src/services/cloudinaryService.js:1:20)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/opt/render/project/src/backend/src/services/cloudinaryService.js',
+    '/opt/render/project/src/backend/src/routes/users.js',
+    '/opt/render/project/src/backend/src/server.js'
+  ]
+}
+Node.js v22.16.0
+==> Exited with status 1
+==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+==> Running 'npm start'
+> backend@1.0.0 start
+> node src/server.js
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+node:internal/modules/cjs/loader:1404
+  throw err;
+  ^
+Error: Cannot find module 'cloudinary'
+Require stack:
+- /opt/render/project/src/backend/src/services/cloudinaryService.js
+- /opt/render/project/src/backend/src/routes/users.js
+- /opt/render/project/src/backend/src/server.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (/opt/render/project/src/backend/src/services/cloudinaryService.js:1:20)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/opt/render/project/src/backend/src/services/cloudinaryService.js',
+    '/opt/render/project/src/backend/src/routes/users.js',
+    '/opt/render/project/src/backend/src/server.js'
+  ]
+}
+Node.js v22.16.0
