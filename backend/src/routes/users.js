@@ -3,27 +3,13 @@ const multer = require("multer");
 const path = require("path");
 const prisma = require("../prisma");
 const { requireAuth, optionalAuth } = require("../middleware/auth");
+const { uploadToCloudinary } = require("../services/cloudinaryService");
 
 const router = express.Router();
 
-const avatarStorage = multer.diskStorage({
-  destination: path.join(__dirname, "../../uploads/avatars"),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `avatar-${req.userId}-${Date.now()}${ext}`);
-  },
-});
-
-const coverStorage = multer.diskStorage({
-  destination: path.join(__dirname, "../../uploads/covers"),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `cover-${req.userId}-${Date.now()}${ext}`);
-  },
-});
-
-const uploadAvatar = multer({ storage: avatarStorage });
-const uploadCover = multer({ storage: coverStorage });
+const storage = multer.memoryStorage();
+const uploadAvatar = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+const uploadCover = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 const sanitizeUser = (user) => {
   if (!user) return null;
@@ -218,26 +204,35 @@ router.put("/me/avatar", requireAuth, uploadAvatar.single("avatar"), async (req,
     return res.status(400).json({ message: "No se adjuntó archivo" });
   }
 
-  const avatarPath = path.join("uploads/avatars", req.file.filename).replace(/\\/g, "/");
-
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { avatar: avatarPath },
-  });
-
-  res.json({ user: sanitizeUser(updated) });
+  try {
+    const avatarUrl = await uploadToCloudinary(req.file.buffer, "avatars", "image");
+    const updated = await prisma.user.update({
+      where: { id: req.userId },
+      data: { avatar: avatarUrl },
+    });
+    res.json({ user: sanitizeUser(updated) });
+  } catch (error) {
+    console.error("Error uploading avatar:", error);
+    res.status(500).json({ message: "Error al subir avatar" });
+  }
 });
 
 router.put("/me/cover", requireAuth, uploadCover.single("coverImage"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No se adjuntó archivo de portada" });
   }
-  const coverPath = path.join("uploads/covers", req.file.filename).replace(/\\/g, "/");
-  const updated = await prisma.user.update({
-    where: { id: req.userId },
-    data: { coverImageUrl: coverPath },
-  });
-  res.json({ user: sanitizeUser(updated) });
+
+  try {
+    const coverUrl = await uploadToCloudinary(req.file.buffer, "covers", "image");
+    const updated = await prisma.user.update({
+      where: { id: req.userId },
+      data: { coverImageUrl: coverUrl },
+    });
+    res.json({ user: sanitizeUser(updated) });
+  } catch (error) {
+    console.error("Error uploading cover:", error);
+    res.status(500).json({ message: "Error al subir portada" });
+  }
 });
 
 router.put("/me/interests", requireAuth, async (req, res) => {

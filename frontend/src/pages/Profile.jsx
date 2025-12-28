@@ -63,6 +63,14 @@ export default function Profile() {
   const posts = data?.posts || [];
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    return `${mediaBase}/${imagePath}`;
+  };
+
   useEffect(() => {
     if (data?.user) {
       setRelationForm({
@@ -314,7 +322,7 @@ export default function Profile() {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
         <div className="h-32 w-full rounded-t-2xl overflow-hidden bg-gradient-to-r from-indigo-100 to-slate-200 dark:from-slate-800 dark:to-slate-700">
           {profile.coverImageUrl ? (
-            <img src={`${mediaBase}/${profile.coverImageUrl}`} alt="Portada" className="w-full h-full object-cover" />
+            <img src={getImageUrl(profile.coverImageUrl)} alt="Portada" className="w-full h-full object-cover" />
           ) : null}
         </div>
         <div className="p-6">

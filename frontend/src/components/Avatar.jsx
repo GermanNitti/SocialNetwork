@@ -3,7 +3,14 @@ import { useLightbox } from "../context/LightboxContext";
 
 export default function Avatar({ user, size = 48, className = "" }) {
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
-  const imgSrc = user?.avatar ? `${mediaBase}/${user.avatar}` : null;
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    return `${mediaBase}/${imagePath}`;
+  };
+  const imgSrc = user?.avatar ? getImageUrl(user.avatar) : null;
   const initials = user?.name ? user.name.charAt(0).toUpperCase() : "?";
   const { open } = useLightbox();
   const ringColors = {

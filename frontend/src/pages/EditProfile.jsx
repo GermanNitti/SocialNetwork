@@ -17,6 +17,14 @@ export default function EditProfile() {
   const [message, setMessage] = useState(null);
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    return `${mediaBase}/${imagePath}`;
+  };
+
   useEffect(() => {
     if (user) {
       setForm({
@@ -98,7 +106,7 @@ export default function EditProfile() {
             {coverPreview ? (
               <img src={coverPreview} alt="Portada" className="w-full h-full object-cover" />
             ) : user?.coverImageUrl ? (
-              <img src={`${mediaBase}/${user.coverImageUrl}`} alt="Portada" className="w-full h-full object-cover" />
+              <img src={getImageUrl(user.coverImageUrl)} alt="Portada" className="w-full h-full object-cover" />
             ) : null}
           </div>
           <label className="text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer">
@@ -198,7 +206,7 @@ export default function EditProfile() {
       </form>
       {user?.avatar && (
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
-          Ruta de avatar actual: {`${mediaBase}/${user.avatar}`}
+          Avatar actual: {getImageUrl(user.avatar)}
         </p>
       )}
     </div>

@@ -31,6 +31,14 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
   const currentReaction = post.userReaction;
   const { style } = useCardStyle();
   const { open } = useLightbox();
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    return `${mediaBase}/${imagePath}`;
+  };
   const safeHashtags = Array.isArray(post.hashtags)
     ? post.hashtags.filter((h) => typeof h === "string" && h.trim())
     : [];
@@ -241,10 +249,10 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
           {post.image && (
             <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
               <img
-                src={`${mediaBase}/${post.image}`}
+                src={getImageUrl(post.image)}
                 alt="Post"
                 className="w-full object-cover max-h-96 cursor-pointer"
-                onClick={() => open(`${mediaBase}/${post.image}`, "Imagen")}
+                onClick={() => open(getImageUrl(post.image), "Imagen")}
               />
             </div>
           )}
