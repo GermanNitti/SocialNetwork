@@ -20,6 +20,7 @@ import MobileHeader from "./components/MobileHeader";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import UserSearch from "./components/UserSearch";
+import ToastProvider from "./context/ToastContext";
 
 function App() {
   const { user, loading } = useAuth();
@@ -81,15 +82,16 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen pb-16 md:pb-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-      {user && (
-        <>
-          <div className="hidden md:block">
-            <NavBar />
-          </div>
-          <MobileHeader />
-        </>
-      )}
+    <ToastProvider>
+      <div className="min-h-screen pb-16 md:pb-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
+        {user && (
+          <>
+            <div className="hidden md:block">
+              <NavBar />
+            </div>
+            <MobileHeader />
+          </>
+        )}
       <div className="max-w-5xl mx-auto px-4 py-6">
         {user && !user.hasCompletedOnboarding ? (
           <OnboardingWizard />
@@ -178,7 +180,7 @@ function App() {
       {user && (
         <MobileBottomNav activeTab={resolveTab()} onChange={handleTabChange} />
       )}
-      {user && mobileSearchOpen && (
+       {user && mobileSearchOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-sm md:hidden">
           <div className="p-4">
             <div className="flex justify-between items-center mb-3 text-slate-100">
@@ -196,7 +198,8 @@ function App() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </ToastProvider>
   );
 }
 

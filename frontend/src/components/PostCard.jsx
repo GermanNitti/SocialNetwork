@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import { REACTIONS, REACTION_ORDER } from "../constants/reactions";
 import useCardStyle from "../hooks/useCardStyle";
 import { useLightbox } from "../context/LightboxContext";
+import { useToast } from "../context/ToastContext";
 
 export default function PostCard({ post, showHelpHighlight = false, onCommentAdded, onPostUpdated }) {
   const queryClient = useQueryClient();
@@ -31,18 +32,26 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
   const currentReaction = post.userReaction;
   const { style } = useCardStyle();
   const { open } = useLightbox();
+  const toast = useToast();
 
-  const getImageUrl = (imagePath) => {
+  const getImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null;
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
       return imagePath;
     }
     return `${mediaBase}/${imagePath}`;
-  };
-  const safeHashtags = Array.isArray(post.hashtags)
-    ? post.hashtags.filter((h) => typeof h === "string" && h.trim())
-    : [];
-  const safeTags = Array.isArray(post.tags) ? post.tags.filter((t) => typeof t === "string" && t.trim()) : [];
+  }, [mediaBase]);
+
+  const safeHashtags = useMemo(() =>
+    Array.isArray(post.hashtags)
+      ? post.hashtags.filter((h) => typeof h === "string" && h.trim())
+      : []
+  , [post.hashtags]);
+
+  const safeTags = useMemo(() =>
+    Array.isArray(post.tags) ? post.tags.filter((t) => typeof t === "string" && t.trim()) : []
+  , [post.tags]);
+
   const commentCount = post._count?.comments ?? allComments.length ?? 0;
 
   useEffect(() => {
@@ -88,6 +97,9 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       }
     },
+    onError: () => {
+      toast.error("Error al guardar reacción");
+    },
   });
 
   const { mutateAsync: sendComment, isPending: commenting } = useMutation({
@@ -97,7 +109,6 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
     },
     onSuccess: (data) => {
       setComment("");
-      // Actualiza la lista local para verlo al instante
       if (data && data.id) {
         setAllComments((prev) => {
           const merged = [...prev, data];
@@ -113,6 +124,10 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
       } else {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       }
+      toast.success("Comentario agregado");
+    },
+    onError: () => {
+      toast.error("Error al agregar comentario");
     },
   });
 
@@ -128,6 +143,10 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
       } else {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       }
+      toast.success("Post actualizado");
+    },
+    onError: () => {
+      toast.error("Error al actualizar post");
     },
   });
 
@@ -144,6 +163,10 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
       } else {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       }
+      toast.success("Comentario actualizado");
+    },
+    onError: () => {
+      toast.error("Error al actualizar comentario");
     },
   });
 
@@ -153,7 +176,6 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
       return data;
     },
     onSuccess: (data, variables) => {
-      // Actualiza estado local para respuesta instantánea
       if (variables?.commentId && data?.reactions) {
         setAllComments((prev) =>
           prev.map((c) =>
@@ -169,6 +191,9 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
         fetchComments();
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       }
+    },
+    onError: () => {
+      toast.error("Error al reaccionar al comentario");
     },
   });
 

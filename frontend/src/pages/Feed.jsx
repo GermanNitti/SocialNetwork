@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/client";
 import PostComposer from "../components/PostComposer";
 import PostCard from "../components/PostCard";
@@ -7,11 +7,15 @@ import { FeedTabs } from "../components/feed/FeedTabs";
 import { RightSidebar } from "../components/layout/RightSidebar";
 import MobileHighlightsSection from "../features/highlights/MobileHighlightsSection";
 import { FeedSkeleton } from "../components/Skeleton";
+import PullToRefresh from "../components/PullToRefresh";
+import { useToast } from "../context/ToastContext";
 
 export default function Feed() {
-  const [mode, setMode] = useState("forYou"); // forYou | squads | help | explore
-
-  const { data, isLoading } = useQuery({
+  const [mode, setMode] = useState("forYou");
+  const queryClient = useQueryClient();
+  const toast = useToast();
+ 
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["posts", mode],
     queryFn: async () => {
       const endpoint =
@@ -36,6 +40,15 @@ export default function Feed() {
   });
   const posts = Array.isArray(data) ? data : [];
 
+  const handleRefresh = async () => {
+    try {
+      await refetch();
+      toast.success("Feed actualizado");
+    } catch (error) {
+      toast.error("Error al actualizar");
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 space-y-4">
       {import.meta.env.VITE_ENABLE_HIGHLIGHTS === "1" && <MobileHighlightsSection />}
@@ -45,8 +58,9 @@ export default function Feed() {
       </div>
 
       <div className="grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 pb-16">
-        <section className="space-y-4">
-          <FeedTabs active={mode} onChange={setMode} />
+        <PullToRefresh onRefresh={handleRefresh}>
+          <section className="space-y-4">
+            <FeedTabs active={mode} onChange={setMode} />
 
           {isLoading && <FeedSkeleton count={3} />}
           {!isLoading && posts.length === 0 && (
@@ -58,7 +72,8 @@ export default function Feed() {
             posts.map((post) => (
               <PostCard key={post.id} post={post} showHelpHighlight={mode === "help"} />
             ))}
-        </section>
+          </section>
+        </PullToRefresh>
 
         <aside className="hidden md:block">
           <RightSidebar />
