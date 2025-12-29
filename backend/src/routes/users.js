@@ -110,31 +110,20 @@ router.get("/:username", optionalAuth, async (req, res) => {
     },
   });
 
-  const friendsCount = await prisma.friendship.count({
-    where: {
-      status: "ACCEPTED",
-      OR: [{ requesterId: user.id }, { addresseeId: user.id }],
-    },
-  });
+  const latestPostEmotion = posts.length > 0 ? {
+    emotion: posts[0].emotion,
+    emotionColor: posts[0].emotionColor,
+  } : null;
 
-  let friendshipStatus = "NONE";
-  let friendship = null;
-  if (req.userId) {
-    friendship = await prisma.friendship.findFirst({
-      where: {
-        OR: [
-          { requesterId: req.userId, addresseeId: user.id },
-          { requesterId: user.id, addresseeId: req.userId },
-        ],
-      },
-    });
-    friendshipStatus = friendship
-      ? friendship.status === "ACCEPTED"
-        ? "FRIENDS"
-        : friendship.requesterId === req.userId
-          ? "OUTGOING"
-          : "INCOMING"
-      : "NONE";
+  let currentEmotion = null;
+  let currentEmotionColor = null;
+
+  if (user.emotionMode === "manual") {
+    currentEmotion = user.manualEmotion;
+    currentEmotionColor = user.manualEmotionColor;
+  } else if (user.emotionMode !== "hidden") {
+    currentEmotion = latestPostEmotion?.emotion || null;
+    currentEmotionColor = latestPostEmotion?.emotionColor || null;
   }
 
   res.json({
@@ -144,6 +133,9 @@ router.get("/:username", optionalAuth, async (req, res) => {
       friendshipStatus,
       relationCategory: friendship?.relationCategory || null,
       relationDetail: friendship?.relationDetail || null,
+      latestPostEmotion,
+      currentEmotion,
+      currentEmotionColor,
       badges:
         user.userBadges?.map((ub) => ({
           code: ub.badge.code,
@@ -256,6 +248,31 @@ router.put("/me/location", requireAuth, async (req, res) => {
     where: { id: req.userId },
     data: { location },
   });
+  res.json({ user: sanitizeUser(updated) });
+});
+
+router.put("/me/emotion-mode", requireAuth, async (req, res) => {
+  const { emotionMode, manualEmotion, manualEmotionColor } = req.body;
+
+  if (
+    !["auto", "manual", "hidden"].includes(emotionMode)
+  ) {
+    return res.status(400).json({ message: "Modo de emoción inválido" });
+  }
+
+  if (emotionMode === "manual" && !manualEmotion) {
+    return res.status(400).json({ message: "Emoción manual requerida para modo manual" });
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: req.userId },
+    data: {
+      emotionMode,
+      manualEmotion: emotionMode === "manual" ? manualEmotion : null,
+      manualEmotionColor: emotionMode === "manual" ? manualEmotionColor : null,
+    },
+  });
+
   res.json({ user: sanitizeUser(updated) });
 });
 

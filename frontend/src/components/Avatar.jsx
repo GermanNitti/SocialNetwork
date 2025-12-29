@@ -2,7 +2,7 @@ import { API_BASE_URL } from "../api/client";
 import { useLightbox } from "../context/LightboxContext";
 import { motion } from "framer-motion";
 
-export default function Avatar({ user, size = 48, className = "" }) {
+export default function Avatar({ user, size = 48, className = "", emotionColor = null }) {
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
@@ -14,10 +14,20 @@ export default function Avatar({ user, size = 48, className = "" }) {
   const imgSrc = user?.avatar ? getImageUrl(user.avatar) : null;
   const initials = user?.name ? user.name.charAt(0).toUpperCase() : "?";
   const { open } = useLightbox();
-  const ringColors = {
-    c1: "rgb(186, 66, 255)",
-    c2: "rgb(0, 225, 255)",
-  };
+
+  const finalEmotionColor = user?.emotionMode === "hidden"
+    ? null
+    : (emotionColor || user?.currentEmotionColor || null);
+
+  const ringColors = finalEmotionColor
+    ? {
+        c1: finalEmotionColor,
+        c2: finalEmotionColor,
+      }
+    : {
+        c1: "rgb(186, 66, 255)",
+        c2: "rgb(0, 225, 255)",
+      };
 
   const ringSize = size + 10;
 

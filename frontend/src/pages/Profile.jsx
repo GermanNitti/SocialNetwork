@@ -331,6 +331,7 @@ export default function Profile() {
               user={profile}
               size={72}
               className="border border-slate-200 dark:border-slate-700 -mt-10 bg-white"
+              emotionColor={profile?.currentEmotionColor || null}
             />
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2 flex-wrap">

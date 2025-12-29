@@ -8,7 +8,7 @@ import useCardStyle from "../hooks/useCardStyle";
 import { useToast } from "../context/ToastContext";
 
 export default function PostComposer({ onCreated }) {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [content, setContent] = useState("");
@@ -26,13 +26,22 @@ export default function PostComposer({ onCreated }) {
       });
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setContent("");
       setImage(null);
       setPreview(null);
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+
       if (onCreated) onCreated(data);
       toast.success("Post publicado");
+
+      try {
+        const { data: userData } = await api.get("/auth/me");
+        setUser(userData.user);
+        queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      } catch (error) {
+        console.error("Error al actualizar usuario:", error);
+      }
     },
     onError: () => {
       toast.error("Error al publicar post");

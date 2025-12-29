@@ -205,7 +205,7 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
 
   return (
     <article
-      className={`overflow-hidden rounded-2xl border-3 bg-white dark:bg-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`relative overflow-hidden rounded-2xl border-3 bg-white dark:bg-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
         showHelpHighlight || post.type === "HELP_REQUEST" ? "ring-2 ring-amber-300/60" : ""
       }`}
       style={{
@@ -214,6 +214,18 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
         borderWidth: post.emotionColor ? '4px' : '1px',
       }}
     >
+      {post.emotion && (
+        <div
+          className="absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-bold opacity-80"
+          style={{
+            backgroundColor: post.emotionColor + '40',
+            color: post.emotionColor,
+            textTransform: 'capitalize',
+          }}
+        >
+          {post.emotion}
+        </div>
+      )}
       <div className="p-4 space-y-4">
         {/* Área de hover: todo menos el input de comentario */}
         <div
@@ -222,7 +234,7 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
           onMouseLeave={() => setShowComments(false)}
         >
           <div className="flex items-start gap-3">
-            <Avatar user={post.author} size={48} />
+            <Avatar user={post.author} size={48} emotionColor={post.emotionColor} />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <Link to={`/profile/${post.author?.username || ""}`} className="hover:opacity-90">

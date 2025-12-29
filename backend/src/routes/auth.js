@@ -103,7 +103,31 @@ router.get("/me", requireAuth, async (req, res) => {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
 
-  res.json({ user: sanitizeUser(user) });
+  let currentEmotion = null;
+  let currentEmotionColor = null;
+
+  if (user.emotionMode === "manual") {
+    currentEmotion = user.manualEmotion;
+    currentEmotionColor = user.manualEmotionColor;
+  } else if (user.emotionMode !== "hidden") {
+    const latestPost = await prisma.post.findFirst({
+      where: { authorId: req.userId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (latestPost) {
+      currentEmotion = latestPost.emotion;
+      currentEmotionColor = latestPost.emotionColor;
+    }
+  }
+
+  res.json({
+    user: {
+      ...sanitizeUser(user),
+      currentEmotion,
+      currentEmotionColor,
+    }
+  });
 });
 
 module.exports = router;

@@ -83,7 +83,7 @@ export default function NavBar() {
               whileTap={{ scale: 0.98 }}
             >
               <Link to={`/profile/${user.username}`} className="flex items-center gap-2">
-                <Avatar user={user} size={32} />
+                <Avatar user={user} size={32} emotionColor={user?.currentEmotionColor || null} />
                 <div className="leading-tight hidden md:block">
                   <div className="text-slate-900 dark:text-white font-semibold text-sm">{user.name}</div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400">@{user.username}</div>
