@@ -1,31 +1,30 @@
-Mejora esta interfaz de red social mobile aplicando las siguientes optimizaciones:
+nothing to commit, working tree clean
+PS C:\Users\T460\Documents\SocialNetwork> git add.
+git: 'add.' is not a git command. See 'git --help'.
 
-ANIMACIONES SMOOTH (60FPS):
-- Usa solo 'transform' y 'opacity' para animaciones (aceleradas por GPU)
-- Implementa 'will-change' en elementos que se animarán
-- Agrega transiciones suaves con 'transition: transform 0.3s ease, opacity 0.3s ease'
-- Usa Intersection Observer para animaciones al scroll y lazy loading
-- Implementa gestos táctiles naturales (swipe, pull-to-refresh)
+        add
+PS C:\Users\T460\Documents\SocialNetwork> git add .
+PS C:\Users\T460\Documents\SocialNetwork> git commit -m "phase 1 finish"
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
 
-ESTÉTICA PROFESIONAL:
-- Aplica glassmorphism sutil (backdrop-filter: blur())
-- Agrega micro-interacciones en todos los elementos interactivos (hover, active states)
-- Implementa skeleton loaders para estados de carga
-- Usa gradientes modernos y sombras suaves (no harsh)
-- Sistema de colores consistente con variables CSS
-- Tipografía con jerarquía clara
-- Espaciado consistente usando múltiplos de 4 o 8px
+nothing to commit, working tree clean
+PS C:\Users\T460\Documents\SocialNetwork> git push
+Delta compression using up to 4 threads
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (11/11), 4.16 KiB | 142.00 KiB/s, done.
+Total 11 (delta 8), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (8/8), completed with 8 local objects.
+To https://github.com/GermanNitti/SocialNetwork.git
+   1bb47f4..7cffcde  main -> main
+PS C:\Users\T460\Documents\SocialNetwork> cd .\backend
+PS C:\Users\T460\Documents\SocialNetwork\backend> npx prisma db push
+Loaded Prisma config from prisma.config.ts.
 
-EXPERIENCIA MOBILE:
-- Animaciones de entrada/salida para modales y overlays
-- Feedback táctil visual en todos los botones
-- Transiciones entre vistas tipo app nativa
-- Pull-to-refresh animado
-- Scroll infinito smooth
-- Estados de carga, éxito y error bien diseñados
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-0-us-west-2.pooler.supabase.com:5432"
 
-RENDIMIENTO:
-- Lazy loading de imágenes y componentes
-- Optimiza re-renders innecesarios
-- Usa CSS transforms en lugar de top/left/width/height
-- Implementa virtualization si hay listas largas
+Error: P1001: Can't reach database server at `aws-0-us-west-2.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-0-us-west-2.pooler.supabase.com:5432`.

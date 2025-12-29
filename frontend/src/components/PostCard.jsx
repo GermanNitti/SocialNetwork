@@ -199,10 +199,13 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
 
   return (
     <article
-      className={`overflow-hidden rounded-2xl border border-slate-200/70 dark:border-slate-800/70 bg-white dark:bg-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`overflow-hidden rounded-2xl border bg-white dark:bg-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
         showHelpHighlight || post.type === "HELP_REQUEST" ? "ring-2 ring-amber-300/60" : ""
       }`}
-      style={style}
+      style={{
+        ...style,
+        ...(post.emotionColor ? { borderColor: post.emotionColor, borderWidth: '3px' } : {})
+      }}
     >
       <div className="p-4 space-y-4">
         {/* Área de hover: todo menos el input de comentario */}
