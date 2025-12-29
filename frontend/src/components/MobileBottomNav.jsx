@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function MobileBottomNav({ activeTab, onChange }) {
   const location = useLocation();
@@ -104,21 +105,22 @@ export default function MobileBottomNav({ activeTab, onChange }) {
           animation: iconBounce 0.6s ease-out;
         }
       `}</style>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/95 px-2 backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-slate-200/60 dark:border-slate-800/60 glass bg-white/90 dark:bg-slate-950/95 px-2 backdrop-blur-md md:hidden shadow-lg">
         {navItems.map((item) => {
           const active = current === item.id;
           return (
-            <button
+            <motion.button
               key={item.id}
+              whileTap={{ scale: 0.9 }}
               ref={(el) => (btnRefs.current[item.id] = el)}
               onClick={handleClick(item.id)}
-              className={`nav-button relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold transition ${
-                active ? "text-indigo-600 dark:text-indigo-300" : "text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-200"
+              className={`nav-button relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold smooth-transition ${
+                active ? "text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30" : "text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-200 hover:bg-slate-50 dark:hover:bg-slate-800/50"
               }`}
             >
               <span className="icon-container h-6 w-6">{item.icon}</span>
               <span className="whitespace-nowrap">{item.title}</span>
-            </button>
+            </motion.button>
           );
         })}
       </nav>
