@@ -341,7 +341,9 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
               >
                 <span>{REACTIONS[key].icon}</span>
                 <span className="hidden sm:inline">{REACTIONS[key].label}</span>
-                <span className="font-semibold">{post.reactions?.[key] ?? 0}</span>
+                {(post.reactions?.[key] ?? 0) > 0 && (
+                  <span className="font-semibold">{post.reactions?.[key] ?? 0}</span>
+                )}
               </motion.button>
             ))}
             <div className="ml-auto flex items-center gap-2">

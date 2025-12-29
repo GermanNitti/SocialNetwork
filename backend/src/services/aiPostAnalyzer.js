@@ -47,6 +47,29 @@ function contentMatchesTopic(content, topic) {
   return false;
 }
 
+function fallbackEmotionAnalysis(content = "") {
+  const text = (content || "").toLowerCase();
+  const foundEmotion = EMOTIONS.find((emotion) => {
+    return emotion.keywords.some((keyword) => text.includes(keyword.toLowerCase()));
+  });
+
+  if (foundEmotion) {
+    return {
+      emotion: foundEmotion.emotion,
+      emotionName: foundEmotion.name,
+      emotionColor: foundEmotion.color,
+      confidence: 0.4,
+    };
+  }
+
+  return {
+    emotion: "neutral",
+    emotionName: "Neutral",
+    emotionColor: "#D3D3D3",
+    confidence: 0.3,
+  };
+}
+
 /**
  * Analiza la emoción de un post con IA y devuelve:
  * {
@@ -58,12 +81,7 @@ function contentMatchesTopic(content, topic) {
  */
 async function analyzeEmotionWithAI(content) {
   if (!GROQ_ENABLED || !content || !content.trim()) {
-    return {
-      emotion: "neutral",
-      emotionName: "Neutral",
-      emotionColor: "#D3D3D3",
-      confidence: 0.5,
-    };
+    return fallbackEmotionAnalysis(content);
   }
 
   const emotionsCatalog = EMOTIONS.map((e) => ({
@@ -75,20 +93,27 @@ async function analyzeEmotionWithAI(content) {
   }));
 
   const systemPrompt = `
-Actuás como un detector de emociones para una red social argentina.
+Actuás como un detector de emociones para una red social argentina. Tu objetivo es SIEMPRE asignar una emoción significativa, casi nunca "neutral".
+
 Tu tarea:
 - Leer el texto del post.
 - Identificar la emoción dominante o sensación que transmite.
 - Seleccionar UNA sola emoción de la lista provista que mejor represente el estado emocional.
-- Considerar tanto palabras emocionales explícitas como el tono y contexto general.
-- Devolver un JSON con la emoción detectada y su nivel de confianza.
+- Considerar tanto palabras emocionales explícitas como el tono, contexto y matices del texto.
+- SER AGRESIVO en la detección: si hay CUALQUIER indicio emocional, asigna esa emoción.
 
-REGLAS:
-1) Seleccioná SOLO una emoción de la lista "emotions". No inventes otras.
-2) Si hay múltiples emociones, elegí la dominante o principal.
-3) Si no es claro, asigná "neutral".
-4) Entendés lunfardo argentino (guita, bondi, mardel, joya, genial, etc.) y expresiones locales.
-5) Considerá ironía, sarcasmo y humor cuando sea apropiado.
+REGLAS IMPORTANTES:
+1) SOLO usás "neutral" si el post es completamente objetivo, informativo, sin tono emocional alguno.
+2) Buscá activamente emociones: alegría, tristeza, amor, humor, sorpresa, curiosidad, determinación, nostalgia, etc.
+3) Palabras como "jajaja", "jeje", "jiji" → HUMOR, no neutral.
+4. Signos de exclamación (!!), preguntas (¿?), emojis → hay emoción.
+5) Frases cortas como "Qué buen día", "Hoy todo salió bien" → ALEGRÍA/FELICIDAD, no neutral.
+6) Expresiones como "Qué mal", "No me salió" → FRUSTRACIÓN/MOLESTIA, no neutral.
+7) Frases como "¿Alguien sabe?", "¿Cómo hago X?" → CURIOSIDAD, no neutral.
+8) Palabras de acción como "voy a", "quiero", "necesito" → DETERMINACIÓN/DESESPERACIÓN según el contexto.
+9) Recordatorios del pasado → NOSTALGIA, no neutral.
+10) Entendés lunfardo argentino (guita, bondi, mardel, joya, genial, qué bajón, etc.) y expresiones locales.
+11) SIEMPRE elegí la emoción más intensa detectada, aunque la confianza no sea perfecta.
 
 FORMATO DE RESPUESTA (solo JSON):
 {
@@ -110,11 +135,26 @@ Analizá el post y devolvé SOLO este JSON:
   "reason": "breve explicación de por qué se eligió esta emoción"
 }
 
-Reglas:
-- Usa solo emociones que figuran en "emotions".
-- Considera el tono, contexto, palabras clave y expresiones emocionales.
-- Si hay múltiples emociones, elige la dominante.
-- Máximo nivel de confianza: 1.0
+Reglas CRÍTICAS de detección:
+- RISA ("jajaja", "jeje", "jiji", "lol", "risa", "jaja") → humor
+- SIGNOS DE EMOCIÓN (!!!, ???, 😂, 😢, 😠, 😍) → emoción correspondiente
+- PREGUNTAS ("¿alguien sabe?", "¿cómo hago?", "qué es") → curiosidad
+- AGRADO ("qué buen día", "genial", "increíble", "joya", "macanudo") → alegría/euforia/entusiasmo
+- DESAGRADO ("qué mal", "no salió", "horrible", "un desastre") → frustración/irritación/tristeza
+- RECORDAR ("ayer", "antes", "recuerdo cuando", "aquella vez") → nostalgia/melancolía
+- ACCIÓN ("voy a", "quiero", "necesito", "lo voy a lograr") → determinación/esperanza
+- AMOR/CARIÑO ("te quiero", "te amo", "te extraño", ❤️) → amor
+- DOLOR ("me duele", "qué triste", "bajón", "mal momento") → tristeza/angustia/soledad
+- REFLEXIÓN ("pienso", "creo", "me pregunto", "quizás") → reflexión
+- IRONÍA ("claro", "obvio", "ah sí", sarcasmo) → ironía
+- SORPRESA ("¡sorpresa!", "no lo podía creer", "qué shock") → sorpresa
+- GRATITUD ("gracias", "agradecido", "bendecido") → gratitud
+- CALMA ("paz", "tranquilo", "relajado") → calma/serenidad
+- ORGULLO ("lo logré", "conseguí", "mi logro") → orgullo
+
+USÁ SOLO emociones de la lista "emotions" abajo.
+SIEMPRE elegí la emoción más evidente, aunque no sea 100% perfecta.
+EVITÁ "neutral" a menos que sea texto completamente objetivo sin tono emocional.
 
 Post:
 """${content}"""
@@ -132,12 +172,7 @@ ${JSON.stringify(emotionsCatalog, null, 2)}
     console.log("[analyzeEmotionWithAI] Respuesta cruda de Groq:", raw);
   } catch (err) {
     console.error("[aiPostAnalyzer] Error llamando a Groq para emociones:", err);
-    return {
-      emotion: "neutral",
-      emotionName: "Neutral",
-      emotionColor: "#D3D3D3",
-      confidence: 0.5,
-    };
+    return fallbackEmotionAnalysis(content);
   }
 
   try {
@@ -145,7 +180,8 @@ ${JSON.stringify(emotionsCatalog, null, 2)}
     console.log("[analyzeEmotionWithAI] JSON parseado:", parsed);
 
     if (!parsed.emotion || !emotionsCatalog.find((e) => e.id === parsed.emotion)) {
-      throw new Error("Emoción no válida");
+      console.warn("[analyzeEmotionWithAI] Emoción no válida o faltante, usando fallback");
+      return fallbackEmotionAnalysis(content);
     }
 
     const emotionData = emotionsCatalog.find((e) => e.id === parsed.emotion);
@@ -160,12 +196,7 @@ ${JSON.stringify(emotionsCatalog, null, 2)}
     return result;
   } catch (err) {
     console.error("[aiPostAnalyzer] Error parseando JSON de Groq para emociones:", err, raw);
-    return {
-      emotion: "neutral",
-      emotionName: "Neutral",
-      emotionColor: "#D3D3D3",
-      confidence: 0.5,
-    };
+    return fallbackEmotionAnalysis(content);
   }
 }
 
