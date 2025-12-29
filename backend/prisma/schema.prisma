@@ -75,6 +75,8 @@ model Post {
   projectId Int?
   project   Project?   @relation(fields: [projectId], references: [id])
   ambiguousReferences AmbiguousReference[] @relation("PostAmbiguousReferences")
+  emotion   String?
+  emotionColor String?
 }
 
 model Comment {

@@ -6,7 +6,7 @@ const { requireAuth } = require("../middleware/auth");
 const { notify } = require("../utils/notify");
 const { extractHashtagsObjects, normalizeHashtag } = require("../utils/hashtags");
 const { detectTopicsFromText } = require("../utils/topicDetection");
-const { analyzePostWithAI } = require("../services/aiPostAnalyzer");
+const { analyzePostWithAI, analyzeEmotionWithAI } = require("../services/aiPostAnalyzer");
 const { updateTermStatsFromPost } = require("../utils/termStatsUpdater");
 const { registerUserInteraction } = require("../utils/userRelations");
 const { createAmbiguousReferenceFromAI } = require("../utils/ambiguousReferencesAI");
@@ -74,6 +74,8 @@ const serializePost = (post, userId) => ({
   hashtags: post.hashtags || [],
   type: post.type,
   squad: post.squad ? { id: post.squad.id, name: post.squad.name } : null,
+  emotion: post.emotion,
+  emotionColor: post.emotionColor,
 });
 
 router.get("/", requireAuth, async (req, res) => {
@@ -287,6 +289,9 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
     const aiTopics = aiAnalysis.topics || [];
     const aiHashtags = aiAnalysis.hashtags || [];
 
+    // 4.5) Análisis de emociones
+    const emotionAnalysis = await analyzeEmotionWithAI(content);
+
     // 5) Unir tags
     const allCanonicalTags = Array.from(
       new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics])
@@ -303,6 +308,8 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
         projectId: projectId ? Number(projectId) : null,
         authorId: req.userId,
         image: imageUrl,
+        emotion: emotionAnalysis.emotion,
+        emotionColor: emotionAnalysis.emotionColor,
       },
       include: {
         author: true,

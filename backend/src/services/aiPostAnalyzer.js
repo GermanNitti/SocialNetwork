@@ -1,6 +1,7 @@
-﻿const { callGroqChat, GROQ_ENABLED } = require("./aiClient");
+const { callGroqChat, GROQ_ENABLED } = require("./aiClient");
 const TOPICS = require("../config/topics");
 const TAG_CATEGORIES = require("../config/tagCategories");
+const EMOTIONS = require("../config/emotions");
 const { normalizeHashtag } = require("../utils/hashtags");
 
 function buildTopicsCatalog() {
@@ -44,6 +45,124 @@ function contentMatchesTopic(content, topic) {
     }
   }
   return false;
+}
+
+/**
+ * Analiza la emoción de un post con IA y devuelve:
+ * {
+ *   emotion: string,      // id de la emoción detectada
+ *   emotionName: string,  // nombre de la emoción
+ *   emotionColor: string, // color hexadecimal de la emoción
+ *   confidence: number    // nivel de confianza 0.0-1.0
+ * }
+ */
+async function analyzeEmotionWithAI(content) {
+  if (!GROQ_ENABLED || !content || !content.trim()) {
+    return {
+      emotion: "neutral",
+      emotionName: "Neutral",
+      emotionColor: "#D3D3D3",
+      confidence: 0.5,
+    };
+  }
+
+  const emotionsCatalog = EMOTIONS.map((e) => ({
+    id: e.emotion,
+    name: e.name,
+    color: e.color,
+    keywords: e.keywords,
+    examples: e.examples,
+  }));
+
+  const systemPrompt = `
+Actuás como un detector de emociones para una red social argentina.
+Tu tarea:
+- Leer el texto del post.
+- Identificar la emoción dominante o sensación que transmite.
+- Seleccionar UNA sola emoción de la lista provista que mejor represente el estado emocional.
+- Considerar tanto palabras emocionales explícitas como el tono y contexto general.
+- Devolver un JSON con la emoción detectada y su nivel de confianza.
+
+REGLAS:
+1) Seleccioná SOLO una emoción de la lista "emotions". No inventes otras.
+2) Si hay múltiples emociones, elegí la dominante o principal.
+3) Si no es claro, asigná "neutral".
+4) Entendés lunfardo argentino (guita, bondi, mardel, joya, genial, etc.) y expresiones locales.
+5) Considerá ironía, sarcasmo y humor cuando sea apropiado.
+
+FORMATO DE RESPUESTA (solo JSON):
+{
+  "emotion": "id_emocion",
+  "emotionName": "Nombre de Emoción",
+  "emotionColor": "#RRGGBB",
+  "confidence": 0.0-1.0,
+  "reason": "breve explicación de por qué se eligió esta emoción"
+}
+`;
+
+  const userPrompt = `
+Analizá el post y devolvé SOLO este JSON:
+{
+  "emotion": "id_emocion",
+  "emotionName": "Nombre de Emoción",
+  "emotionColor": "#RRGGBB",
+  "confidence": 0.0-1.0,
+  "reason": "breve explicación de por qué se eligió esta emoción"
+}
+
+Reglas:
+- Usa solo emociones que figuran en "emotions".
+- Considera el tono, contexto, palabras clave y expresiones emocionales.
+- Si hay múltiples emociones, elige la dominante.
+- Máximo nivel de confianza: 1.0
+
+Post:
+"""${content}"""
+
+Emotions:
+${JSON.stringify(emotionsCatalog, null, 2)}
+`;
+
+  let raw;
+  try {
+    raw = await callGroqChat([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ]);
+  } catch (err) {
+    console.error("[aiPostAnalyzer] Error llamando a Groq para emociones:", err);
+    return {
+      emotion: "neutral",
+      emotionName: "Neutral",
+      emotionColor: "#D3D3D3",
+      confidence: 0.5,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+
+    if (!parsed.emotion || !emotionsCatalog.find((e) => e.id === parsed.emotion)) {
+      throw new Error("Emoción no válida");
+    }
+
+    const emotionData = emotionsCatalog.find((e) => e.id === parsed.emotion);
+
+    return {
+      emotion: parsed.emotion,
+      emotionName: emotionData.name,
+      emotionColor: emotionData.color,
+      confidence: parsed.confidence || 0.5,
+    };
+  } catch (err) {
+    console.error("[aiPostAnalyzer] Error parseando JSON de Groq para emociones:", err, raw);
+    return {
+      emotion: "neutral",
+      emotionName: "Neutral",
+      emotionColor: "#D3D3D3",
+      confidence: 0.5,
+    };
+  }
 }
 
 /**
@@ -222,4 +341,5 @@ function fallbackHashtagsFromText(text = "") {
 
 module.exports = {
   analyzePostWithAI,
+  analyzeEmotionWithAI,
 };
