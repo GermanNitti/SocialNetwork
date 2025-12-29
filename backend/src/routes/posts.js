@@ -6,7 +6,7 @@ const { requireAuth } = require("../middleware/auth");
 const { notify } = require("../utils/notify");
 const { extractHashtagsObjects, normalizeHashtag } = require("../utils/hashtags");
 const { detectTopicsFromText } = require("../utils/topicDetection");
-const { analyzePostWithAI, analyzeEmotionWithAI } = require("../services/aiPostAnalyzer");
+const { analyzeEmotionWithAI } = require("../services/aiPostAnalyzer");
 const { updateTermStatsFromPost } = require("../utils/termStatsUpdater");
 const { registerUserInteraction } = require("../utils/userRelations");
 const { createAmbiguousReferenceFromAI } = require("../utils/ambiguousReferencesAI");
@@ -264,45 +264,26 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
       if (!projectExists) return res.status(400).json({ message: "Proyecto no encontrado" });
     }
 
-    // 1) Tags explícitos
+    // 1) Análisis de emociones con IA
+    const emotionAnalysis = await analyzeEmotionWithAI(content);
+    console.log("[Post Create] Emoción detectada:", emotionAnalysis);
+
+    // 2) Tags explícitos y hashtags escritos (sin IA)
     const explicitTags = Array.isArray(bodyTags) ? bodyTags : [];
-    // 2) Hashtags escritos
     const hashtagObjects = extractHashtagsObjects(content);
     const canonicalFromHashtags = hashtagObjects.map((h) => h.canonical);
-    // 3) Diccionario simple
     const dictTopics = typeof detectTopicsFromText === "function" ? detectTopicsFromText(content) : [];
-    // 4) IA (Groq)
-    let aiAnalysis = {
-      topics: [],
-      extra_tags: [],
-      implicit_reference: { present: false, kind: "none", target_is_person: false },
-    };
 
-    if (GROQ_ENABLED) {
-      // Forzamos Groq para afinar el prompt y evaluar su cobertura,
-      // sin depender de heurísticas locales
-      aiAnalysis = await analyzePostWithAI(content);
-    } else if (!GROQ_ENABLED && typeof detectTopicsFromText === "function") {
-      aiAnalysis.topics = dictTopics;
-    }
-
-    const aiTopics = aiAnalysis.topics || [];
-    const aiHashtags = aiAnalysis.hashtags || [];
-
-    // 4.5) Análisis de emociones
-    const emotionAnalysis = await analyzeEmotionWithAI(content);
-
-    // 5) Unir tags
+    // 3) Unir tags
     const allCanonicalTags = Array.from(
-      new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics])
+      new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics])
     );
 
-    // 6) Crear post
     const post = await prisma.post.create({
       data: {
         content,
         tags: allCanonicalTags,
-        hashtags: aiHashtags,
+        hashtags: [],
         type: type || "NORMAL",
         squadId: squadId ? Number(squadId) : null,
         projectId: projectId ? Number(projectId) : null,
@@ -341,15 +322,10 @@ router.post("/", requireAuth, uploadPostImage.single("image"), async (req, res) 
       );
     }
 
-    // 8) Stats de términos (global, por tag, por usuario)
+    // 4) Stats de términos (global, por tag, por usuario)
     await updateTermStatsFromPost(prisma, post);
 
-    // 9) Referencia implícita
-    if (aiAnalysis.implicit_reference?.present) {
-      await createAmbiguousReferenceFromAI(prisma, post, aiAnalysis.implicit_reference);
-    }
-
-    // 10) Stats de hashtags
+    // 5) Stats de hashtags
     if (hashtagObjects.length > 0 && prisma.hashtag?.upsert) {
       await Promise.all(
         hashtagObjects.map((h) =>
@@ -392,31 +368,20 @@ router.put("/:id", requireAuth, async (req, res) => {
   const { content } = req.body;
   if (!content || !content.trim()) return res.status(400).json({ message: "El contenido es obligatorio" });
 
-  // Recalcular tags/hashtags con la misma lógica que creación
+  // Recalcular tags y emoción
+  const emotionAnalysis = await analyzeEmotionWithAI(content);
   const explicitTags = Array.isArray(req.body.tags) ? req.body.tags : [];
   const hashtagObjects = extractHashtagsObjects(content);
   const canonicalFromHashtags = hashtagObjects.map((h) => h.canonical);
   const dictTopics = typeof detectTopicsFromText === "function" ? detectTopicsFromText(content) : [];
-  let aiAnalysis = {
-    topics: [],
-    extra_tags: [],
-    implicit_reference: { present: false, kind: "none", target_is_person: false },
-  };
-  if (GROQ_ENABLED) {
-    aiAnalysis = await analyzePostWithAI(content);
-  } else if (!GROQ_ENABLED && typeof detectTopicsFromText === "function") {
-    aiAnalysis.topics = dictTopics;
-  }
-  const aiTopics = aiAnalysis.topics || [];
-  const aiHashtags = aiAnalysis.hashtags || [];
 
   const allCanonicalTags = Array.from(
-    new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics, ...aiTopics])
+    new Set([...explicitTags, ...canonicalFromHashtags, ...dictTopics])
   );
 
   const post = await prisma.post.update({
     where: { id: postId },
-    data: { content, tags: allCanonicalTags, hashtags: aiHashtags },
+    data: { content, tags: allCanonicalTags, hashtags: [], emotion: emotionAnalysis.emotion, emotionColor: emotionAnalysis.emotionColor },
     include: {
       author: true,
       _count: { select: { likes: true, comments: true } },

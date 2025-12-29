@@ -34,6 +34,12 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
   const { open } = useLightbox();
   const toast = useToast();
 
+  useEffect(() => {
+    if (post.emotion || post.emotionColor) {
+      console.log("[PostCard] Emoción del post:", post.emotion, "Color:", post.emotionColor);
+    }
+  }, [post.emotion, post.emotionColor]);
+
   const getImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null;
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
@@ -199,12 +205,13 @@ export default function PostCard({ post, showHelpHighlight = false, onCommentAdd
 
   return (
     <article
-      className={`overflow-hidden rounded-2xl border bg-white dark:bg-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`overflow-hidden rounded-2xl border-3 bg-white dark:bg-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
         showHelpHighlight || post.type === "HELP_REQUEST" ? "ring-2 ring-amber-300/60" : ""
       }`}
       style={{
         ...style,
-        ...(post.emotionColor ? { borderColor: post.emotionColor, borderWidth: '3px' } : {})
+        borderColor: post.emotionColor || '#e2e8f0',
+        borderWidth: post.emotionColor ? '4px' : '1px',
       }}
     >
       <div className="p-4 space-y-4">

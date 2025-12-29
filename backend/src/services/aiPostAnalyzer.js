@@ -129,6 +129,7 @@ ${JSON.stringify(emotionsCatalog, null, 2)}
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ]);
+    console.log("[analyzeEmotionWithAI] Respuesta cruda de Groq:", raw);
   } catch (err) {
     console.error("[aiPostAnalyzer] Error llamando a Groq para emociones:", err);
     return {
@@ -141,6 +142,7 @@ ${JSON.stringify(emotionsCatalog, null, 2)}
 
   try {
     const parsed = JSON.parse(raw);
+    console.log("[analyzeEmotionWithAI] JSON parseado:", parsed);
 
     if (!parsed.emotion || !emotionsCatalog.find((e) => e.id === parsed.emotion)) {
       throw new Error("Emoción no válida");
@@ -148,12 +150,14 @@ ${JSON.stringify(emotionsCatalog, null, 2)}
 
     const emotionData = emotionsCatalog.find((e) => e.id === parsed.emotion);
 
-    return {
+    const result = {
       emotion: parsed.emotion,
       emotionName: emotionData.name,
       emotionColor: emotionData.color,
       confidence: parsed.confidence || 0.5,
     };
+    console.log("[analyzeEmotionWithAI] Resultado final:", result);
+    return result;
   } catch (err) {
     console.error("[aiPostAnalyzer] Error parseando JSON de Groq para emociones:", err, raw);
     return {
