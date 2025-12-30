@@ -8,10 +8,27 @@ import NotificationBell from "./NotificationBell";
 import FriendRequests from "./FriendRequests";
 import { Link as RouterLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { getActiveEvent, getTestModeEvent, EVENT_CONFIG } from "./events/EventManager";
+import { Play } from "lucide-react";
 
 export default function NavBar() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [testEvent, setTestEvent] = useState(false);
+
+  const activeEvent = getActiveEvent();
+  const testModeEvent = getTestModeEvent();
+  const eventToTest = testModeEvent || activeEvent;
+  const EventComponent = testEvent ? eventToTest?.component : null;
+
+  const handleTestEvent = () => {
+    if (eventToTest && EVENT_CONFIG.allowTestMode) {
+      setTestEvent(true);
+    }
+  };
+
+  const showTestButton = EVENT_CONFIG.allowTestMode && eventToTest && !testEvent;
 
   if (!user) return null;
 
@@ -19,16 +36,32 @@ export default function NavBar() {
     `${isActive ? "bg-indigo-600 text-white shadow-md" : "text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"} px-2.5 py-1 rounded-full smooth-transition text-xs sm:text-sm`;
 
   return (
-    <header className="glass bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60 sticky top-0 z-40 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 py-0.5">
-        <div className="flex flex-wrap items-center gap-2 justify-between">
+    <>
+      {testEvent && EventComponent && <EventComponent onComplete={() => setTestEvent(false)} />}
+
+      <header className="glass bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-3 py-0.5">
+          <div className="flex flex-wrap items-center gap-2 justify-between">
           <motion.div
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-2 min-w-[180px]"
           >
-            <Link to="/feed" className="flex items-center gap-2">
-              <MacanudosLogo showText size={90} />
-            </Link>
+            <div className="flex items-center gap-2">
+              {showTestButton && (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.05 }}
+                  onClick={handleTestEvent}
+                  className="p-1.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all"
+                  title={`Probar: ${eventToTest.name}`}
+                >
+                  <Play className="w-5 h-5" />
+                </motion.button>
+              )}
+              <Link to="/feed" className="flex items-center gap-2">
+                <MacanudosLogo showText size={90} />
+              </Link>
+            </div>
           </motion.div>
 
           <nav className="flex items-center gap-1 flex-1 justify-center min-w-[200px]">
@@ -94,5 +127,6 @@ export default function NavBar() {
         </div>
       </div>
     </header>
+    </>
   );
 }
