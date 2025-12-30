@@ -84,6 +84,9 @@ router.get("/:username", optionalAuth, async (req, res) => {
       hasCompletedOnboarding: true,
       coverImageUrl: true,
       createdAt: true,
+      emotionMode: true,
+      manualEmotion: true,
+      manualEmotionColor: true,
       _count: { select: { posts: true } },
       userBadges: {
         include: { badge: true },
@@ -98,15 +101,54 @@ router.get("/:username", optionalAuth, async (req, res) => {
   const posts = await prisma.post.findMany({
     where: { author: { username } },
     orderBy: { createdAt: "desc" },
-    include: {
-      author: true,
-      _count: { select: { likes: true, comments: true } },
+    select: {
+      id: true,
+      content: true,
+      image: true,
+      createdAt: true,
+      emotion: true,
+      emotionColor: true,
+      type: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          avatar: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+        },
+      },
       likes: {
         select: { userId: true },
       },
       reactions: true,
-      comments: { orderBy: { createdAt: "asc" }, include: { author: true } },
-      squad: true,
+      comments: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              avatar: true,
+            },
+          },
+        },
+      },
+      squad: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   });
 

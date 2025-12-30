@@ -1,30 +1,432 @@
-nothing to commit, working tree clean
-PS C:\Users\T460\Documents\SocialNetwork> git add.
-git: 'add.' is not a git command. See 'git --help'.
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Zap, Star, Heart, Rocket } from 'lucide-react';
 
-        add
-PS C:\Users\T460\Documents\SocialNetwork> git add .
-PS C:\Users\T460\Documents\SocialNetwork> git commit -m "phase 1 finish"
-On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
-  (use "git push" to publish your local commits)
+const MidnightLaunch = () => {
+  const [countdown, setCountdown] = useState(10);
+  const [phase, setPhase] = useState('countdown'); // countdown, explosion, welcome, app
+  const [particles, setParticles] = useState([]);
+  const [pulseIntensity, setPulseIntensity] = useState(0);
+  const canvasRef = useRef(null);
+  const audioContextRef = useRef(null);
 
-nothing to commit, working tree clean
-PS C:\Users\T460\Documents\SocialNetwork> git push
-Delta compression using up to 4 threads
-Compressing objects: 100% (11/11), done.
-Writing objects: 100% (11/11), 4.16 KiB | 142.00 KiB/s, done.
-Total 11 (delta 8), reused 0 (delta 0), pack-reused 0 (from 0)
-remote: Resolving deltas: 100% (8/8), completed with 8 local objects.
-To https://github.com/GermanNitti/SocialNetwork.git
-   1bb47f4..7cffcde  main -> main
-PS C:\Users\T460\Documents\SocialNetwork> cd .\backend
-PS C:\Users\T460\Documents\SocialNetwork\backend> npx prisma db push
-Loaded Prisma config from prisma.config.ts.
+  useEffect(() => {
+    if (countdown > 0 && phase === 'countdown') {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+        setPulseIntensity(11 - countdown);
+        
+        // Generar partículas en cada segundo
+        const newParticles = Array.from({ length: 20 }, (_, i) => ({
+          id: Date.now() + i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size: Math.random() * 4 + 2,
+          duration: Math.random() * 2 + 1
+        }));
+        setParticles(prev => [...prev, ...newParticles]);
+        
+        // Sonido (beep simulado con vibración visual)
+        if (countdown <= 5) {
+          document.body.style.transform = `scale(${1 + (6 - countdown) * 0.01})`;
+          setTimeout(() => {
+            document.body.style.transform = 'scale(1)';
+          }, 100);
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && phase === 'countdown') {
+      setPhase('explosion');
+      setTimeout(() => setPhase('welcome'), 3000);
+      setTimeout(() => setPhase('app'), 6000);
+      
+      // EXPLOSIÓN MASIVA de partículas
+      const explosionParticles = Array.from({ length: 200 }, (_, i) => ({
+        id: Date.now() + i,
+        x: 50,
+        y: 50,
+        targetX: Math.random() * 100,
+        targetY: Math.random() * 100,
+        size: Math.random() * 8 + 3,
+        duration: Math.random() * 3 + 2,
+        color: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F'][Math.floor(Math.random() * 5)]
+      }));
+      setParticles(explosionParticles);
+    }
+  }, [countdown, phase]);
 
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-0-us-west-2.pooler.supabase.com:5432"
+  // Limpiar partículas viejas
+  useEffect(() => {
+    const cleanup = setInterval(() => {
+      setParticles(prev => prev.filter(p => Date.now() - p.id < p.duration * 1000));
+    }, 100);
+    return () => clearInterval(cleanup);
+  }, []);
 
-Error: P1001: Can't reach database server at `aws-0-us-west-2.pooler.supabase.com:5432`
+  const getCountdownColor = () => {
+    if (countdown > 7) return 'from-purple-600 to-blue-600';
+    if (countdown > 4) return 'from-blue-600 to-cyan-500';
+    if (countdown > 2) return 'from-cyan-500 to-yellow-400';
+    return 'from-yellow-400 to-red-500';
+  };
 
-Please make sure your database server is running at `aws-0-us-west-2.pooler.supabase.com:5432`.
+  const getGlowIntensity = () => {
+    return `0 0 ${20 + pulseIntensity * 10}px rgba(255, 255, 255, ${0.3 + pulseIntensity * 0.05})`;
+  };
+
+  if (phase === 'countdown') {
+    return (
+      <div className="relative w-full h-screen bg-black overflow-hidden flex items-center justify-center">
+        {/* Fondo animado con gradiente */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-black opacity-80"
+          style={{
+            animation: 'pulse 2s ease-in-out infinite',
+            transform: `scale(${1 + pulseIntensity * 0.02})`
+          }}
+        />
+        
+        {/* Grid futurista */}
+        <div className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+            backgroundSize: '50px 50px',
+            animation: 'gridMove 20s linear infinite'
+          }}
+        />
+
+        {/* Partículas flotantes */}
+        {particles.map(particle => (
+          <div
+            key={particle.id}
+            className="absolute rounded-full bg-white"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              animation: `fadeOut ${particle.duration}s ease-out forwards`,
+              boxShadow: '0 0 10px rgba(255,255,255,0.8)'
+            }}
+          />
+        ))}
+
+        {/* Anillos expansivos */}
+        {countdown <= 5 && (
+          <>
+            <div 
+              className="absolute rounded-full border-4 border-white"
+              style={{
+                width: '200px',
+                height: '200px',
+                animation: 'expandRing 2s ease-out infinite',
+                opacity: 0
+              }}
+            />
+            <div 
+              className="absolute rounded-full border-4 border-cyan-400"
+              style={{
+                width: '200px',
+                height: '200px',
+                animation: 'expandRing 2s ease-out infinite 0.5s',
+                opacity: 0
+              }}
+            />
+          </>
+        )}
+
+        {/* Contador principal */}
+        <div className="relative z-10 text-center">
+          <div 
+            className={`text-[20rem] font-black bg-gradient-to-r ${getCountdownColor()} bg-clip-text text-transparent`}
+            style={{
+              textShadow: getGlowIntensity(),
+              animation: countdown <= 3 ? 'shake 0.5s ease-in-out infinite' : 'none',
+              transform: `scale(${1 + (11 - countdown) * 0.05})`
+            }}
+          >
+            {countdown}
+          </div>
+          
+          {/* Texto decorativo */}
+          <div className="mt-8 space-y-4">
+            <p className="text-white text-3xl font-light tracking-[0.3em] opacity-80"
+              style={{ animation: 'pulse 2s ease-in-out infinite' }}>
+              PREPARANDO EL LANZAMIENTO
+            </p>
+            
+            {/* Iconos rotando */}
+            <div className="flex justify-center gap-6 mt-8">
+              {[Sparkles, Zap, Star, Heart, Rocket].map((Icon, i) => (
+                <Icon
+                  key={i}
+                  className="w-8 h-8 text-white"
+                  style={{
+                    animation: `float 2s ease-in-out infinite ${i * 0.2}s`,
+                    filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.8))'
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Barra de progreso */}
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-2/3">
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500"
+              style={{
+                width: `${((10 - countdown) / 10) * 100}%`,
+                transition: 'width 1s ease-out',
+                boxShadow: '0 0 20px rgba(255,255,255,0.5)'
+              }}
+            />
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-100px); }
+          }
+          @keyframes expandRing {
+            from { transform: scale(1); opacity: 0.8; }
+            to { transform: scale(4); opacity: 0; }
+          }
+          @keyframes shake {
+            0%, 100% { transform: translateX(0) scale(${1 + (11 - countdown) * 0.05}); }
+            25% { transform: translateX(-10px) scale(${1 + (11 - countdown) * 0.05}); }
+            75% { transform: translateX(10px) scale(${1 + (11 - countdown) * 0.05}); }
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+          }
+          @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (phase === 'explosion') {
+    return (
+      <div className="relative w-full h-screen bg-black overflow-hidden flex items-center justify-center">
+        {/* Flash blanco */}
+        <div 
+          className="absolute inset-0 bg-white"
+          style={{ animation: 'flashOut 0.5s ease-out forwards' }}
+        />
+        
+        {/* Explosión de partículas */}
+        {particles.map(particle => (
+          <div
+            key={particle.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              background: particle.color || '#FFD700',
+              animation: `explodeParticle ${particle.duration}s ease-out forwards`,
+              transform: `translate(${(particle.targetX - particle.x) * 5}px, ${(particle.targetY - particle.y) * 5}px)`,
+              boxShadow: `0 0 ${particle.size * 3}px ${particle.color || '#FFD700'}`
+            }}
+          />
+        ))}
+
+        {/* Texto "BOOM" */}
+        <div 
+          className="relative z-10 text-[15rem] font-black text-transparent"
+          style={{
+            WebkitTextStroke: '3px white',
+            animation: 'boom 1s ease-out forwards',
+            textShadow: '0 0 100px rgba(255,255,255,1)'
+          }}
+        >
+          ¡BOOM!
+        </div>
+
+        <style jsx>{`
+          @keyframes flashOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+          }
+          @keyframes explodeParticle {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+          }
+          @keyframes boom {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.5) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (phase === 'welcome') {
+    return (
+      <div className="relative w-full h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black overflow-hidden flex items-center justify-center">
+        {/* Confetti cayendo */}
+        {Array.from({ length: 100 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-4 rounded-sm"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '-5%',
+              background: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F'][i % 5],
+              animation: `confettiFall ${2 + Math.random() * 2}s linear forwards ${Math.random() * 2}s`,
+              transform: `rotate(${Math.random() * 360}deg)`
+            }}
+          />
+        ))}
+
+        {/* Mensaje de bienvenida */}
+        <div className="relative z-10 text-center space-y-8"
+          style={{ animation: 'slideUp 1s ease-out forwards' }}>
+          
+          <div className="text-8xl font-black text-white mb-4"
+            style={{ 
+              textShadow: '0 0 40px rgba(255,255,255,0.8)',
+              animation: 'glow 2s ease-in-out infinite'
+            }}>
+            ¡BIENVENIDO!
+          </div>
+          
+          <div className="text-3xl text-cyan-300 font-light tracking-wider">
+            Eres un <span className="font-bold text-yellow-400">FOUNDING MEMBER</span>
+          </div>
+          
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <Star className="w-12 h-12 text-yellow-400" style={{ animation: 'spin 3s linear infinite' }} />
+            <span className="text-6xl font-black bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+              #001
+            </span>
+            <Star className="w-12 h-12 text-yellow-400" style={{ animation: 'spin 3s linear infinite reverse' }} />
+          </div>
+
+          <div className="text-xl text-gray-300 mt-8 max-w-2xl mx-auto px-4">
+            Estás entre los primeros en experimentar algo completamente nuevo.
+            <br />
+            Tu voz ayudará a dar forma al futuro.
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes confettiFall {
+            to { transform: translateY(120vh) rotate(720deg); }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes glow {
+            0%, 100% { text-shadow: 0 0 40px rgba(255,255,255,0.8); }
+            50% { text-shadow: 0 0 80px rgba(255,255,255,1), 0 0 120px rgba(139,92,246,0.8); }
+          }
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // FASE APP
+  return (
+    <div className="w-full h-screen bg-gradient-to-br from-slate-900 to-black text-white overflow-hidden">
+      {/* Header con efecto glassmorphism */}
+      <div className="relative backdrop-blur-xl bg-white/10 border-b border-white/20 p-6"
+        style={{ animation: 'slideDown 0.8s ease-out' }}>
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
+              style={{ animation: 'pulse 2s ease-in-out infinite' }}>
+              <Rocket className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-bold">NEXUS</h1>
+          </div>
+          <div className="flex items-center gap-2 bg-yellow-500/20 px-4 py-2 rounded-full border border-yellow-500/30">
+            <Star className="w-4 h-4 text-yellow-400" />
+            <span className="text-sm font-semibold">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Feed simulado */}
+      <div className="max-w-2xl mx-auto p-6 space-y-6" style={{ animation: 'fadeIn 1.2s ease-out' }}>
+        {/* Post ejemplo con marco emocional */}
+        {[
+          { emotion: 'joy', color: 'from-yellow-400 to-orange-500', text: 'Primera publicación en esta increíble red 🎉' },
+          { emotion: 'excitement', color: 'from-pink-500 to-purple-500', text: '¡Esto es el futuro! No puedo creer que esté aquí desde el día 1' },
+          { emotion: 'hope', color: 'from-cyan-400 to-blue-500', text: 'Algo me dice que esto va a ser grande...' }
+        ].map((post, i) => (
+          <div
+            key={i}
+            className="relative backdrop-blur-xl bg-white/5 rounded-2xl p-6 border-2"
+            style={{
+              borderImage: `linear-gradient(135deg, var(--tw-gradient-stops)) 1`,
+              borderImageSlice: 1,
+              animation: `slideInPost 0.8s ease-out forwards ${i * 0.2}s`,
+              opacity: 0
+            }}
+          >
+            <div className={`absolute -inset-0.5 bg-gradient-to-r ${post.color} rounded-2xl opacity-50 blur-lg`} />
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400" />
+                <div>
+                  <div className="font-semibold">Usuario #{i + 1}</div>
+                  <div className="text-xs text-gray-400">Hace unos segundos</div>
+                </div>
+              </div>
+              <p className="text-lg">{post.text}</p>
+              
+              {/* Indicador de emoción */}
+              <div className="mt-4 flex items-center gap-2">
+                <Heart className="w-4 h-4" />
+                <span className="text-sm text-gray-400 capitalize">{post.emotion}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Botón flotante para crear post */}
+        <button
+          className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl"
+          style={{ animation: 'bounce 2s ease-in-out infinite' }}
+        >
+          <span className="text-3xl">+</span>
+        </button>
+      </div>
+
+      <style jsx>{`
+        @keyframes slideDown {
+          from { transform: translateY(-100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideInPost {
+          from { transform: translateX(-100px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default MidnightLaunch;
