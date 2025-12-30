@@ -3,8 +3,13 @@ export const EVENT_CONFIG = {
   eventsEnabled: true,
 
   // MODO DE DESARROLLO
-  // true: Todos los eventos se pueden probar con botón
-  // false: Solo eventos con testMode.enabled = true pueden probarse
+  // true: Modo desarrollo - mostrar botón de prueba
+  // false: Modo producción - ocultar botón de prueba
+  developmentMode: true,
+
+  // PERMITE PROBAR EVENTOS EN DESARROLLO
+  // true: Los eventos se pueden probar con botón (solo si developmentMode = true)
+  // false: No se permite probar eventos
   allowTestMode: true,
 
   // LOGGING
@@ -13,7 +18,7 @@ export const EVENT_CONFIG = {
   debugMode: false,
 
   // CONFIGURACIÓN POR DEFECTO DE TEST MODE
-  // Si no se específica en un evento, usa estos valores
+  // Si no se especifica en un evento, usa estos valores
   defaultTestMode: {
     enabled: false,
     overrideDate: null,

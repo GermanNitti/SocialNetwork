@@ -9,7 +9,7 @@ import FriendRequests from "./FriendRequests";
 import { Link as RouterLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { getActiveEvent, getTestModeEvent, EVENT_CONFIG } from "./events/EventManager";
+import { getActiveEvent, getTestModeEvent, getTestableEvent, EVENT_CONFIG } from "./events/EventManager";
 import { Play } from "lucide-react";
 
 export default function NavBar() {
@@ -19,7 +19,8 @@ export default function NavBar() {
 
   const activeEvent = getActiveEvent();
   const testModeEvent = getTestModeEvent();
-  const eventToTest = testModeEvent || activeEvent;
+  const testableEvent = getTestableEvent();
+  const eventToTest = testModeEvent || testableEvent || activeEvent;
   const EventComponent = testEvent ? eventToTest?.component : null;
 
   const handleTestEvent = () => {
@@ -28,7 +29,7 @@ export default function NavBar() {
     }
   };
 
-  const showTestButton = EVENT_CONFIG.allowTestMode && eventToTest && !testEvent;
+  const showTestButton = EVENT_CONFIG.developmentMode && EVENT_CONFIG.allowTestMode && eventToTest && !testEvent;
 
   if (!user) return null;
 

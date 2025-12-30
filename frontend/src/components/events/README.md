@@ -2,6 +2,37 @@
 
 El sistema de eventos permite implementar animaciones y efectos especiales para eventos específicos (Año Nuevo, lanzamientos, aniversarios, etc.) de manera escalable.
 
+## 🚨 IMPORTANTE: Modo de Producción
+
+El sistema tiene **dos modos** de operación:
+
+### Modo de Desarrollo (`developmentMode: true`)
+- **Botón ▶️ visible** en la navbar para probar eventos
+- Puedes activar cualquier evento manualmente
+- Ideal para desarrollar y ajustar animaciones
+- Eventos se muestran según `testMode.enabled`
+
+### Modo de Producción (`developmentMode: false`)
+- **Botón ▶️ OCULTO** - no se ve en la navbar
+- Los eventos solo se activan por fecha y hora
+- Los usuarios no pueden activar eventos manualmente
+- Es el modo que se debe usar cuando la app esté en producción
+
+### Cómo Cambiar entre Modos
+
+En `frontend/src/components/events/EventConfig.jsx`:
+
+```javascript
+export const EVENT_CONFIG = {
+  // Modo desarrollo - cambiar a false en producción
+  developmentMode: true,  // <-- CAMBIAR A FALSE EN PRODUCCIÓN
+
+  // Configuración restante...
+};
+```
+
+**⚠️ Recordatorio: Antes de hacer deploy a producción, SIEMPRE cambiar `developmentMode: false`**
+
 ## Estructura
 
 ```
@@ -22,6 +53,7 @@ frontend/src/components/events/
 
 ### EventConfig.jsx
 - Configuración centralizada de todos los eventos
+- **`developmentMode`**: Controla si el botón de prueba es visible
 - Fechas de activación/desactivación
 - Modos de prueba
 - Configuraciones visuales
@@ -171,11 +203,11 @@ import { MI_NUEVO_EVENTO_CONFIG } from './EventConfig';
 }
 ```
 
-## Cómo Probar un Evento
+## Cómo Probar un Evento (MODO DESARROLLO)
 
 ### Opción 1: Botón de Prueba en la App
 
-Si `allowTestMode: true` en `EventConfig.jsx`, aparecerá un botón ▶️ en la navbar para probar eventos.
+Si `developmentMode: true` y `allowTestMode: true` en `EventConfig.jsx`, aparecerá un botón ▶️ en la navbar para probar eventos.
 
 ### Opción 2: Habilitar Test Mode
 
@@ -205,6 +237,16 @@ export const NEW_YEAR_2026_CONFIG = {
 };
 ```
 
+## Cómo Probar un Evento (MODO PRODUCCIÓN)
+
+En modo de producción (`developmentMode: false`), los eventos **solo se activan por fecha y hora**. No hay botón de prueba.
+
+Para probar eventos antes de lanzarlos a producción:
+
+1. **Usa `overrideDate`** en `EventConfig.jsx` con una fecha cercana
+2. **Asegúrate que `schedule.enabled` sea `true`**
+3. **Verifica las zonas horarias**
+
 ## Configurar para Producción
 
 Cuando el evento esté listo y probado:
@@ -212,6 +254,13 @@ Cuando el evento esté listo y probado:
 ### 1. Verificar EventConfig.jsx
 
 ```javascript
+export const EVENT_CONFIG = {
+  developmentMode: false,      // <-- IMPORTANTE: false en producción
+  eventsEnabled: true,          // Eventos activos
+  allowTestMode: false,         // No permitir pruebas
+  debugMode: false,             // Logs desactivados
+};
+
 export const NEW_YEAR_2026_CONFIG = {
   // Fechas correctas
   startDateTime: '2026-01-01T00:00:00',
@@ -222,7 +271,7 @@ export const NEW_YEAR_2026_CONFIG = {
 
   // Test mode desactivado
   testMode: {
-    enabled: false, // <-- IMPORTANTE: false
+    enabled: false, // <-- IMPORTANTE: false en producción
     overrideDate: null,
   },
 };
@@ -232,9 +281,10 @@ export const NEW_YEAR_2026_CONFIG = {
 
 ```javascript
 export const EVENT_CONFIG = {
-  eventsEnabled: true, // Eventos activos
-  allowTestMode: true, // Permitir probar con botón
-  debugMode: false, // Logs desactivados
+  developmentMode: false,  // <-- Botón oculto
+  eventsEnabled: true,     // Eventos activos
+  allowTestMode: false,    // No permite pruebas
+  debugMode: false,        // Sin logs
 };
 ```
 
@@ -349,8 +399,16 @@ export const EVENT_CONFIG = {
 
 1. Verifica que `schedule.enabled` sea `true` en `EventConfig.jsx`
 2. Confirma que `eventsEnabled` sea `true` en `EVENT_CONFIG`
-3. Verifica que la fecha actual esté entre `startDateTime` y `endDateTime`
-4. Revisa la consola del navegador por errores de JavaScript
+3. En modo desarrollo, verifica que `developmentMode` sea `true`
+4. Verifica que la fecha actual esté entre `startDateTime` y `endDateTime`
+5. Revisa la consola del navegador por errores de JavaScript
+
+### El botón de prueba no aparece
+
+1. Verifica que `developmentMode` sea `true` en `EventConfig.jsx`
+2. Verifica que `allowTestMode` sea `true` en `EVENT_CONFIG`
+3. Confirma que haya al menos un evento configurado en `EVENTS`
+4. Recarga la página (F5) para que se carguen los cambios
 
 ### El componente no renderiza
 
@@ -358,7 +416,7 @@ export const EVENT_CONFIG = {
 2. Asegúrate que el componente devuelva `null` cuando termine la animación
 3. Revisa los estilos `z-index` para que esté por encima de todo el contenido
 
-### Eventos que se sobreponen
+### Eventos que se superponen
 
 El sistema muestra SOLO el primer evento activo que encuentre en el array `EVENTS`. Si tienes múltiples eventos activos en el mismo momento, solo se mostrará el primero.
 
@@ -366,22 +424,31 @@ El sistema muestra SOLO el primer evento activo que encuentre en el array `EVENT
 
 Para el evento de Año Nuevo 2026:
 
-- [ ] Evento completamente probado con test mode
-- [ ] `testMode.enabled` en `false`
-- [ ] `schedule.enabled` en `true`
+### Modo Desarrollo (Ahora):
+- [ ] Evento completamente probado con botón ▶️
+- [ ] Animaciones fluidas sin errores
+- [ ] Colores y efectos como se desean
+- [ ] `developmentMode: true` en `EventConfig.jsx`
+
+### Modo Producción (Antes del 1/1/2026):
+- [ ] `developmentMode` en `false` (botón oculto)
+- [ ] `testMode.enabled` en `false` para todos los eventos
+- [ ] `schedule.enabled` en `true` para eventos activos
 - [ ] Fechas correctas (`2026-01-01T00:00:00` a `2026-01-01T23:59:59`)
 - [ ] Zona horaria correcta (`America/Argentina/Buenos_Aires`)
 - [ ] `eventsEnabled` en `true`
 - [ ] `debugMode` en `false`
 - [ ] Pruebas en múltiples navegadores
-- [ ] Animaciones fluidas sin errores
-- [ ] Componente llama `onComplete()` cuando termina
+- [ ] Deploy exitoso
 
 ## Notas Importantes
 
+- **`developmentMode`**: Controla si el botón de prueba es visible. `true` = visible, `false` = oculto.
 - Todos los componentes de eventos deben tener `z-[9999]` para estar por encima de todo
 - Los eventos usan `position: fixed` para cubrir toda la pantalla
 - Cada evento debe llamar a `onComplete()` cuando termine la animación
 - Los eventos son completamente independientes y reutilizables
 - Usa las plantillas de `EVENT_TEMPLATES` para crear eventos rápidamente
+- La configuración está centralizada en `EventConfig.jsx` para fácil modificación
+- **ANTES DE PRODUCCIÓN**: SIEMPRE cambiar `developmentMode: false` para ocultar el botón
 - La configuración está centralizada en `EventConfig.jsx` para fácil modificación
