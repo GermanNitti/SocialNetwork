@@ -152,6 +152,33 @@ router.get("/:username", optionalAuth, async (req, res) => {
     },
   });
 
+  const friendsCount = await prisma.friendship.count({
+    where: {
+      status: "ACCEPTED",
+      OR: [{ requesterId: user.id }, { addresseeId: user.id }],
+    },
+  });
+
+  let friendshipStatus = "NONE";
+  let friendship = null;
+  if (req.userId) {
+    friendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: req.userId, addresseeId: user.id },
+          { requesterId: user.id, addresseeId: req.userId },
+        ],
+      },
+    });
+    friendshipStatus = friendship
+      ? friendship.status === "ACCEPTED"
+        ? "FRIENDS"
+        : friendship.requesterId === req.userId
+          ? "OUTGOING"
+          : "INCOMING"
+      : "NONE";
+  }
+
   const latestPostEmotion = posts.length > 0 ? {
     emotion: posts[0].emotion,
     emotionColor: posts[0].emotionColor,
