@@ -46,7 +46,6 @@ export const NEW_YEAR_2026_CONFIG = {
   testMode: {
     enabled: false, // true = mostrar siempre (para pruebas), false = respeta fechas
     overrideDate: null, // Opcional: fecha específica para simular (formato ISO 8601)
-                       // Ejemplo: '2025-12-31T23:59:59' para probar efecto de Año Nuevo
   },
 
   // DURACIÓN DE CADA FASE (en milisegundos)

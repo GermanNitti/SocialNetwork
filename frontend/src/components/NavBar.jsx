@@ -9,7 +9,8 @@ import FriendRequests from "./FriendRequests";
 import { Link as RouterLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { getActiveEvent, getTestModeEvent, getTestableEvent, EVENT_CONFIG } from "./events/EventManager";
+import { getActiveEvent, getTestModeEvent, getTestableEvent } from "./events/EventManager";
+import { EVENT_CONFIG } from "./events/EventConfig";
 
 // Icono Play SVG
 const PlayIcon = () => (
