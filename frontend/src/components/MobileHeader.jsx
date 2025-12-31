@@ -7,7 +7,8 @@ import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { getActiveEvent, getTestModeEvent, getTestableEvent, EVENT_CONFIG } from "./events/EventManager";
+import { getActiveEvent, getTestModeEvent, getTestableEvent } from "./events/EventManager";
+import { EVENT_CONFIG } from "./events/EventConfig";
 
 // Icono Play SVG
 const PlayIcon = () => (
@@ -48,7 +49,7 @@ export default function MobileHeader() {
               whileHover={{ scale: 1.05 }}
               onClick={handleTestEvent}
               className="p-1.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all"
-              title={`Probar: ${eventToTest.name}`}
+              title={`Probar: ${eventToTest?.name || 'evento'}`}
             >
               <PlayIcon />
             </motion.button>

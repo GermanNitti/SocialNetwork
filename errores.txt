@@ -1,13 +1,14 @@
-vite v7.2.6 building client environment for production...
-transforming...
-✓ 405 modules transformed.
-✗ Build failed in 2.29s
-error during build:
-[vite]: Rollup failed to resolve import "lucide-react" from "/vercel/path0/frontend/src/components/events/midnightLaunch.jsx".
-This is most likely unintended because it can break your application at runtime.
-If you do want to externalize this module explicitly add it to
-`build.rollupOptions.external`
-    at viteLog (file:///vercel/path0/frontend/node_modules/vite/dist/node/chunks/config.js:33628:57)
-    at file:///vercel/path0/frontend/node_modules/vite/dist/node/chunks/config.js:33662:73
-    at onwarn (file:///vercel/path0/frontend/node_modules/@vitejs/plugin-react/dist/index.js:76:7)
-    at file:///vercel/path0/frontend/node_modules/vite/dist/node/chunks/config.js:33662:28
+11: error during build:
+src/components/MobileHeader.jsx (10:61): "EVENT_CONFIG" is not exported by "src/components/events/EventManager.jsx", imported by "src/components/MobileHeader.jsx".
+12: // Icono Play SVG
+    at getRollupError (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:16956:16)
+    at Module.traceVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17412:29)
+    at ModuleScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:15076:39)
+    at FunctionScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at FunctionBodyScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at ReturnValueScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at FunctionBodyScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at MemberExpression.bind (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:7363:49)
+Error: Command "npm run build" exited with 1

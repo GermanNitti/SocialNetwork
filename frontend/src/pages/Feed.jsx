@@ -70,7 +70,9 @@ export default function Feed() {
           )}
           {!isLoading &&
             posts.map((post) => (
-              <PostCard key={post.id} post={post} showHelpHighlight={mode === "help"} />
+              <div key={post.id} className="mx-2 md:mx-4">
+                <PostCard post={post} showHelpHighlight={mode === "help"} />
+              </div>
             ))}
           </section>
         </PullToRefresh>
