@@ -1,5 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Zap, Star, Heart, Rocket } from 'lucide-react';
+
+// Iconos SVG
+const SparklesIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m12 3-1.912 5.813a2 2 0 0 0-3.59 0l-6.173 2.656a2 2 0 0 0-1.4 3.27l1.638 6.639a2 2 0 0 0 .886 2.725l1.2 5.323a2 2 0 0 0 1.937-1.313l5.263-2.631a2 2 0 0 0 2.003.795l1.2-5.323a2 2 0 0 0 .886-2.725l1.638-6.639a2 2 0 0 0-1.4-3.27L12 3Z" />
+  </svg>
+);
+
+const ZapIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="13 2 3 14 12 14" />
+    <polygon points="13 2 3 14 12 14" />
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 15.09 8.26 16 12.26 13.74 16.5 17.5 14.5 11.5 14.5 7.5 13.74 10.5 12.26 8.91 15.09 12 2Z" />
+  </svg>
+);
+
+const HeartIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0-7.78-7.78l-1.06 1.06a5.5 5.5 0 0 0-7.78 0Z" />
+  </svg>
+);
+
+const RocketIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s4.77-5.77 4.5-5c0 0 3.74-5.77 4.5-5s.5-3.74 2-5c-1.5-1.26-2-5-2-5s.5-3.74-2-5 2-5.77 4.5-5 4.5c0 0-3.74-5.77-4.5-5s-.5-3.74-2-5c0 0 .5-3.74 2-5s2-5.77 4.5-5 4.5c0 0 3.74 5.77 4.5 5Z" />
+    <path d="M12 15a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z" />
+    <path d="m12 7-8.5 2.75" />
+    <path d="M5 22c-1.5-1.5-1.5-3 2-3 2.5 2.5 5.5-3 5.5-3l-5.5-5.5" />
+  </svg>
+);
 
 export default function MidnightLaunch({ onComplete }) {
   const [countdown, setCountdown] = useState(10);
@@ -147,8 +181,8 @@ export default function MidnightLaunch({ onComplete }) {
             </p>
 
             <div className="flex justify-center gap-6 mt-8">
-              {[Sparkles, Zap, Star, Heart, Rocket].map((Icon, i) => (
-                <Icon
+              {[SparklesIcon, ZapIcon, StarIcon, HeartIcon, RocketIcon].map((IconComponent, i) => (
+                <IconComponent
                   key={i}
                   className="w-8 h-8 text-white"
                   style={{
@@ -290,11 +324,11 @@ export default function MidnightLaunch({ onComplete }) {
           </div>
 
           <div className="flex justify-center items-center gap-4 mt-8">
-            <Star className="w-12 h-12 text-yellow-400" style={{ animation: 'spin 3s linear infinite' }} />
+            <StarIcon className="w-12 h-12 text-yellow-400" style={{ animation: 'spin 3s linear infinite' }} />
             <span className="text-6xl font-black bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
               #001
             </span>
-            <Star className="w-12 h-12 text-yellow-400" style={{ animation: 'spin 3s linear infinite reverse' }} />
+            <StarIcon className="w-12 h-12 text-yellow-400" style={{ animation: 'spin 3s linear infinite reverse' }} />
           </div>
 
           <div className="text-xl text-gray-300 mt-8 max-w-2xl mx-auto px-4">

@@ -1,59 +1,13 @@
-
-> frontend@0.0.0 build
-> vite build
-
 vite v7.2.6 building client environment for production...
 transforming...
-✓ 48 modules transformed.
-✗ Build failed in 879ms
+✓ 405 modules transformed.
+✗ Build failed in 2.29s
 error during build:
-[vite]: Rollup failed to resolve import "lucide-react" from "/home/runner/work/SocialNetwork/SocialNetwork/frontend/src/components/NavBar.jsx".
+[vite]: Rollup failed to resolve import "lucide-react" from "/vercel/path0/frontend/src/components/events/midnightLaunch.jsx".
 This is most likely unintended because it can break your application at runtime.
 If you do want to externalize this module explicitly add it to
 `build.rollupOptions.external`
-    at viteLog (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33628:57)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33662:73
-    at onwarn (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/@vitejs/plugin-react/dist/index.js:76:7)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33662:28
-    at onRollupLog (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33657:63)
-    at onLog (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33460:4)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:20961:32
-    at Object.logger [as onLog] (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:22848:9)
-    at ModuleLoader.handleInvalidResolvedId (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21592:26)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21550:26
-6s
-Run cd frontend
-
-added 252 packages, and audited 253 packages in 5s
-
-57 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-> frontend@0.0.0 build
-> vite build
-
-vite v7.2.6 building client environment for production...
-transforming...
-✓ 48 modules transformed.
-✗ Build failed in 879ms
-error during build:
-[vite]: Rollup failed to resolve import "lucide-react" from "/home/runner/work/SocialNetwork/SocialNetwork/frontend/src/components/NavBar.jsx".
-This is most likely unintended because it can break your application at runtime.
-If you do want to externalize this module explicitly add it to
-`build.rollupOptions.external`
-    at viteLog (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33628:57)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33662:73
-    at onwarn (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/@vitejs/plugin-react/dist/index.js:76:7)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33662:28
-    at onRollupLog (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33657:63)
-    at onLog (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/vite/dist/node/chunks/config.js:33460:4)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:20961:32
-    at Object.logger [as onLog] (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:22848:9)
-    at ModuleLoader.handleInvalidResolvedId (file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21592:26)
-    at file:///home/runner/work/SocialNetwork/SocialNetwork/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21550:26
-Error: Process completed with exit code 1.
-0s
-0s
-1s
+    at viteLog (file:///vercel/path0/frontend/node_modules/vite/dist/node/chunks/config.js:33628:57)
+    at file:///vercel/path0/frontend/node_modules/vite/dist/node/chunks/config.js:33662:73
+    at onwarn (file:///vercel/path0/frontend/node_modules/@vitejs/plugin-react/dist/index.js:76:7)
+    at file:///vercel/path0/frontend/node_modules/vite/dist/node/chunks/config.js:33662:28
