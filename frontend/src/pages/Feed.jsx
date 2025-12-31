@@ -50,14 +50,14 @@ export default function Feed() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 space-y-4">
+    <div className="max-w-6xl mx-auto px-0 md:px-4 space-y-4">
       {import.meta.env.VITE_ENABLE_HIGHLIGHTS === "1" && <MobileHighlightsSection />}
 
       <div id="composer" className="pt-2">
         <PostComposer />
       </div>
 
-      <div className="grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 pb-16">
+      <div className="grid md:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1.4fr)] gap-3 md:gap-6 pb-16 md:pb-6">
         <PullToRefresh onRefresh={handleRefresh}>
           <section className="space-y-4">
             <FeedTabs active={mode} onChange={setMode} />

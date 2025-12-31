@@ -83,7 +83,7 @@ function App() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen pb-16 md:pb-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
+      <div className="min-h-screen pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 w-full overflow-x-hidden">
         {user && (
           <>
             <div className="hidden md:block">
@@ -92,7 +92,7 @@ function App() {
             <MobileHeader />
           </>
         )}
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-0 md:px-4 py-3 md:py-6">
         {user && !user.hasCompletedOnboarding ? (
           <OnboardingWizard />
         ) : (

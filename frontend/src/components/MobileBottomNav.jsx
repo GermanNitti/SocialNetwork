@@ -79,8 +79,8 @@ export default function MobileBottomNav({ activeTab, onChange }) {
     <>
       <style>{`
         @keyframes rippleEffect {
-          0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.55); transform: translate(-50%, -50%) scale(0); }
-          100% { box-shadow: 0 0 0 16px rgba(99, 102, 241, 0); transform: translate(-50%, -50%) scale(2); }
+          0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.55); transform: translate(-50%, -50%) scale(0); }
+          100% { box-shadow: 0 0 0 16px rgba(99,102,241,0); transform: translate(-50%, -50%) scale(2); }
         }
         @keyframes iconBounce {
           0%, 100% { transform: scale(1); }
@@ -105,7 +105,7 @@ export default function MobileBottomNav({ activeTab, onChange }) {
           animation: iconBounce 0.6s ease-out;
         }
       `}</style>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-slate-200/60 dark:border-slate-800/60 glass bg-white/90 dark:bg-slate-950/95 px-2 backdrop-blur-md md:hidden shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 h-[60px] md:hidden flex items-center justify-around px-0 safe-area-inset-bottom">
         {navItems.map((item) => {
           const active = current === item.id;
           return (
@@ -114,14 +114,18 @@ export default function MobileBottomNav({ activeTab, onChange }) {
               whileTap={{ scale: 0.9 }}
               ref={(el) => (btnRefs.current[item.id] = el)}
               onClick={handleClick(item.id)}
-              className={`nav-button relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold smooth-transition ${
-                active ? "text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30" : "text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-200 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              className={`nav-button relative flex flex-col items-center justify-center gap-0.5 px-4 py-2 w-full h-full border-t-0 border-b-0 border-l-0 border-r-0 rounded-none text-xs font-semibold smooth-transition transition-all ${
+                active ? "text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/20" : "text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-200 active:bg-slate-100 dark:active:bg-slate-800/50"
               }`}
             >
-              <span className="icon-container h-6 w-6">{item.icon}</span>
-              <span className="whitespace-nowrap">{item.title}</span>
+              <span className="icon-container h-5 w-5">{item.icon}</span>
+              <span className="whitespace-nowrap text-[10px]">{item.title}</span>
             </motion.button>
           );
+        })}
+      </nav>
+    </>
+  );
         })}
       </nav>
     </>
