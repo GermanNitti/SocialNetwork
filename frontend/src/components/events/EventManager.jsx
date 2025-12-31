@@ -27,14 +27,6 @@ export const EVENTS = [
     visual: NEW_YEAR_2026_CONFIG.visual,
   },
   // Agregar más eventos aquí en el futuro
-  // {
-  //   id: EVENT_TYPES.ANNIVERSARY,
-  //   name: '1er Aniversario de Macanudos',
-  //   description: 'Celebración del primer aniversario',
-  //   component: AnniversaryEvent,
-  //   schedule: EVENT_TEMPLATES.singleDay('2026-12-30', 'Aniversario 2026'),
-  //   testMode: EVENT_CONFIG.defaultTestMode,
-  // },
 ];
 
 export function shouldShowEvent(event) {
@@ -105,25 +97,20 @@ export function getActiveEvent() {
 
 export function getTestModeEvent() {
   // Devuelve el primer evento que tiene testMode.enabled = true
-  // O si no hay ninguno con testMode específico, devuelve el primer evento disponible
   const eventWithTestMode = EVENTS.find(event => event.testMode?.enabled && EVENT_CONFIG.allowTestMode);
-  
+
   if (eventWithTestMode) {
     return eventWithTestMode;
   }
 
   // Si no hay evento con testMode específico, devuelve el primer evento para pruebas
-  // siempre que haya eventos configurados
   return EVENTS.length > 0 ? EVENTS[0] : null;
 }
 
 export function getTestableEvent() {
   // Devuelve cualquier evento disponible para probar (independientemente de si está activo por fecha)
   // Útil para botones de prueba que deben aparecer siempre
-  return EVENTS.length > 0 ? EVENTS[0] : null;
-}
-
-  // Si no hay evento con testMode específico, devuelve el primer evento disponible para pruebas
+  // Si no hay eventos configurados, devuelve null
   return EVENTS.length > 0 ? EVENTS[0] : null;
 }
 

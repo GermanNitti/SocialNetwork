@@ -4,7 +4,7 @@ import { Sparkles, Zap, Star, Heart, Rocket } from 'lucide-react';
 export default function MidnightLaunch({ onComplete }) {
   const [countdown, setCountdown] = useState(10);
   const [phase, setPhase] = useState('countdown');
-  const [pparticles, setPparticles] = useState([]);
+  const [particles, setParticles] = useState([]);
   const [pulseIntensity, setPulseIntensity] = useState(0);
 
   useEffect(() => {
@@ -13,14 +13,14 @@ export default function MidnightLaunch({ onComplete }) {
         setCountdown(countdown - 1);
         setPulseIntensity(11 - countdown);
 
-        const newPparticles = Array.from({ length: 20 }, (_, i) => ({
+        const newParticles = Array.from({ length: 20 }, (_, i) => ({
           id: Date.now() + i,
           x: Math.random() * 100,
           y: Math.random() * 100,
           size: Math.random() * 4 + 2,
           duration: Math.random() * 2 + 1
         }));
-        setPparticles(prev => [...prev, ...newPparticles]);
+        setParticles(prev => [...prev, ...newParticles]);
 
         if (countdown <= 5) {
           document.body.style.transform = `scale(${1 + (6 - countdown) * 0.01})`;
@@ -38,7 +38,7 @@ export default function MidnightLaunch({ onComplete }) {
         onComplete?.();
       }, 6000);
 
-      const explosionPparticles = Array.from({ length: 200 }, (_, i) => ({
+      const explosionParticles = Array.from({ length: 200 }, (_, i) => ({
         id: Date.now() + i,
         x: 50,
         y: 50,
@@ -48,13 +48,13 @@ export default function MidnightLaunch({ onComplete }) {
         duration: Math.random() * 3 + 2,
         color: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F'][Math.floor(Math.random() * 5)]
       }));
-      setPparticles(explosionPparticles);
+      setParticles(explosionParticles);
     }
   }, [countdown, phase, onComplete]);
 
   useEffect(() => {
     const cleanup = setInterval(() => {
-      setPparticles(prev => prev.filter(p => Date.now() - p.id < p.duration * 1000));
+      setParticles(prev => prev.filter(p => Date.now() - p.id < p.duration * 1000));
     }, 100);
     return () => clearInterval(cleanup);
   }, []);
@@ -64,10 +64,6 @@ export default function MidnightLaunch({ onComplete }) {
     if (countdown > 4) return 'from-blue-600 to-cyan-500';
     if (countdown > 2) return 'from-cyan-500 to-yellow-400';
     return 'from-yellow-400 to-red-500';
-  };
-
-  const getGlowIntensity = () => {
-    return `0 0 ${20 + pulseIntensity * 10}px rgba(255,255,255, ${0.3 + pulseIntensity * 0.05})`;
   };
 
   const getGlowIntensity = () => {
@@ -93,16 +89,16 @@ export default function MidnightLaunch({ onComplete }) {
           }}
         />
 
-        {pparticles.map(pparticle => (
+        {particles.map(particle => (
           <div
-            key={pparticle.id}
+            key={particle.id}
             className="absolute rounded-full bg-white"
             style={{
-              left: `${pparticle.x}%`,
-              top: `${pparticle.y}%`,
-              width: `${pparticle.size}px`,
-              height: `${pparticle.size}px`,
-              animation: `fadeOut ${pparticle.duration}s ease-out forwards`,
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              animation: `fadeOut ${particle.duration}s ease-out forwards`,
               boxShadow: '0 0 10px rgba(255,255,255,0.8)'
             }}
           />
@@ -145,7 +141,8 @@ export default function MidnightLaunch({ onComplete }) {
 
           <div className="mt-8 space-y-4">
             <p className="text-white text-3xl font-light tracking-[0.3em] opacity-80"
-              style={{ animation: 'pulse 2s ease-in-out infinite' }}>
+              style={{ animation: 'pulse 2s ease-in-out infinite' }}
+            >
               PREPARANDO EL LANZAMIENTO
             </p>
 
@@ -212,19 +209,19 @@ export default function MidnightLaunch({ onComplete }) {
           style={{ animation: 'flashOut 0.5s ease-out forwards' }}
         />
 
-        {pparticles.map(pparticle => (
+        {particles.map(particle => (
           <div
-            key={pparticle.id}
+            key={particle.id}
             className="absolute rounded-full"
             style={{
-              left: `${pparticle.x}%`,
-              top: `${pparticle.y}%`,
-              width: `${pparticle.size}px`,
-              height: `${pparticle.size}px`,
-              background: pparticle.color || '#FFD700',
-              animation: `explodePparticle ${pparticle.duration}s ease-out forwards`,
-              transform: `translate(${(pparticle.targetX - pparticle.x) * 5}px, ${(pparticle.targetY - pparticle.y) * 5}px)`,
-              boxShadow: `0 0 ${pparticle.size * 3}px ${pparticle.color || '#FFD700'}`
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              background: particle.color || '#FFD700',
+              animation: `explodeParticle ${particle.duration}s ease-out forwards`,
+              transform: `translate(${(particle.targetX - particle.x) * 5}px, ${(particle.targetY - particle.y) * 5}px)`,
+              boxShadow: `0 0 ${particle.size * 3}px ${particle.color || '#FFD700'}`
             }}
           />
         ))}
@@ -245,7 +242,7 @@ export default function MidnightLaunch({ onComplete }) {
             0% { opacity: 1; }
             100% { opacity: 0; }
           }
-          @keyframes explodePparticle {
+          @keyframes explodeParticle {
             0% { opacity: 1; transform: translate(0, 0) scale(1); }
             100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
           }
@@ -283,7 +280,8 @@ export default function MidnightLaunch({ onComplete }) {
             style={{
               textShadow: '0 0 40px rgba(255,255,255,0.8)',
               animation: 'glow 2s ease-in-out infinite'
-            }}>
+            }}
+          >
             ¡BIENVENIDO!
           </div>
 

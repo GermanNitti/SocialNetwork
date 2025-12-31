@@ -10,7 +10,13 @@ import { Link as RouterLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { getActiveEvent, getTestModeEvent, getTestableEvent, EVENT_CONFIG } from "./events/EventManager";
-import { Play } from "lucide-react";
+
+// Icono Play SVG
+const PlayIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
 
 export default function NavBar() {
   const { user, logout } = useAuth();
@@ -48,17 +54,17 @@ export default function NavBar() {
             className="flex items-center gap-2 min-w-[180px]"
           >
             <div className="flex items-center gap-2">
-              {showTestButton && (
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  whileHover={{ scale: 1.05 }}
-                  onClick={handleTestEvent}
-                  className="p-1.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all"
-                  title={`Probar: ${eventToTest.name}`}
-                >
-                  <Play className="w-5 h-5" />
-                </motion.button>
-              )}
+               {showTestButton && (
+                 <motion.button
+                   whileTap={{ scale: 0.95 }}
+                   whileHover={{ scale: 1.05 }}
+                   onClick={handleTestEvent}
+                   className="p-1.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl transition-all"
+                   title={`Probar: ${eventToTest.name}`}
+                 >
+                   <PlayIcon />
+                 </motion.button>
+               )}
               <Link to="/feed" className="flex items-center gap-2">
                 <MacanudosLogo showText size={90} />
               </Link>
