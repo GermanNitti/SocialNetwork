@@ -16,11 +16,24 @@ export default function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  if (!user) {
+    return (
+      <div className="w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white/60">Cargando...</div>
+      </div>
+    );
+  }
+
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
     queryFn: async () => {
-      const { data } = await api.get("/chat/conversations");
-      return data || [];
+      try {
+        const { data } = await api.get("/chat/conversations");
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+        return [];
+      }
     },
     refetchInterval: 15000,
   });
@@ -28,8 +41,13 @@ export default function Chat() {
   const { data: friends } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
-      const { data } = await api.get("/friends");
-      return data || [];
+      try {
+        const { data } = await api.get("/friends");
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+        return [];
+      }
     },
   });
 
@@ -37,8 +55,13 @@ export default function Chat() {
     enabled: !!active,
     queryKey: ["messages", active],
     queryFn: async () => {
-      const { data } = await api.get(`/chat/${active}/messages`);
-      return data || [];
+      try {
+        const { data } = await api.get(`/chat/${active}/messages`);
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        return [];
+      }
     },
     refetchInterval: 5000,
   });
@@ -122,8 +145,9 @@ export default function Chat() {
   const combinedList = (() => {
     const acceptedFriends = friends?.filter((f) => f.status === "ACCEPTED") || [];
     const friendUsernames = new Set(acceptedFriends.map((f) => f.user.username));
+    const conversationsList = conversations || [];
     
-    const conversationsWithoutFriends = conversations?.filter(
+    const conversationsWithoutFriends = conversationsList.filter(
       (c) => {
         const other = c.participants?.find((p) => p.id !== user.id) || c.participants?.[0];
         return other && !friendUsernames.has(other.username);
@@ -131,8 +155,8 @@ export default function Chat() {
     ) || [];
 
     return [
-      ...conversations.map((c) => ({ type: "conversation", data: c })),
-      ...acceptedFriends.filter((f) => !conversations.some((c) => {
+      ...conversationsList.map((c) => ({ type: "conversation", data: c })),
+      ...acceptedFriends.filter((f) => !conversationsList.some((c) => {
         const other = c.participants?.find((p) => p.id !== user.id) || c.participants?.[0];
         return other?.username === f.user.username;
       })).map((f) => ({ type: "friend", data: f })),
