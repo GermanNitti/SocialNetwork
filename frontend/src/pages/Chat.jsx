@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import Avatar from "../components/Avatar";
-import { Check, CheckCheck } from "lucide-react";
+
 
 export default function Chat() {
   const { user } = useAuth();
@@ -514,9 +514,13 @@ export default function Chat() {
                                 transition={{ delay: 0.2 }}
                               >
                                 {message.read ? (
-                                  <CheckCheck className="w-4 h-4 text-blue-300" />
+                                  <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
                                 ) : (
-                                  <Check className="w-4 h-4 opacity-70" />
+                                  <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
                                 )}
                               </motion.div>
                             )}
