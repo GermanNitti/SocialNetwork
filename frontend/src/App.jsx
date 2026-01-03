@@ -81,18 +81,20 @@ function App() {
     );
   }
 
+  const isChatPage = location.pathname.startsWith("/chat");
+
   return (
     <ToastProvider>
-      <div className="min-h-screen pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 w-full overflow-x-hidden">
+      <div className={`min-h-screen ${isChatPage ? 'pb-0 md:pb-0' : 'pb-20 md:pb-0'} bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 w-full overflow-x-hidden`}>
         {user && (
           <>
             <div className="hidden md:block">
               <NavBar />
             </div>
-            <MobileHeader />
+            {!isChatPage && <MobileHeader />}
           </>
         )}
-      <div className="max-w-7xl mx-auto px-0 md:px-4 py-3 md:py-6">
+      <div className={`${isChatPage ? 'px-0 py-0 h-screen' : 'max-w-7xl mx-auto px-0 md:px-4 py-3 md:py-6'}`}>
         {user && !user.hasCompletedOnboarding ? (
           <OnboardingWizard />
         ) : (
@@ -177,7 +179,7 @@ function App() {
         )}
       </div>
       <Lightbox />
-      {user && (
+      {user && !isChatPage && (
         <MobileBottomNav activeTab={resolveTab()} onChange={handleTabChange} />
       )}
        {user && mobileSearchOpen && (
