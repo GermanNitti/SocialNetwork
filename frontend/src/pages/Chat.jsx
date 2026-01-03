@@ -101,47 +101,6 @@ export default function Chat() {
     setActiveUser(null);
   };
 
-  const send = useMutation({
-    mutationFn: async () => {
-      if (!text.trim()) return;
-      const targetUsername = activeUser?.username;
-      if (!targetUsername) return;
-      await api.post(`/chat/to/${targetUsername}`, { content: text });
-    },
-    onSuccess: () => {
-      const tempId = Date.now();
-      const newMessage = {
-        id: tempId,
-        content: text,
-        sender: { id: user.id, username: user.username },
-        createdAt: new Date(),
-        isFormed: false,
-        particles: generateTextParticles(text),
-        reactions: [],
-        read: false
-      };
-      
-      setLocalMessages(prev => [...prev, newMessage]);
-      setText("");
-      
-      setTimeout(() => {
-        setLocalMessages(prev => prev.map(msg => 
-          msg.id === tempId ? { ...msg, isFormed: true } : msg
-        ));
-      }, 1500);
-      
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["messages", active] });
-        queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      }, 1600);
-    },
-  });
-
-  const handleSend = (e) => {
-    e.preventDefault();
-    send.mutate();
-  };
-
   const combinedList = (() => {
     const acceptedFriends = friends?.filter((f) => f.status === "ACCEPTED") || [];
     const friendUsernames = new Set(acceptedFriends.map((f) => f.user.username));
@@ -180,6 +139,8 @@ export default function Chat() {
     neutral: { from: '#667EEA', to: '#764BA2', glow: 'rgba(102, 126, 234, 0.3)' }
   };
 
+  const uid = () => `${Date.now()}-${Math.random()}`;
+
   const generateTextParticles = (text) => {
     const particles = [];
     const charsPerLine = 30;
@@ -193,14 +154,11 @@ export default function Chat() {
       const finalX = col * charWidth;
       const finalY = line * lineHeight;
       
-      const startX = finalX + (Math.random() - 0.5) * 100;
-      const startY = 300 + Math.random() * 200;
-      
       particles.push({
-        id: `particle-${i}-${Date.now()}`,
+        id: uid(),
         char: text[i],
-        startX,
-        startY,
+        startX: finalX + (Math.random() - 0.5) * 120,
+        startY: 300 + Math.random() * 200,
         finalX,
         finalY,
         delay: Math.random() * 0.3
@@ -210,13 +168,102 @@ export default function Chat() {
     return particles;
   };
 
+  const generateBubbleParticles = (width, height) => {
+    const particles = [];
+    const spacing = 6;
+
+    for (let y = 0; y < height; y += spacing) {
+      for (let x = 0; x < width; x += spacing) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 200 + Math.random() * 100;
+
+        particles.push({
+          id: uid(),
+          finalX: x,
+          finalY: y,
+          startX: x + Math.cos(angle) * distance,
+          startY: y + Math.sin(angle) * distance,
+          delay: Math.random() * 0.4
+        });
+      }
+    }
+
+    return particles;
+  };
+
   const [localMessages, setLocalMessages] = useState([]);
 
   useEffect(() => {
     if (messages) {
-      setLocalMessages(messages.map(m => ({ ...m, isFormed: true, particles: null })));
+      setLocalMessages(messages.map(m => ({ ...m, isFormed: true, particles: null, bubbleParticles: null })));
     }
   }, [messages]);
+
+  const send = useMutation({
+    mutationFn: async () => {
+      if (!text.trim()) return;
+      const targetUsername = activeUser?.username;
+      if (!targetUsername) return;
+      await api.post(`/chat/to/${targetUsername}`, { content: text });
+    },
+    onSuccess: () => {
+      const tempId = Date.now();
+      const messageText = text;
+      
+      // Medir dimensiones de la burbuja
+      const tempDiv = document.createElement("div");
+      tempDiv.style.cssText = `
+        position: absolute;
+        visibility: hidden;
+        max-width: 20rem;
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.625;
+        font-family: system-ui;
+        white-space: pre-wrap;
+      `;
+      tempDiv.textContent = messageText;
+      document.body.appendChild(tempDiv);
+
+      const width = tempDiv.offsetWidth;
+      const height = tempDiv.offsetHeight;
+
+      document.body.removeChild(tempDiv);
+      
+      const newMessage = {
+        id: tempId,
+        content: messageText,
+        sender: { id: user.id, username: user.username },
+        createdAt: new Date(),
+        isFormed: false,
+        particles: generateTextParticles(messageText),
+        bubbleParticles: generateBubbleParticles(width, height),
+        bubbleWidth: width,
+        bubbleHeight: height,
+        reactions: [],
+        read: false
+      };
+      
+      setLocalMessages(prev => [...prev, newMessage]);
+      setText("");
+      
+      setTimeout(() => {
+        setLocalMessages(prev => prev.map(msg => 
+          msg.id === tempId ? { ...msg, isFormed: true } : msg
+        ));
+      }, 1500);
+      
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["messages", active] });
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      }, 1600);
+    },
+  });
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    send.mutate();
+  };
 
   const addReaction = (messageId, emoji) => {
     setLocalMessages(prev => prev.map(msg => {
@@ -476,121 +523,163 @@ export default function Chat() {
                           />
                         )}
 
-                        <motion.div
-                          className={`relative backdrop-blur-xl rounded-3xl p-4 border ${
-                            isMe 
-                              ? 'bg-gradient-to-br text-white border-white/20' 
-                              : 'bg-white/10 text-white border-white/10'
-                          }`}
+                        <div
                           style={{
-                            background: isMe 
-                              ? `linear-gradient(135deg, ${emotion.from}, ${emotion.to})`
-                              : 'rgba(255, 255, 255, 0.05)',
-                            boxShadow: isFormed ? `0 8px 32px ${emotion.glow}` : 'none'
+                            width: !isFormed && message.bubbleWidth ? message.bubbleWidth : 'auto',
+                            height: !isFormed && message.bubbleHeight ? message.bubbleHeight : 'auto'
                           }}
+                          className="relative"
                         >
-                          {!isFormed && message.particles ? (
-                            <div className="relative min-h-[60px]" style={{ minWidth: '200px' }}>
-                              {message.particles.map((particle) => (
-                                <motion.span
-                                  key={particle.id}
-                                  className="absolute text-base font-normal"
+                          {/* Partículas de burbuja */}
+                          {!isFormed && message.bubbleParticles && (
+                            <div className="absolute inset-0">
+                              {message.bubbleParticles.map((p) => (
+                                <motion.div
+                                  key={p.id}
+                                  className="absolute w-1 h-1 rounded-sm"
                                   style={{
-                                    color: 'white',
-                                    textShadow: `0 0 10px ${emotion.from}`,
+                                    background: `linear-gradient(135deg, ${emotion.from}, ${emotion.to})`,
+                                    boxShadow: `0 0 4px ${emotion.glow}`,
+                                    left: p.finalX,
+                                    top: p.finalY
                                   }}
-                                  initial={{ 
-                                    x: particle.startX,
-                                    y: particle.startY,
+                                  initial={{
+                                    x: p.startX - p.finalX,
+                                    y: p.startY - p.finalY,
+                                    opacity: 0,
+                                    scale: 0
+                                  }}
+                                  animate={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                                  transition={{
+                                    duration: 1.2,
+                                    delay: p.delay,
+                                    ease: [0.4, 0.0, 0.2, 1]
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Partículas de texto */}
+                          {!isFormed && message.particles && (
+                            <div className="absolute inset-0 p-4">
+                              {message.particles.map((p) => (
+                                <motion.span
+                                  key={p.id}
+                                  className="absolute text-base text-white leading-relaxed"
+                                  style={{
+                                    textShadow: `0 0 10px ${emotion.from}`
+                                  }}
+                                  initial={{
+                                    x: p.startX,
+                                    y: p.startY,
                                     opacity: 0,
                                     scale: 0,
-                                    filter: 'blur(10px)'
+                                    filter: "blur(10px)"
                                   }}
-                                  animate={{ 
-                                    x: particle.finalX,
-                                    y: particle.finalY,
+                                  animate={{
+                                    x: p.finalX,
+                                    y: p.finalY,
                                     opacity: 1,
                                     scale: 1,
-                                    filter: 'blur(0px)'
+                                    filter: "blur(0px)"
                                   }}
-                                  transition={{ 
+                                  transition={{
                                     duration: 1,
-                                    delay: particle.delay,
+                                    delay: p.delay,
                                     ease: [0.4, 0.0, 0.2, 1]
                                   }}
                                 >
-                                  {particle.char}
+                                  {p.char}
                                 </motion.span>
                               ))}
                             </div>
-                          ) : (
-                            <p className="text-base leading-relaxed">{message.content}</p>
-                          )}
-                          
-                          <div className="flex items-center justify-end gap-2 mt-2">
-                            <span className="text-xs opacity-70">
-                              {new Date(message.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            {isMe && isFormed && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.2 }}
-                              >
-                                {message.read ? (
-                                  <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
-                              </motion.div>
-                            )}
-                          </div>
-
-                          {message.reactions?.length > 0 && isFormed && (
-                            <motion.div 
-                              className="absolute -bottom-3 right-4 flex gap-1"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: 'spring', stiffness: 300 }}
-                            >
-                              {message.reactions.map((reaction, idx) => (
-                                <motion.div
-                                  key={idx}
-                                  className="bg-slate-800/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 border border-white/20"
-                                  whileHover={{ scale: 1.2 }}
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  <span className="text-sm">{reaction.emoji}</span>
-                                  <span className="text-xs text-white/80">{reaction.count}</span>
-                                </motion.div>
-                              ))}
-                            </motion.div>
                           )}
 
+                          {/* Mensaje formado */}
                           {isFormed && (
                             <motion.div
-                              className={`absolute ${isMe ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity`}
+                              className={`relative backdrop-blur-xl rounded-3xl p-4 border ${
+                                isMe 
+                                  ? 'bg-gradient-to-br text-white border-white/20' 
+                                  : 'bg-white/10 text-white border-white/10'
+                              }`}
+                              style={{
+                                background: isMe 
+                                  ? `linear-gradient(135deg, ${emotion.from}, ${emotion.to})`
+                                  : 'rgba(255, 255, 255, 0.05)',
+                                boxShadow: `0 8px 32px ${emotion.glow}`
+                              }}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3 }}
                             >
-                              <div className="flex gap-1 bg-slate-800/90 backdrop-blur-xl rounded-full p-2 border border-white/20 shadow-xl">
-                                {['❤️', '👍', '😂', '🔥', '👑'].map((emoji, idx) => (
-                                  <motion.button
-                                    key={idx}
-                                    className="text-lg hover:scale-125 transition-transform"
-                                    whileHover={{ scale: 1.3 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => addReaction(message.id, emoji)}
+                              <p className="text-base leading-relaxed">{message.content}</p>
+                              
+                              <div className="flex items-center justify-end gap-2 mt-2">
+                                <span className="text-xs opacity-70">
+                                  {new Date(message.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                {isMe && (
+                                  <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.2 }}
                                   >
-                                    {emoji}
-                                  </motion.button>
-                                ))}
+                                    {message.read ? (
+                                      <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                    ) : (
+                                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                      </svg>
+                                    )}
+                                  </motion.div>
+                                )}
                               </div>
+
+                              {message.reactions?.length > 0 && (
+                                <motion.div 
+                                  className="absolute -bottom-3 right-4 flex gap-1"
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ type: 'spring', stiffness: 300 }}
+                                >
+                                  {message.reactions.map((reaction, idx) => (
+                                    <motion.div
+                                      key={idx}
+                                      className="bg-slate-800/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 border border-white/20"
+                                      whileHover={{ scale: 1.2 }}
+                                      whileTap={{ scale: 0.9 }}
+                                    >
+                                      <span className="text-sm">{reaction.emoji}</span>
+                                      <span className="text-xs text-white/80">{reaction.count}</span>
+                                    </motion.div>
+                                  ))}
+                                </motion.div>
+                              )}
+
+                              <motion.div
+                                className={`absolute ${isMe ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity`}
+                              >
+                                <div className="flex gap-1 bg-slate-800/90 backdrop-blur-xl rounded-full p-2 border border-white/20 shadow-xl">
+                                  {['❤️', '👍', '😂', '🔥', '👑'].map((emoji, idx) => (
+                                    <motion.button
+                                      key={idx}
+                                      className="text-lg hover:scale-125 transition-transform"
+                                      whileHover={{ scale: 1.3 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      onClick={() => addReaction(message.id, emoji)}
+                                    >
+                                      {emoji}
+                                    </motion.button>
+                                  ))}
+                                </div>
+                              </motion.div>
                             </motion.div>
                           )}
-                        </motion.div>
+                        </div>
                       </motion.div>
                     </motion.div>
                   );
