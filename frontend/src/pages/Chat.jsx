@@ -67,12 +67,17 @@ export default function Chat() {
   });
 
   const scrollToBottom = () => {
+    const hasUnformedMessages = localMessages.some(m => !m.isFormed);
+    if (hasUnformedMessages) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const hasUnformedMessages = localMessages.some(m => !m.isFormed);
+    if (!hasUnformedMessages) {
+      scrollToBottom();
+    }
+  }, [localMessages]);
 
   const startConversation = useMutation({
     mutationFn: async (username) => {
@@ -154,14 +159,17 @@ export default function Chat() {
       const finalX = col * charWidth;
       const finalY = line * lineHeight;
       
+      const startX = finalX + (Math.random() - 0.5) * 60;
+      const startY = finalY + 40 + Math.random() * 30;
+      
       particles.push({
-        id: uid(),
+        id: `particle-${i}-${Date.now()}`,
         char: text[i],
-        startX: finalX + (Math.random() - 0.5) * 120,
-        startY: 300 + Math.random() * 200,
+        startX,
+        startY,
         finalX,
         finalY,
-        delay: Math.random() * 0.3
+        delay: i * 0.02
       });
     }
     
@@ -170,12 +178,12 @@ export default function Chat() {
 
   const generateBubbleParticles = (width, height) => {
     const particles = [];
-    const spacing = 6;
+    const spacing = 12;
 
     for (let y = 0; y < height; y += spacing) {
       for (let x = 0; x < width; x += spacing) {
         const angle = Math.random() * Math.PI * 2;
-        const distance = 200 + Math.random() * 100;
+        const distance = 60 + Math.random() * 40;
 
         particles.push({
           id: uid(),
@@ -183,7 +191,7 @@ export default function Chat() {
           finalY: y,
           startX: x + Math.cos(angle) * distance,
           startY: y + Math.sin(angle) * distance,
-          delay: Math.random() * 0.4
+          delay: (y * spacing + x) * 0.001
         });
       }
     }
@@ -251,12 +259,12 @@ export default function Chat() {
         setLocalMessages(prev => prev.map(msg => 
           msg.id === tempId ? { ...msg, isFormed: true } : msg
         ));
-      }, 1500);
+      }, 800);
       
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["messages", active] });
         queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      }, 1600);
+      }, 900);
     },
   });
 
@@ -539,7 +547,7 @@ export default function Chat() {
                                   className="absolute w-1 h-1 rounded-sm"
                                   style={{
                                     background: `linear-gradient(135deg, ${emotion.from}, ${emotion.to})`,
-                                    boxShadow: `0 0 4px ${emotion.glow}`,
+                                    boxShadow: `0 0 2px ${emotion.glow}`,
                                     left: p.finalX,
                                     top: p.finalY
                                   }}
@@ -551,9 +559,9 @@ export default function Chat() {
                                   }}
                                   animate={{ x: 0, y: 0, opacity: 1, scale: 1 }}
                                   transition={{
-                                    duration: 1.2,
+                                    duration: 0.6,
                                     delay: p.delay,
-                                    ease: [0.4, 0.0, 0.2, 1]
+                                    ease: "easeOut"
                                   }}
                                 />
                               ))}
@@ -566,16 +574,16 @@ export default function Chat() {
                               {message.particles.map((p) => (
                                 <motion.span
                                   key={p.id}
-                                  className="absolute text-base text-white leading-relaxed"
+                                  className="absolute text-sm text-white leading-relaxed font-medium"
                                   style={{
-                                    textShadow: `0 0 10px ${emotion.from}`
+                                    textShadow: `0 0 8px ${emotion.from}`
                                   }}
                                   initial={{
                                     x: p.startX,
                                     y: p.startY,
                                     opacity: 0,
-                                    scale: 0,
-                                    filter: "blur(10px)"
+                                    scale: 0.5,
+                                    filter: "blur(4px)"
                                   }}
                                   animate={{
                                     x: p.finalX,
@@ -585,9 +593,9 @@ export default function Chat() {
                                     filter: "blur(0px)"
                                   }}
                                   transition={{
-                                    duration: 1,
+                                    duration: 0.5,
                                     delay: p.delay,
-                                    ease: [0.4, 0.0, 0.2, 1]
+                                    ease: "easeOut"
                                   }}
                                 >
                                   {p.char}
