@@ -66,6 +66,14 @@ export default function Chat() {
     refetchInterval: 5000,
   });
 
+  const [localMessages, setLocalMessages] = useState([]);
+
+  useEffect(() => {
+    if (messages) {
+      setLocalMessages(messages.map(m => ({ ...m, isFormed: true, particles: null, bubbleParticles: null })));
+    }
+  }, [messages]);
+
   const scrollToBottom = () => {
     const hasUnformedMessages = localMessages.some(m => !m.isFormed);
     if (hasUnformedMessages) return;
@@ -198,14 +206,6 @@ export default function Chat() {
 
     return particles;
   };
-
-  const [localMessages, setLocalMessages] = useState([]);
-
-  useEffect(() => {
-    if (messages) {
-      setLocalMessages(messages.map(m => ({ ...m, isFormed: true, particles: null, bubbleParticles: null })));
-    }
-  }, [messages]);
 
   const send = useMutation({
     mutationFn: async () => {
