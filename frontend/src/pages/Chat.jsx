@@ -169,6 +169,33 @@ export default function Chat() {
       : baseEmotion;
   const emotionIntensity = activeEmotion ? activeEmotion.intensity : 0;
 
+  const openChat = (conversation) => {
+    const other = conversation.participants?.find((p) => p.id !== user.id) || conversation.participants?.[0];
+    setActive(conversation.id);
+    setActiveUser(other);
+    setView("chat");
+  };
+
+  const goBack = () => {
+    setView("list");
+    setActive(null);
+    setActiveUser(null);
+  };
+
+  const startConversation = useMutation({
+    mutationFn: async (username) => {
+      const { data } = await api.post(`/chat/start/${username}`);
+      return data;
+    },
+    onSuccess: ({ id }) => {
+      setActive(id);
+      const friend = friends?.find((f) => f.user.username === username);
+      if (friend) setActiveUser(friend.user);
+      setView("chat");
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    },
+  });
+
   if (!user) {
     return (
       <div className="w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
