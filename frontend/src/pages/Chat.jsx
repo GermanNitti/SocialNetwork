@@ -883,101 +883,101 @@ export default function Chat() {
                        </div>
                      </motion.div>
                    );
-                 })}
-               </AnimatePresence>
-               
-               <div ref={messagesEndRef} />
-               
-               {typingParticles.length > 0 && (
-                 <div className="flex justify-end pointer-events-none">
-                   <div className="relative" style={{ width: 200, height: 80 }}>
-                     <div 
-                       className="absolute rounded-3xl"
-                       style={{
-                         width: '100%',
-                         height: '100%',
-                         left: '50%',
-                         top: '50%',
-                         transform: 'translate(-50%, -50%)',
-                       }}
-                     >
-                       {typingParticles.map((p) => {
-                         const c = p.emotional ? emotion : baseEmotion;
-                         
-                         return (
-                           <motion.div
-                             key={p.id}
-                             className="absolute rounded-full"
-                             style={{
-                               width: p.size,
-                               height: p.size,
-                               background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                               boxShadow: `0 0 ${14 + intensity * 12}px ${c.glow}`,
-                               left: "50%",
-                               top: "50%",
-                               willChange: "transform",
-                             }}
-                             initial={{
-                               x: p.fromX,
-                               y: p.fromY,
-                               opacity: 0,
-                               scale: 0.3,
-                             }}
-                             animate={{
-                               x: [p.orbitX + p.noiseX, p.orbitX - p.noiseX],
-                               y: [p.orbitY - p.noiseY, p.orbitY + p.noiseY],
-                               opacity: 1,
-                               scale: 1.2,
-                             }}
-                             transition={{
-                               duration: p.speed,
-                               delay: p.delay,
-                               ease: "easeInOut",
-                               repeat: Infinity,
-                               repeatType: "reverse",
-                             }}
-                           />
-                         );
-                       })}
-                       
-                       {smallParticles.map((p) => {
-                         const c = p.emotional ? emotion : baseEmotion;
-                         
-                         return (
-                           <motion.div
-                             key={p.id}
-                             className="absolute rounded-full"
-                             style={{
-                               width: p.size,
-                               height: p.size,
-                               background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                               left: "50%",
-                               top: "50%",
-                               willChange: "transform",
-                             }}
-                             initial={{
-                               x: 0,
-                               y: 0,
-                               opacity: 1,
-                               scale: 1,
-                             }}
-                             animate={{
-                               x: p.x,
-                               y: p.y,
-                               opacity: 0,
-                               scale: 0.3,
-                             }}
-                             transition={{
-                               duration: 0.6,
-                               ease: "easeOut",
-                             }}
-                           />
-                         );
-                       })}
-                     </div>
-                   </div>
-                 </div>
-               )}
+                  })}
+                </AnimatePresence>
+                
+                {typingParticles.length > 0 && (
+                  <div className="flex justify-end pointer-events-none">
+                    <div className="relative" style={{ width: 200, height: 80 }}>
+                      <div 
+                        className="absolute rounded-3xl"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          left: '50%',
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                      >
+                        {typingParticles.map((p) => {
+                          const c = p.emotional ? emotion : baseEmotion;
+                          
+                          return (
+                            <motion.div
+                              key={p.id}
+                              className="absolute rounded-full"
+                              style={{
+                                width: p.size,
+                                height: p.size,
+                                background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                                boxShadow: `0 0 ${14 + intensity * 12}px ${c.glow}`,
+                                left: "50%",
+                                top: "50%",
+                                willChange: "transform",
+                              }}
+                              initial={{
+                                x: p.fromX,
+                                y: p.fromY,
+                                opacity: 0,
+                                scale: 0.3,
+                              }}
+                              animate={{
+                                x: [p.orbitX + p.noiseX, p.orbitX - p.noiseX],
+                                y: [p.orbitY - p.noiseY, p.orbitY + p.noiseY],
+                                opacity: 1,
+                                scale: 1.2,
+                              }}
+                              transition={{
+                                duration: p.speed,
+                                delay: p.delay,
+                                ease: "easeInOut",
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                              }}
+                            />
+                          );
+                        })}
+                        
+                        {smallParticles.map((p) => {
+                          const c = p.emotional ? emotion : baseEmotion;
+                          
+                          return (
+                            <motion.div
+                              key={p.id}
+                              className="absolute rounded-full"
+                              style={{
+                                width: p.size,
+                                height: p.size,
+                                background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                                left: "50%",
+                                top: "50%",
+                                willChange: "transform",
+                              }}
+                              initial={{
+                                x: 0,
+                                y: 0,
+                                opacity: 1,
+                                scale: 1,
+                              }}
+                              animate={{
+                                x: p.x,
+                                y: p.y,
+                                opacity: 0,
+                                scale: 0.3,
+                              }}
+                              transition={{
+                                duration: 0.6,
+                                ease: "easeOut",
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div ref={messagesEndRef} />
              </div>
              
              <div className="p-4 border-t border-white/5 backdrop-blur-xl flex gap-3 relative z-10 bg-black/20">
