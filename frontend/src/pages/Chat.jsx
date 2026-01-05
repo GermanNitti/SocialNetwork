@@ -153,10 +153,6 @@ export default function Chat() {
   const [ghostPulse, setGhostPulse] = useState(0);
   const [ghostParticles, setGhostParticles] = useState([]);
   
-  const [visibleBubbles, setVisibleBubbles] = useState(new Set());
-  const [activeBubbles, setActiveBubbles] = useState(new Set());
-  const visibilityTimers = useRef({});
-  
   const messagesEndRef = useRef(null);
   const lastTypeTime = useRef(Date.now());
   const [typingSpeed, setTypingSpeed] = useState(0);
@@ -209,9 +205,26 @@ export default function Chat() {
       </div>
     );
   }
+  
+  useEffect(() => {
+    if (messages) {
+      setLocalMessages(messages.map(m => ({ 
+        ...m, 
+        id: m.id,
+        text: m.content,
+        sender: m.sender?.id,
+        isFormed: true, 
+        particles: null, 
+        bubbleParticles: generateBubbleParticles(15), 
+        animating: false, 
+        floating: [] 
+      })));
+    }
+  }, [messages]);
+
+  const last7MessageIds = new Set(localMessages.length > 0 ? localMessages.slice(-7).map(m => m.id) : []);
 
   const { data: conversations } = useQuery({
-    queryKey: ["conversations"],
     queryFn: async () => {
       try {
         const { data } = await api.get("/chat/conversations");
@@ -296,70 +309,10 @@ export default function Chat() {
         floating: [] 
       })));
     }
-  }, [messages]);
-
-  useEffect(() => {
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        const bubbleId = entry.target.dataset.bubbleId;
-        
-        if (entry.isIntersecting) {
-          if (visibilityTimers.current[bubbleId]) {
-            clearTimeout(visibilityTimers.current[bubbleId]);
-          }
-          
-          visibilityTimers.current[bubbleId] = setTimeout(() => {
-            setVisibleBubbles((prev) => {
-              const newSet = new Set(prev);
-              newSet.add(bubbleId);
-              return newSet;
-            });
-          }, 250);
-        } else {
-          if (visibilityTimers.current[bubbleId]) {
-            clearTimeout(visibilityTimers.current[bubbleId]);
-            delete visibilityTimers.current[bubbleId];
-          }
-          
-          setVisibleBubbles((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(bubbleId);
-            return newSet;
-          });
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, {
-      threshold: 0.1,
-      rootMargin: "50px",
-    });
-
-    const bubbleElements = document.querySelectorAll("[data-bubble-id]");
-    bubbleElements.forEach((el) => observer.observe(el));
-
-    return () => {
-      observer.disconnect();
-      Object.values(visibilityTimers.current).forEach(clearTimeout);
-    };
-  }, [localMessages]);
-
-  useEffect(() => {
-    const visibleArray = Array.from(visibleBubbles);
-    
-    if (visibleArray.length <= 7) {
-      setActiveBubbles(new Set(visibleArray));
-    } else {
-      const messageIds = localMessages.map(m => m.id);
-      const sortedVisible = visibleArray.sort((a, b) => {
-        return messageIds.indexOf(b) - messageIds.indexOf(a);
-      });
-      setActiveBubbles(new Set(sortedVisible.slice(0, 7)));
-    }
-  }, [visibleBubbles, localMessages]);
-
-  useEffect(() => {
-    if (view !== "chat") return;
+   }, [messages]);
+   
+   useEffect(() => {
+     if (view !== "chat") return;
     
     const startGhostTyping = () => {
       setGhostTyping(true);
@@ -846,15 +799,13 @@ export default function Chat() {
                            }}
                            transition={{ duration: 0.45 }}
                            className="relative z-10 p-4 rounded-3xl backdrop-blur-xl border overflow-hidden"
-                           style={{
-                             background: `linear-gradient(135deg, 
-                               ${msgEmotion.from}18, 
-                               ${msgEmotion.to}28)`,
-                             borderColor: `${msgEmotion.from}50`,
-                             boxShadow: `0 10px 36px ${msgEmotion.glow}, inset 0 1px 2px ${msgEmotion.from}30`,
-                           }}
+                            style={{
+                              background: `bg-white/10`,
+                              borderColor: `border-white/20`,
+                              boxShadow: `0 10px 36px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.2)`,
+                            }}
                          >
-                           {activeBubbles.has(msg.id) && (
+                            {last7MessageIds.has(msg.id) && (
                              <div className="absolute inset-0 pointer-events-none overflow-hidden">
                                {msg.bubbleParticles && msg.bubbleParticles.map((p) => (
                                  <motion.div
