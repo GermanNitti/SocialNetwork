@@ -50,7 +50,6 @@ function detectEmotion(text) {
   return dominantEmotion ? { emotion: dominantEmotion, intensity: Math.min(maxCount / 3, 1) } : null;
 }
 
-// Generar partículas estáticas para burbujas (solo una vez por burbuja)
 const generateBubbleParticles = (count = 15) => {
   return Array.from({ length: count }).map((_, i) => {
     const angle = Math.random() * Math.PI * 2;
@@ -68,14 +67,11 @@ const generateBubbleParticles = (count = 15) => {
   });
 };
 
-// Generar posiciones siguiendo el contorno de una burbuja redondeada (rounded-3xl)
 const generateBubbleContourPositions = (count = 80, width = 200, height = 80, borderRadius = 24) => {
   const positions = [];
-  
-  // Calcular el perímetro aproximado considerando las esquinas redondeadas
   const straightWidth = width - 2 * borderRadius;
   const straightHeight = height - 2 * borderRadius;
-  const cornerArcLength = (Math.PI / 2) * borderRadius; // Cuarto de círculo
+  const cornerArcLength = (Math.PI / 2) * borderRadius;
   const perimeter = 2 * straightWidth + 2 * straightHeight + 4 * cornerArcLength;
   
   for (let i = 0; i < count; i++) {
@@ -85,51 +81,43 @@ const generateBubbleContourPositions = (count = 80, width = 200, height = 80, bo
     let x, y;
     let currentPos = 0;
     
-    // Lado superior (sin esquinas)
     if (pos < straightWidth) {
       x = pos - width / 2 + borderRadius;
       y = -height / 2;
     }
-    // Esquina superior derecha (arco)
     else if (pos < straightWidth + cornerArcLength) {
       currentPos = pos - straightWidth;
       const angle = (currentPos / cornerArcLength) * (Math.PI / 2);
       x = width / 2 - borderRadius + Math.sin(angle) * borderRadius;
       y = -height / 2 + borderRadius - Math.cos(angle) * borderRadius;
     }
-    // Lado derecho (sin esquinas)
     else if (pos < straightWidth + cornerArcLength + straightHeight) {
       currentPos = pos - straightWidth - cornerArcLength;
       x = width / 2;
       y = -height / 2 + borderRadius + currentPos;
     }
-    // Esquina inferior derecha (arco)
     else if (pos < straightWidth + 2 * cornerArcLength + straightHeight) {
       currentPos = pos - straightWidth - cornerArcLength - straightHeight;
       const angle = (currentPos / cornerArcLength) * (Math.PI / 2);
       x = width / 2 - borderRadius + Math.cos(angle) * borderRadius;
       y = height / 2 - borderRadius + Math.sin(angle) * borderRadius;
     }
-    // Lado inferior (sin esquinas)
     else if (pos < 2 * straightWidth + 2 * cornerArcLength + straightHeight) {
       currentPos = pos - straightWidth - 2 * cornerArcLength - straightHeight;
       x = width / 2 - borderRadius - currentPos;
       y = height / 2;
     }
-    // Esquina inferior izquierda (arco)
     else if (pos < 2 * straightWidth + 3 * cornerArcLength + straightHeight) {
       currentPos = pos - 2 * straightWidth - 2 * cornerArcLength - straightHeight;
       const angle = (currentPos / cornerArcLength) * (Math.PI / 2);
       x = -width / 2 + borderRadius - Math.sin(angle) * borderRadius;
       y = height / 2 - borderRadius + Math.cos(angle) * borderRadius;
     }
-    // Lado izquierdo (sin esquinas)
     else if (pos < 2 * straightWidth + 3 * cornerArcLength + 2 * straightHeight) {
       currentPos = pos - 2 * straightWidth - 3 * cornerArcLength - straightHeight;
       x = -width / 2;
       y = height / 2 - borderRadius - currentPos;
     }
-    // Esquina superior izquierda (arco)
     else {
       currentPos = pos - 2 * straightWidth - 3 * cornerArcLength - 2 * straightHeight;
       const angle = (currentPos / cornerArcLength) * (Math.PI / 2);
@@ -137,7 +125,6 @@ const generateBubbleContourPositions = (count = 80, width = 200, height = 80, bo
       y = -height / 2 + borderRadius - Math.sin(angle) * borderRadius;
     }
     
-    // Agregar noise para distribución más natural
     const noise = (Math.random() - 0.5) * 12;
     
     positions.push({
@@ -151,7 +138,7 @@ const generateBubbleContourPositions = (count = 80, width = 200, height = 80, bo
 
 const uid = () => `${Date.now()}-${Math.random()}`;
 
-export default function ChatDemo() {
+export default function Chat() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [view, setView] = useState("list");
@@ -162,12 +149,10 @@ export default function ChatDemo() {
   const [typingParticles, setTypingParticles] = useState([]);
   const [smallParticles, setSmallParticles] = useState([]);
   
-  // Estados para escritura fantasma
   const [ghostTyping, setGhostTyping] = useState(false);
   const [ghostPulse, setGhostPulse] = useState(0);
   const [ghostParticles, setGhostParticles] = useState([]);
   
-  // Estados para visibilidad de burbujas
   const [visibleBubbles, setVisibleBubbles] = useState(new Set());
   const [activeBubbles, setActiveBubbles] = useState(new Set());
   const visibilityTimers = useRef({});
@@ -219,7 +204,7 @@ export default function ChatDemo() {
 
   if (!user) {
     return (
-      <div className="w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-neutral-950 flex items-center justify-center">
         <div className="text-white/60">Cargando...</div>
       </div>
     );
@@ -313,16 +298,12 @@ export default function ChatDemo() {
     }
   }, [messages]);
 
-  /* =========================
-     INTERSECTION OBSERVER PARA BURBUJAS VISIBLES
-     ========================= */
   useEffect(() => {
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
         const bubbleId = entry.target.dataset.bubbleId;
         
         if (entry.isIntersecting) {
-          // Agregar a visibles con debounce de 250ms
           if (visibilityTimers.current[bubbleId]) {
             clearTimeout(visibilityTimers.current[bubbleId]);
           }
@@ -335,7 +316,6 @@ export default function ChatDemo() {
             });
           }, 250);
         } else {
-          // Remover inmediatamente cuando sale del viewport
           if (visibilityTimers.current[bubbleId]) {
             clearTimeout(visibilityTimers.current[bubbleId]);
             delete visibilityTimers.current[bubbleId];
@@ -355,7 +335,6 @@ export default function ChatDemo() {
       rootMargin: "50px",
     });
 
-    // Observar todos los mensajes
     const bubbleElements = document.querySelectorAll("[data-bubble-id]");
     bubbleElements.forEach((el) => observer.observe(el));
 
@@ -365,17 +344,12 @@ export default function ChatDemo() {
     };
   }, [localMessages]);
 
-  /* =========================
-     GESTIÓN DE BURBUJAS ACTIVAS (MÁXIMO 7)
-     ========================= */
   useEffect(() => {
     const visibleArray = Array.from(visibleBubbles);
     
     if (visibleArray.length <= 7) {
-      // Si hay 7 o menos, activar todas
       setActiveBubbles(new Set(visibleArray));
     } else {
-      // Si hay más de 7, priorizar las más recientes
       const messageIds = localMessages.map(m => m.id);
       const sortedVisible = visibleArray.sort((a, b) => {
         return messageIds.indexOf(b) - messageIds.indexOf(a);
@@ -384,9 +358,6 @@ export default function ChatDemo() {
     }
   }, [visibleBubbles, localMessages]);
 
-  /* =========================
-     ESCRITURA FANTASMA DEL OTRO USUARIO
-     ========================= */
   useEffect(() => {
     if (view !== "chat") return;
     
@@ -444,16 +415,10 @@ export default function ChatDemo() {
     return () => clearInterval(interval);
   }, [ghostTyping]);
 
-  /* =========================
-     SCROLL AUTOMÁTICO
-     ========================= */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [localMessages]);
 
-  /* =========================
-     VELOCIDAD DE TIPEO
-     ========================= */
   useEffect(() => {
     if (!text) return;
 
@@ -481,9 +446,6 @@ export default function ChatDemo() {
     1
   );
 
-  /* =========================
-     PARTÍCULAS DE ESCRITURA - Ahora con forma de burbuja
-     ========================= */
   useEffect(() => {
     if (!text) {
       setTypingParticles([]);
@@ -499,15 +461,12 @@ export default function ChatDemo() {
       const bubbleHeight = 80;
       const borderRadius = 24;
       
-      // Generar posiciones siguiendo el contorno de la burbuja
       const contourPositions = generateBubbleContourPositions(80, bubbleWidth, bubbleHeight, borderRadius);
 
       contourPositions.forEach((pos, i) => {
-        // Calcular dirección de explosión desde el contorno
         const explosionDistance = 80 + Math.random() * 40;
         const angle = Math.atan2(pos.y, pos.x);
         
-        // Posición final de explosión
         const explosionX = pos.x + Math.cos(angle) * explosionDistance;
         const explosionY = pos.y + Math.sin(angle) * explosionDistance;
         
@@ -517,13 +476,10 @@ export default function ChatDemo() {
         
         add.push({
           id: uid(),
-          // Posición inicial en el contorno de la burbuja
           fromX: pos.x,
           fromY: pos.y,
-          // Posición orbital (más cerca del contorno)
           orbitX: pos.x * 0.85 + noiseX * 0.3,
           orbitY: pos.y * 0.85 + noiseY * 0.3,
-          // Posición de explosión
           explosionX: explosionX + noiseX,
           explosionY: explosionY + noiseY,
           noiseX: (Math.random() - 0.5) * 12,
@@ -629,10 +585,8 @@ export default function ChatDemo() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-zinc-900 to-neutral-950 text-white relative overflow-hidden">
-      {/* CAPA DE FONDO CON ESCRITURA FANTASMA */}
       {view === "chat" && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Textura sutil de fondo */}
           <div 
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -685,27 +639,6 @@ export default function ChatDemo() {
               ))}
             </div>
           )}
-
-          {ghostTyping && (
-            <motion.div
-              className="absolute left-[15%] top-[45%] rounded-full border-2"
-              style={{
-                width: 60,
-                height: 60,
-                borderColor: baseEmotion.glow,
-                transform: "translate(-50%, -50%)",
-              }}
-              animate={{
-                scale: [1, 1.8, 1],
-                opacity: [0.3, 0, 0.3],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          )}
         </div>
       )}
 
@@ -719,80 +652,6 @@ export default function ChatDemo() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="w-full h-full flex flex-col"
           >
-            <div className="p-4 border-b border-white/5 backdrop-blur-xl relative z-10 bg-black/20">
-              <h2 className="text-xl font-semibold text-white">Chats</h2>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              {combinedList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-white/60">
-                  <div className="w-20 h-20 mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  </div>
-                  <p className="text-sm">No tienes chats aún</p>
-                  <p className="text-xs mt-1">Añade amigos para empezar</p>
-                </div>
-              ) : (
-                combinedList.map((item, idx) => {
-                  const isConversation = item.type === "conversation";
-                  const userData = isConversation 
-                    ? (item.data.participants?.find((p) => p.id !== user.id) || item.data.participants?.[0])
-                    : item.data.user;
-                  const lastMessage = isConversation ? item.data.lastMessage : null;
-
-                  return (
-                    <motion.button
-                      key={idx}
-                      onClick={() => isConversation ? openChat(item.data) : startConversation.mutate(userData.username)}
-                      className="w-full text-left relative backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-4 transition-all"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar user={userData} size={48} />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <div className="font-semibold text-white truncate">{userData?.name}</div>
-                            {lastMessage && (
-                              <div className="text-xs text-white/50">
-                                {new Date(lastMessage.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex items-center justify-between mt-1">
-                            <div className="text-xs text-white/60">@{userData?.username}</div>
-                            {lastMessage && (
-                              <div className="text-xs text-white/70 truncate max-w-[60%]">
-                                {lastMessage.sender?.username === user.username ? "Tú: " : ""}
-                                {lastMessage.content}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })
-              )}
-            </div>
-          </motion.div>
-        )}
-
-        {view === "chat" && activeUser && (
-          <motion.div
-            key="chat"
-            initial={{ x: 300, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 300, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-full h-full flex flex-col"
-          >
-            {/* HEADER */}
             <div className="p-4 border-b border-white/5 backdrop-blur-xl relative z-10 bg-black/20">
               <div className="flex items-center gap-4">
                 <motion.button
@@ -841,7 +700,6 @@ export default function ChatDemo() {
                         style={{ minHeight: msg.animating ? 90 : "auto" }}
                         data-bubble-id={msg.id}
                       >
-                        {/* EXPLOSIÓN DESDE EL CONTORNO */}
                         {msg.animating &&
                           msg.floating.map((p) => {
                             const c = p.emotional ? msgEmotion : baseEmotion;
@@ -878,7 +736,6 @@ export default function ChatDemo() {
                             );
                           })}
 
-                        {/* BURBUJA CON GRADIENTE TRANSPARENTE Y PARTÍCULAS */}
                         <motion.div
                           initial={{
                             opacity: 0,
@@ -900,7 +757,6 @@ export default function ChatDemo() {
                             boxShadow: `0 10px 36px ${msgEmotion.glow}, inset 0 1px 2px ${msgEmotion.from}30`,
                           }}
                         >
-                          {/* PARTÍCULAS DE FONDO DE LA BURBUJA - Solo si está activa */}
                           {activeBubbles.has(msg.id) && (
                             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                               {msg.bubbleParticles && msg.bubbleParticles.map((p) => (
@@ -931,7 +787,6 @@ export default function ChatDemo() {
                             </div>
                           )}
 
-                          {/* TEXTO */}
                           <span className="relative z-10 text-slate-50 drop-shadow-sm">
                             {msg.text}
                           </span>
@@ -942,14 +797,11 @@ export default function ChatDemo() {
                 })}
               </AnimatePresence>
               
-              {/* REFERENCIA PARA SCROLL */}
               <div ref={messagesEndRef} />
 
-              {/* PARTÍCULAS DE ESCRITURA - Ahora en forma de burbuja */}
               {typingParticles.length > 0 && (
                 <div className="flex justify-end pointer-events-none">
                   <div className="relative" style={{ width: 200, height: 80 }}>
-                    {/* Contenedor con forma de burbuja */}
                     <div 
                       className="absolute rounded-3xl"
                       style={{
@@ -1039,7 +891,6 @@ export default function ChatDemo() {
               )}
             </div>
 
-            {/* INPUT */}
             <div className="p-4 border-t border-white/5 backdrop-blur-xl flex gap-3 relative z-10 bg-black/20">
               <input
                 value={text}

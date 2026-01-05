@@ -534,26 +534,7 @@ export default function ChatDemo() {
           </div>
         )}
 
-        {ghostTyping && (
-          <motion.div
-            className="absolute left-[15%] top-[45%] rounded-full border-2"
-            style={{
-              width: 60,
-              height: 60,
-              borderColor: baseEmotion.glow,
-              transform: "translate(-50%, -50%)",
-            }}
-            animate={{
-              scale: [1, 1.8, 1],
-              opacity: [0.3, 0, 0.3],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        )}
+
       </div>
 
       {/* HEADER */}
