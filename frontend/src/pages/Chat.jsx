@@ -420,6 +420,14 @@ export default function Chat() {
   }, [localMessages]);
 
   useEffect(() => {
+    if (typingParticles.length > 0) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [typingParticles]);
+
+  useEffect(() => {
     if (!text) return;
 
     const now = Date.now();
