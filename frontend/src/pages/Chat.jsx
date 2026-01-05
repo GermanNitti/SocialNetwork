@@ -652,242 +652,65 @@ export default function Chat() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="w-full h-full flex flex-col"
           >
-            <div className="p-4 border-b border-white/5 backdrop-blur-xl relative z-10 bg-black/20">
-              <div className="flex items-center gap-4">
-                <motion.button
-                  onClick={goBack}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </motion.button>
-                <Avatar user={activeUser} size={48} />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-slate-100">{activeUser.name}</h3>
-                  <motion.span 
-                    className="text-xs flex items-center gap-1.5"
-                    animate={{
-                      opacity: ghostTyping ? [0.7, 1, 0.7] : 1,
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: ghostTyping ? Infinity : 0,
-                    }}
-                  >
-                    <span className="text-emerald-400">●</span>
-                    <span className="text-slate-400">{ghostTyping ? "escribiendo..." : "En línea"}</span>
-                  </motion.span>
-                </div>
-              </div>
-            </div>
+             <div className="p-4 border-b border-white/5 backdrop-blur-xl relative z-10 bg-black/20">
+               <h2 className="text-xl font-semibold text-white">Chats</h2>
+             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 relative scrollbar-hide z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              <AnimatePresence>
-                {localMessages.map((msg) => {
-                  const isMe = msg.sender === user.id;
-                  const msgEmotion =
-                    msg.emotion && emotionColors[msg.emotion]
-                      ? emotionColors[msg.emotion]
-                      : baseEmotion;
-
-                  return (
-                    <motion.div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div
-                        className="relative max-w-xs"
-                        style={{ minHeight: msg.animating ? 90 : "auto" }}
-                        data-bubble-id={msg.id}
-                      >
-                        {msg.animating &&
-                          msg.floating.map((p) => {
-                            const c = p.emotional ? msgEmotion : baseEmotion;
-
-                            return (
-                              <motion.div
-                                key={p.id}
-                                className="absolute rounded-full pointer-events-none"
-                                style={{
-                                  width: p.size,
-                                  height: p.size,
-                                  background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                                  boxShadow: `0 0 ${18 + pulse * 10}px ${c.glow}`,
-                                  left: "50%",
-                                  top: "50%",
-                                }}
-                                initial={{
-                                  x: p.fromX,
-                                  y: p.fromY,
-                                  opacity: 1,
-                                  scale: 0.8,
-                                }}
-                                animate={{
-                                  x: [p.fromX, p.explosionX, p.explosionX],
-                                  y: [p.fromY, p.explosionY, p.explosionY],
-                                  opacity: [1, 0.6, 0],
-                                  scale: [0.8, 1.6 + pulse * 0.5, 0.2],
-                                }}
-                                transition={{
-                                  duration: 1.1 - intensity * 0.3,
-                                  ease: [0.4, 0, 0.2, 1],
-                                }}
-                              />
-                            );
-                          })}
-
-                        <motion.div
-                          initial={{
-                            opacity: 0,
-                            scale: 0.92,
-                            filter: "blur(14px)",
-                          }}
-                          animate={{
-                            opacity: 1,
-                            scale: 1,
-                            filter: "blur(0px)",
-                          }}
-                          transition={{ duration: 0.45 }}
-                          className="relative z-10 p-4 rounded-3xl backdrop-blur-xl border overflow-hidden"
-                          style={{
-                            background: `linear-gradient(135deg, 
-                              ${msgEmotion.from}18, 
-                              ${msgEmotion.to}28)`,
-                            borderColor: `${msgEmotion.from}50`,
-                            boxShadow: `0 10px 36px ${msgEmotion.glow}, inset 0 1px 2px ${msgEmotion.from}30`,
-                          }}
-                        >
-                          {activeBubbles.has(msg.id) && (
-                            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                              {msg.bubbleParticles && msg.bubbleParticles.map((p) => (
-                                <motion.div
-                                  key={p.id}
-                                  className="absolute rounded-full"
-                                  style={{
-                                    width: p.size,
-                                    height: p.size,
-                                    background: `linear-gradient(135deg, ${msgEmotion.from}, ${msgEmotion.to})`,
-                                    left: "50%",
-                                    top: "50%",
-                                    opacity: p.opacity,
-                                  }}
-                                  animate={{
-                                    x: [p.x, p.x + 5, p.x],
-                                    y: [p.y, p.y - 8, p.y],
-                                  }}
-                                  transition={{
-                                    duration: p.duration,
-                                    delay: p.delay,
-                                    repeat: Infinity,
-                                    repeatType: "reverse",
-                                    ease: "easeInOut",
-                                  }}
-                                />
-                              ))}
-                            </div>
-                          )}
-
-                          <span className="relative z-10 text-slate-50 drop-shadow-sm">
-                            {msg.text}
-                          </span>
-                        </motion.div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-              
-              <div ref={messagesEndRef} />
-
-              {typingParticles.length > 0 && (
-                <div className="flex justify-end pointer-events-none">
-                  <div className="relative" style={{ width: 200, height: 80 }}>
-                    <div 
-                      className="absolute rounded-3xl"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        left: '50%',
-                        top: '50%',
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                    >
-                      {typingParticles.map((p) => {
-                        const c = p.emotional ? emotion : baseEmotion;
-
-                        return (
-                          <motion.div
-                            key={p.id}
-                            className="absolute rounded-full"
-                            style={{
-                              width: p.size,
-                              height: p.size,
-                              background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                              boxShadow: `0 0 ${14 + intensity * 12}px ${c.glow}`,
-                              left: "50%",
-                              top: "50%",
-                              willChange: "transform",
-                            }}
-                            initial={{
-                              x: p.fromX,
-                              y: p.fromY,
-                              opacity: 0,
-                              scale: 0.3,
-                            }}
-                            animate={{
-                              x: [p.orbitX + p.noiseX, p.orbitX - p.noiseX],
-                              y: [p.orbitY - p.noiseY, p.orbitY + p.noiseY],
-                              opacity: 1,
-                              scale: 1.2,
-                            }}
-                            transition={{
-                              duration: p.speed,
-                              delay: p.delay,
-                              ease: "easeInOut",
-                              repeat: Infinity,
-                              repeatType: "reverse",
-                            }}
-                          />
-                        );
-                      })}
-                      
-                      {smallParticles.map((p) => {
-                        const c = p.emotional ? emotion : baseEmotion;
-
-                        return (
-                          <motion.div
-                            key={p.id}
-                            className="absolute rounded-full"
-                            style={{
-                              width: p.size,
-                              height: p.size,
-                              background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                              left: "50%",
-                              top: "50%",
-                              willChange: "transform",
-                            }}
-                            initial={{
-                              x: 0,
-                              y: 0,
-                              opacity: 1,
-                              scale: 1,
-                            }}
-                            animate={{
-                              x: p.x,
-                              y: p.y,
-                              opacity: 0,
-                              scale: 0.3,
-                            }}
-                            transition={{
-                              duration: 0.6,
-                              ease: "easeOut",
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
+             <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {combinedList.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-white/60">
+                  <div className="w-20 h-20 mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
                   </div>
+                  <p className="text-sm">No tienes chats aún</p>
+                  <p className="text-xs mt-1">Añade amigos para empezar</p>
                 </div>
+              ) : (
+                combinedList.map((item, idx) => {
+                  const isConversation = item.type === "conversation";
+                  const userData = isConversation 
+                    ? (item.data.participants?.find((p) => p.id !== user.id) || item.data.participants?.[0])
+                    : item.data.user;
+                  const lastMessage = isConversation ? item.data.lastMessage : null;
+                  
+                  return (
+                    <motion.button
+                      key={idx}
+                      onClick={() => isConversation ? openChat(item.data) : startConversation.mutate(userData.username)}
+                      className="w-full text-left relative backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-4 transition-all"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar user={userData} size={48} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <div className="font-semibold text-white truncate">{userData?.name}</div>
+                            {lastMessage && (
+                              <div className="text-xs text-white/50">
+                                {new Date(lastMessage.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between mt-1">
+                            <div className="text-xs text-white/60">@{userData?.username}</div>
+                            {lastMessage && (
+                              <div className="text-xs text-white/70 truncate max-w-[60%]">
+                                {lastMessage.sender?.username === user.username ? "Tú: " : ""}
+                                {lastMessage.content}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })
               )}
             </div>
 
@@ -906,9 +729,275 @@ export default function Chat() {
                 ➤
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+           </motion.div>
+         )}
+         
+         {view === "chat" && activeUser && (
+           <motion.div
+             key="chat"
+             initial={{ x: 300, opacity: 0 }}
+             animate={{ x: 0, opacity: 1 }}
+             exit={{ x: 300, opacity: 0 }}
+             transition={{ type: "spring", stiffness: 300, damping: 30 }}
+             className="w-full h-full flex flex-col"
+           >
+             <div className="p-4 border-b border-white/5 backdrop-blur-xl flex items-center justify-between relative z-10 bg-black/20">
+               <div className="flex items-center gap-4">
+                 <motion.button
+                   onClick={goBack}
+                   className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                   whileHover={{ scale: 1.1 }}
+                   whileTap={{ scale: 0.9 }}
+                 >
+                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                   </svg>
+                 </motion.button>
+                 <Avatar user={activeUser} size={48} />
+                 <div className="flex-1">
+                   <h3 className="font-semibold text-lg text-slate-100">{activeUser.name}</h3>
+                   <motion.span 
+                     className="text-xs flex items-center gap-1.5 text-slate-400"
+                     animate={{
+                       opacity: [0.7, 1, 0.7],
+                     }}
+                     transition={{
+                       duration: 1.5,
+                       repeat: Infinity,
+                     }}
+                   >
+                     <span className="text-emerald-400">●</span>
+                     <span>En línea</span>
+                   </motion.span>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="flex-1 overflow-y-auto p-6 space-y-4 relative scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <AnimatePresence>
+                 {localMessages.map((msg) => {
+                   const isMe = msg.sender === user.id;
+                   const msgEmotion =
+                     msg.emotion && emotionColors[msg.emotion]
+                       ? emotionColors[msg.emotion]
+                       : baseEmotion;
+                   
+                   return (
+                     <motion.div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                       <div
+                         className="relative max-w-xs"
+                         style={{ minHeight: msg.animating ? 90 : "auto" }}
+                         data-bubble-id={msg.id}
+                       >
+                         {msg.animating &&
+                           msg.floating.map((p) => {
+                             const c = p.emotional ? msgEmotion : baseEmotion;
+                             
+                             return (
+                               <motion.div
+                                 key={p.id}
+                                 className="absolute rounded-full pointer-events-none"
+                                 style={{
+                                   width: p.size,
+                                   height: p.size,
+                                   background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                                   boxShadow: `0 0 ${18 + pulse * 10}px ${c.glow}`,
+                                   left: "50%",
+                                   top: "50%",
+                                 }}
+                                 initial={{
+                                   x: p.fromX,
+                                   y: p.fromY,
+                                   opacity: 1,
+                                   scale: 0.8,
+                                 }}
+                                 animate={{
+                                   x: [p.fromX, p.explosionX, p.explosionX],
+                                   y: [p.fromY, p.explosionY, p.explosionY],
+                                   opacity: [1, 0.6, 0],
+                                   scale: [0.8, 1.6 + pulse * 0.5, 0.2],
+                                 }}
+                                 transition={{
+                                   duration: 1.1 - intensity * 0.3,
+                                   ease: [0.4, 0, 0.2, 1],
+                                 }}
+                               />
+                             );
+                           })}
+                         
+                         <motion.div
+                           initial={{
+                             opacity: 0,
+                             scale: 0.92,
+                             filter: "blur(14px)",
+                           }}
+                           animate={{
+                             opacity: 1,
+                             scale: 1,
+                             filter: "blur(0px)",
+                           }}
+                           transition={{ duration: 0.45 }}
+                           className="relative z-10 p-4 rounded-3xl backdrop-blur-xl border overflow-hidden"
+                           style={{
+                             background: `linear-gradient(135deg, 
+                               ${msgEmotion.from}18, 
+                               ${msgEmotion.to}28)`,
+                             borderColor: `${msgEmotion.from}50`,
+                             boxShadow: `0 10px 36px ${msgEmotion.glow}, inset 0 1px 2px ${msgEmotion.from}30`,
+                           }}
+                         >
+                           {activeBubbles.has(msg.id) && (
+                             <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                               {msg.bubbleParticles && msg.bubbleParticles.map((p) => (
+                                 <motion.div
+                                   key={p.id}
+                                   className="absolute rounded-full"
+                                   style={{
+                                     width: p.size,
+                                     height: p.size,
+                                     background: `linear-gradient(135deg, ${msgEmotion.from}, ${msgEmotion.to})`,
+                                     left: "50%",
+                                     top: "50%",
+                                     opacity: p.opacity,
+                                   }}
+                                   animate={{
+                                     x: [p.x, p.x + 5, p.x],
+                                     y: [p.y, p.y - 8, p.y],
+                                   }}
+                                   transition={{
+                                     duration: p.duration,
+                                     delay: p.delay,
+                                     repeat: Infinity,
+                                     repeatType: "reverse",
+                                     ease: "easeInOut",
+                                   }}
+                                 />
+                               ))}
+                             </div>
+                           )}
+                           
+                           <span className="relative z-10 text-slate-50 drop-shadow-sm">
+                             {msg.text}
+                           </span>
+                         </motion.div>
+                       </div>
+                     </motion.div>
+                   );
+                 })}
+               </AnimatePresence>
+               
+               <div ref={messagesEndRef} />
+               
+               {typingParticles.length > 0 && (
+                 <div className="flex justify-end pointer-events-none">
+                   <div className="relative" style={{ width: 200, height: 80 }}>
+                     <div 
+                       className="absolute rounded-3xl"
+                       style={{
+                         width: '100%',
+                         height: '100%',
+                         left: '50%',
+                         top: '50%',
+                         transform: 'translate(-50%, -50%)',
+                       }}
+                     >
+                       {typingParticles.map((p) => {
+                         const c = p.emotional ? emotion : baseEmotion;
+                         
+                         return (
+                           <motion.div
+                             key={p.id}
+                             className="absolute rounded-full"
+                             style={{
+                               width: p.size,
+                               height: p.size,
+                               background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                               boxShadow: `0 0 ${14 + intensity * 12}px ${c.glow}`,
+                               left: "50%",
+                               top: "50%",
+                               willChange: "transform",
+                             }}
+                             initial={{
+                               x: p.fromX,
+                               y: p.fromY,
+                               opacity: 0,
+                               scale: 0.3,
+                             }}
+                             animate={{
+                               x: [p.orbitX + p.noiseX, p.orbitX - p.noiseX],
+                               y: [p.orbitY - p.noiseY, p.orbitY + p.noiseY],
+                               opacity: 1,
+                               scale: 1.2,
+                             }}
+                             transition={{
+                               duration: p.speed,
+                               delay: p.delay,
+                               ease: "easeInOut",
+                               repeat: Infinity,
+                               repeatType: "reverse",
+                             }}
+                           />
+                         );
+                       })}
+                       
+                       {smallParticles.map((p) => {
+                         const c = p.emotional ? emotion : baseEmotion;
+                         
+                         return (
+                           <motion.div
+                             key={p.id}
+                             className="absolute rounded-full"
+                             style={{
+                               width: p.size,
+                               height: p.size,
+                               background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                               left: "50%",
+                               top: "50%",
+                               willChange: "transform",
+                             }}
+                             initial={{
+                               x: 0,
+                               y: 0,
+                               opacity: 1,
+                               scale: 1,
+                             }}
+                             animate={{
+                               x: p.x,
+                               y: p.y,
+                               opacity: 0,
+                               scale: 0.3,
+                             }}
+                             transition={{
+                               duration: 0.6,
+                               ease: "easeOut",
+                             }}
+                           />
+                         );
+                       })}
+                     </div>
+                   </div>
+                 </div>
+               )}
+             </div>
+             
+             <div className="p-4 border-t border-white/5 backdrop-blur-xl flex gap-3 relative z-10 bg-black/20">
+               <input
+                 value={text}
+                 onChange={(e) => setText(e.target.value)}
+                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                 placeholder="Escribí algo…"
+                 className="flex-1 bg-white/5 rounded-3xl px-5 py-3 outline-none placeholder:text-slate-500 text-slate-100 focus:bg-white/8 transition-colors"
+               />
+               <button
+                 onClick={handleSend}
+                 className="px-5 py-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20"
+               >
+                 ➤
+               </button>
+             </div>
+           </motion.div>
+         )}
+       </AnimatePresence>
     </div>
   );
 }
