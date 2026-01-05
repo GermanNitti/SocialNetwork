@@ -221,6 +221,36 @@ export default function Chat() {
 
   const [localMessages, setLocalMessages] = useState([]);
 
+  const combinedList = (() => {
+    const acceptedFriends = friends?.filter((f) => f.status === "ACCEPTED") || [];
+    const friendUsernames = new Set(acceptedFriends.map((f) => f.user.username));
+    const conversationsList = conversations || [];
+    
+    const conversationsWithoutFriends = conversationsList.filter(
+      (c) => {
+        const other = c.participants?.find((p) => p.id !== user.id) || c.participants?.[0];
+        return other && !friendUsernames.has(other.username);
+      }
+    ) || [];
+
+    return [
+      ...conversationsList.map((c) => ({ type: "conversation", data: c })),
+      ...acceptedFriends.filter((f) => !conversationsList.some((c) => {
+        const other = c.participants?.find((p) => p.id !== user.id) || c.participants?.[0];
+        return other?.username === f.user.username;
+      })).map((f) => ({ type: "friend", data: f })),
+      ...conversationsWithoutFriends.map((c) => ({ type: "conversation", data: c }))
+    ].sort((a, b) => {
+      const aTime = a.type === "conversation" && a.data.lastMessage?.createdAt 
+        ? new Date(a.data.lastMessage.createdAt) 
+        : new Date(0);
+      const bTime = b.type === "conversation" && b.data.lastMessage?.createdAt 
+        ? new Date(b.data.lastMessage.createdAt) 
+        : new Date(0);
+      return bTime - aTime;
+    });
+  })();
+
   useEffect(() => {
     if (messages) {
       setLocalMessages(messages.map(m => ({ ...m, isFormed: true, particles: null, bubbleParticles: null, animating: false, floating: [] })));
@@ -417,7 +447,7 @@ export default function Chat() {
       const msgEmotion = activeEmotion ? activeEmotion.emotion : null;
       const bubbleParticles = generateBubbleParticles(15);
 
-      setLocalMessages((m) => [
+      setLocalMessages((prev) => [
         ...m,
         {
           id,
@@ -438,7 +468,7 @@ export default function Chat() {
       setTypingParticles([]);
 
       setTimeout(() => {
-        setLocalMessages((m) =>
+        setLocalMessages((prev) =>
           m.map((msg) =>
             msg.id === id ? { ...msg, animating: false, floating: [] } : msg
           )
