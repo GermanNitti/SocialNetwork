@@ -475,6 +475,7 @@ export default function Chat() {
       const bubbleParticles = generateBubbleParticles(15);
 
       setLocalMessages((prev) => [
+        ...prev,
         ...m,
         {
           id,
@@ -545,18 +546,18 @@ export default function Chat() {
         paddingTop: 'env(safe-area-inset-top)', 
         paddingBottom: 'env(safe-area-inset-bottom)',
         backgroundImage: chatTheme === "black" 
-          ? `linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(15,23,42,0.9))` 
-          : `linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(241,245,249,0.9))`,
+          ? `url(/background%20black.jpg)` 
+          : `url(/background%20white.jpg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
     >
       {chatTheme === "black" && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" style={{ opacity: 0.3 }} />
+        <div className="absolute inset-0 bg-black/30" />
       )}
       {chatTheme === "white" && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-purple-50 to-slate-100" style={{ opacity: 0.3 }} />
+        <div className="absolute inset-0 bg-white/30" />
       )}
       <AnimatePresence mode="wait">
         {view === "list" && (
@@ -712,9 +713,9 @@ export default function Chat() {
                   />
                 </motion.div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-white text-lg">{activeUser.name}</h3>
+                  <h3 className={`font-semibold text-lg ${chatTheme === 'black' ? 'text-white' : 'text-black'}`}>{activeUser.name}</h3>
                   <motion.p 
-                    className="text-xs text-green-400"
+                    className={`text-xs ${chatTheme === 'black' ? 'text-green-400' : 'text-green-600'}`}
                     animate={{ opacity: [0.5, 1, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
@@ -726,7 +727,7 @@ export default function Chat() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 </motion.button>
@@ -735,7 +736,7 @@ export default function Chat() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </motion.button>
@@ -744,7 +745,7 @@ export default function Chat() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                   </svg>
                  </motion.button>
@@ -898,7 +899,7 @@ export default function Chat() {
                                    whileTap={{ scale: 0.9 }}
                                  >
                                    <span className="text-sm">{reaction.emoji}</span>
-                                   <span className="text-xs text-white/80">{reaction.count}</span>
+                                   <span className={`text-xs ${chatTheme === 'black' ? 'text-white/80' : 'text-black/80'}`}>{reaction.count}</span>
                                  </motion.div>
                                ))}
                              </motion.div>
