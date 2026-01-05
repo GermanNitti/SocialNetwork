@@ -468,46 +468,48 @@ export default function Chat() {
       await api.post(`/chat/to/${targetUsername}`, { content: text });
     },
     onSuccess: () => {
-      const id = uid();
-      const messageText = text;
-      const floating = typingParticles;
-      const msgEmotion = activeEmotion ? activeEmotion.emotion : null;
-      const bubbleParticles = generateBubbleParticles(15);
+  const id = uid();
+  const messageText = text;
+  const floating = typingParticles;
+  const msgEmotion = activeEmotion ? activeEmotion.emotion : null;
+  const bubbleParticles = generateBubbleParticles(15);
 
-      setLocalMessages((prev) => [
-        ...prev,
-        ...m,
-        {
-          id,
-          content: messageText,
-          sender: { id: user.id, username: user.username },
-          createdAt: new Date(),
-          isFormed: true,
-          animating: true,
-          floating,
-          emotion: msgEmotion,
-          bubbleParticles,
-          reactions: [],
-          read: false
-        },
-      ]);
-
-      setText("");
-      setTypingParticles([]);
-
-      setTimeout(() => {
-        setLocalMessages((prev) =>
-          m.map((msg) =>
-            msg.id === id ? { ...msg, animating: false, floating: [] } : msg
-          )
-        );
-      }, 1100);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["messages", active] });
-        queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      }, 1200);
+  setLocalMessages((prev) => [
+    ...prev,
+    {
+      id,
+      content: messageText,
+      sender: { id: user.id, username: user.username },
+      createdAt: new Date().toISOString(),
+      isFormed: true,
+      animating: true,
+      floating,
+      emotion: msgEmotion,
+      bubbleParticles,
+      reactions: [],
+      read: false,
     },
+  ]);
+
+  setText("");
+  setTypingParticles([]);
+
+  setTimeout(() => {
+    setLocalMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === id
+          ? { ...msg, animating: false, floating: [] }
+          : msg
+      )
+    );
+  }, 1100);
+
+  setTimeout(() => {
+    queryClient.invalidateQueries({ queryKey: ["messages", active] });
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  }, 1200);
+}
+
   });
 
   const handleSend = (e) => {
