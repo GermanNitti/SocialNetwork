@@ -225,6 +225,7 @@ export default function Chat() {
   const last7MessageIds = new Set(localMessages.length > 0 ? localMessages.slice(-7).map(m => m.id) : []);
 
   const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
     queryFn: async () => {
       try {
         const { data } = await api.get("/chat/conversations");
@@ -276,7 +277,7 @@ export default function Chat() {
         return other && !friendUsernames.has(other.username);
       }
     ) || [];
-
+    
     return [
       ...conversationsList.map((c) => ({ type: "conversation", data: c })),
       ...acceptedFriends.filter((f) => !conversationsList.some((c) => {
