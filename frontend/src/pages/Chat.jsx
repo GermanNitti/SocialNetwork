@@ -11,11 +11,121 @@ const clamp = (n, min, max) => Math.max(min, Math.min(n, max));
    EMOCIONES
    ========================= */
 const emotionKeywords = {
-  love: ["amor", "te amo", "te quiero", "❤️", "😍", "beso"],
-  sadness: ["triste", "mal", "llorar", "depre", "😢", "😭"],
-  joy: ["jaja", "jaj", "jeje", "feliz", "bien", "genial", "buenisimo", "😂", "😄"],
-  anger: ["odio", "mierda", "puta", "carajo", "concha", "enojo", "🤬", "😡"],
+  love: [
+    // Español neutro
+    "amor", "amar", "amo", "te amo", "te quiero", "quererte", "querido", "querida",
+    "cariño", "carinio", "corazon", "corazón", "mi vida", "mi amor", "mi cielo",
+    "bebé", "bebe", "bb", "nena", "neno", "hermoso", "hermosa", "precioso",
+    "preciosa", "divino", "divina", "lindo", "linda",
+
+    // Argentina / lunfardo
+    "te re quiero", "te re amo", "te quiero una banda", "te amo banda",
+    "me encantas", "me re gustas", "me gustas", "sos todo", "sos lo mas",
+    "sos lo más", "sos mi todo", "me haces bien", "me hacés bien",
+    "me alegras", "me alegrás", "me haces feliz", "me hacés feliz",
+    "estoy enamorado", "estoy enamorada", "me enamore", "me enamoré",
+
+    // Abreviaciones
+    "tqm", "tkm", "t amo", "t qro", "t quiero", "xoxo", "luv", "ily",
+
+    // Inglés
+    "love", "i love you", "luv u", "lov u", "i luv you",
+    "i like you", "i really like you", "miss you", "miss u",
+    "my love", "my heart", "sweetheart", "baby", "babe",
+
+    // Emojis
+    "❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "💖", "💕", "💞", "💘",
+    "😍", "🥰", "😘", "😚", "😙", "😻", "💋"
+  ],
+
+  sadness: [
+    // Español neutro
+    "triste", "tristeza", "mal", "muy mal", "fatal", "hecho mierda",
+    "llorar", "llorando", "llore", "lloré", "llanto", "pena", "dolor",
+    "angustia", "deprimido", "deprimida", "depre", "bajon", "bajón",
+    "vacío", "vacio", "solo", "sola", "soledad",
+
+    // Argentina
+    "estoy bajon", "estoy bajón", "me siento mal", "me siento para el orto",
+    "para el culo", "hecho bolsa", "detonado", "no doy mas",
+    "no doy más", "me duele", "me parte el alma",
+    "tengo ganas de llorar", "me quiero ir a dormir y no despertar",
+    "todo me supera", "no puedo mas", "no puedo más",
+
+    // Abreviaciones
+    "toy mal", "re mal", "malardo", "sad", "kms", "rip me",
+
+    // Inglés
+    "sad", "very sad", "depressed", "depression", "down",
+    "feeling down", "broken", "heartbroken", "lonely",
+    "i feel bad", "i feel awful", "i can't anymore",
+    "i can't do this", "i'm tired of everything",
+
+    // Emojis
+    "😢", "😭", "😞", "😔", "☹️", "🙁", "😿", "💔", "🥀"
+  ],
+
+  joy: [
+    // Español neutro
+    "feliz", "felicidad", "contento", "contenta", "bien", "re bien",
+    "genial", "excelente", "increible", "increíble", "espectacular",
+    "buenisimo", "buenísimo", "joya", "hermoso", "hermosa",
+
+    // Risa
+    "jaja", "jajaja", "jajaj", "jeje", "jejeje", "jsjs", "jijiji",
+    "ajaj", "xd", "xD", "XD", "lol", "lmao", "rofl",
+
+    // Argentina
+    "me cago de risa", "me muero de risa", "estoy chocho",
+    "una masa", "un golazo", "de diez", "10/10",
+    "que lindo", "que piola", "piola", "re piola",
+    "alta alegria", "alta alegría", "me encanta",
+    "me hizo el dia", "me hizo el día",
+
+    // Inglés
+    "happy", "very happy", "so happy", "excited",
+    "awesome", "amazing", "great", "nice",
+    "this is great", "i love this", "so good",
+
+    // Emojis
+    "😂", "🤣", "😄", "😃", "😁", "😆", "😊",
+    "🥳", "🎉", "🎊", "😹", "✨"
+  ],
+
+  anger: [
+    // Español neutro
+    "odio", "odiar", "bronca", "enojo", "enojado", "enojada",
+    "furia", "rabia", "caliente", "molesto", "molesta",
+    "hartó", "harto", "hasta las bolas",
+
+    // Insultos Argentina
+    "mierda", "puta", "puto", "carajo", "concha", "la concha",
+    "la puta madre", "la re puta madre", "forro", "pelotudo",
+    "pelotuda", "boludo", "boluda", "idiota", "imbecil",
+    "imbécil", "gil", "salame", "mogolico", "mogólico",
+    "sorete", "choto", "verga", "pija",
+
+    // Frases
+    "me rompe las bolas", "me rompe los huevos",
+    "me saca", "me saca mal", "me da bronca",
+    "estoy re caliente", "me tiene podrido",
+    "me tiene podrida", "estoy hasta las pelotas",
+    "no me banques", "no me banco esto",
+
+    // Abreviaciones
+    "wtf", "omg", "ffs", "stfu", "af",
+
+    // Inglés
+    "angry", "mad", "furious", "pissed",
+    "i hate this", "this is bullshit",
+    "fuck", "fucking", "shit",
+    "i'm done", "i'm sick of this",
+
+    // Emojis
+    "🤬", "😡", "😠", "👿", "💢", "🔥"
+  ]
 };
+
 
 const emotionColors = {
   love: { from: "#FF77B7", to: "#D81B60", glow: "rgba(255,120,180,.45)" },
@@ -27,7 +137,7 @@ const emotionColors = {
 const emotionPriority = ["love", "sadness", "joy", "anger"];
 
 const escapeRegExp = (str) =>
-  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  str.replace(/[.*+?^${}()|[\]\\]/g, "$&");
 
 function detectEmotion(text) {
   const t = text.toLowerCase();
