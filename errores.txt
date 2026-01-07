@@ -1,35 +1,97 @@
 Uncaught ReferenceError: can't access lexical declaration 'F' before initialization
-    iA https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:84
-    $c https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    gu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Hp https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    vg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Q4 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Uu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    fg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Mg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    J https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    H2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    G2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    Q2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
-    <anonymous> https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
-index-othj3G_v.js:84:29396
-    iA https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:84
-    $c https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    gu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Hp https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    vg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Q4 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Uu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    fg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    Mg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
-    J https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    rA https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:84
+    $c https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    gu https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Hp https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    vg https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Q4 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Uu https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    fg https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Mg https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    J https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    P2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    P2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    H2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    G2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    Q2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:9
+    <anonymous> https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:9
+index-C4dEADfS.js:84:29540
+    rA https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:84
+    $c https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    gu https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Hp https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    vg https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Q4 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Uu https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    fg https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    Mg https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:8
+    J https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
     (Asíncrono: EventHandlerNonNull)
-    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    H2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    G2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
-    Q2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
-    <anónima> https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
+    P2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    P2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    H2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    G2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:1
+    Q2 https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:9
+    <anónima> https://social-network-green-rho.vercel.app/assets/index-C4dEADfS.js:9
+XHRHEAD
+https://social-network-green-rho.vercel.app/chat
+[HTTP/2 404  83ms]
+
+	
+HEAD
+	https://social-network-green-rho.vercel.app/chat
+Estado
+404
+VersiónHTTP/2
+Transferido353 B (tamaño 0 B)
+Política de referenciastrict-origin-when-cross-origin
+Resolución de DNSSistema
+
+	
+cache-control
+	public, max-age=0, must-revalidate
+content-length
+	79
+content-type
+	text/plain; charset=utf-8
+date
+	Wed, 07 Jan 2026 03:27:53 GMT
+server
+	Vercel
+strict-transport-security
+	max-age=63072000; includeSubDomains; preload
+X-Firefox-Spdy
+	h2
+x-vercel-error
+	NOT_FOUND
+x-vercel-id
+	gru1::7mzwc-1767756473971-4afeb9c10605
+	
+Accept
+	*/*
+Accept-Encoding
+	gzip, deflate, br, zstd
+Accept-Language
+	es-AR,es;q=0.8,en-US;q=0.5,en;q=0.3
+Connection
+	keep-alive
+Cookie
+	__vercel_toolbar=1; _vercel_session=e0fb0c47edb7466f4c22094866
+Host
+	social-network-green-rho.vercel.app
+Priority
+	u=4
+Referer
+	https://social-network-green-rho.vercel.app/chat
+Sec-Fetch-Dest
+	empty
+Sec-Fetch-Mode
+	cors
+Sec-Fetch-Site
+	same-origin
+TE
+	trailers
+User-Agent
+	Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0
+x-vercel-draft-status
+	1
