@@ -26,14 +26,23 @@ const emotionColors = {
 
 const emotionPriority = ["love", "sadness", "joy", "anger"];
 
+const escapeRegExp = (str) =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 function detectEmotion(text) {
   const t = text.toLowerCase();
   const emotionCounts = {};
 
   for (const [emotion, keys] of Object.entries(emotionKeywords)) {
     emotionCounts[emotion] = keys.reduce((acc, k) => {
-      const matches = (t.match(new RegExp(k, 'g')) || []).length;
-      return acc + matches;
+      try {
+        const safeKey = escapeRegExp(k.toLowerCase());
+        const matches = (t.match(new RegExp(safeKey, 'g')) || []).length;
+        return acc + matches;
+      } catch (error) {
+        console.error("Error matching emotion keyword:", k, error);
+        return acc;
+      }
     }, 0);
   }
 

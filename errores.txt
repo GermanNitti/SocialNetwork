@@ -1,14 +1,35 @@
-11: error during build:
-src/components/MobileHeader.jsx (10:61): "EVENT_CONFIG" is not exported by "src/components/events/EventManager.jsx", imported by "src/components/MobileHeader.jsx".
-12: // Icono Play SVG
-    at getRollupError (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
-    at error (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
-    at Module.error (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:16956:16)
-    at Module.traceVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17412:29)
-    at ModuleScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:15076:39)
-    at FunctionScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
-    at FunctionBodyScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
-    at ReturnValueScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
-    at FunctionBodyScope.findVariable (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
-    at MemberExpression.bind (file:///vercel/path0/frontend/node_modules/rollup/dist/es/shared/node-entry.js:7363:49)
-Error: Command "npm run build" exited with 1
+Uncaught ReferenceError: can't access lexical declaration 'F' before initialization
+    iA https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:84
+    $c https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    gu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Hp https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    vg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Q4 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Uu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    fg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Mg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    J https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    H2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    G2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    Q2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
+    <anonymous> https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
+index-othj3G_v.js:84:29396
+    iA https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:84
+    $c https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    gu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Hp https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    vg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Q4 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Uu https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    fg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    Mg https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:8
+    J https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    (Asíncrono: EventHandlerNonNull)
+    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    P2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    H2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    G2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:1
+    Q2 https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
+    <anónima> https://social-network-green-rho.vercel.app/assets/index-othj3G_v.js:9
