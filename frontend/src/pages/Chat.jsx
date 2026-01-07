@@ -415,21 +415,6 @@ export default function Chat() {
     });
   })();
 
-  useEffect(() => {
-    if (messages) {
-      setLocalMessages(messages.map(m => ({ 
-        ...m, 
-        id: m.id,
-        text: m.content,
-        sender: m.sender?.id,
-        isFormed: true, 
-        particles: null, 
-        bubbleParticles: generateBubbleParticles(15), 
-        animating: false, 
-        floating: [] 
-      })));
-    }
-   }, [messages]);
    
    useEffect(() => {
      if (view !== "chat") return;
