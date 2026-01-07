@@ -7,125 +7,12 @@ import Avatar from "../components/Avatar";
 
 const clamp = (n, min, max) => Math.max(min, Math.min(n, max));
 
-/* =========================
-   EMOCIONES
-   ========================= */
 const emotionKeywords = {
-  love: [
-    // Español neutro
-    "amor", "amar", "amo", "te amo", "te quiero", "quererte", "querido", "querida",
-    "cariño", "carinio", "corazon", "corazón", "mi vida", "mi amor", "mi cielo",
-    "bebé", "bebe", "bb", "nena", "neno", "hermoso", "hermosa", "precioso",
-    "preciosa", "divino", "divina", "lindo", "linda",
-
-    // Argentina / lunfardo
-    "te re quiero", "te re amo", "te quiero una banda", "te amo banda",
-    "me encantas", "me re gustas", "me gustas", "sos todo", "sos lo mas",
-    "sos lo más", "sos mi todo", "me haces bien", "me hacés bien",
-    "me alegras", "me alegrás", "me haces feliz", "me hacés feliz",
-    "estoy enamorado", "estoy enamorada", "me enamore", "me enamoré",
-
-    // Abreviaciones
-    "tqm", "tkm", "t amo", "t qro", "t quiero", "xoxo", "luv", "ily",
-
-    // Inglés
-    "love", "i love you", "luv u", "lov u", "i luv you",
-    "i like you", "i really like you", "miss you", "miss u",
-    "my love", "my heart", "sweetheart", "baby", "babe",
-
-    // Emojis
-    "❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "💖", "💕", "💞", "💘",
-    "😍", "🥰", "😘", "😚", "😙", "😻", "💋"
-  ],
-
-  sadness: [
-    // Español neutro
-    "triste", "tristeza", "mal", "muy mal", "fatal", "hecho mierda",
-    "llorar", "llorando", "llore", "lloré", "llanto", "pena", "dolor",
-    "angustia", "deprimido", "deprimida", "depre", "bajon", "bajón",
-    "vacío", "vacio", "solo", "sola", "soledad",
-
-    // Argentina
-    "estoy bajon", "estoy bajón", "me siento mal", "me siento para el orto",
-    "para el culo", "hecho bolsa", "detonado", "no doy mas",
-    "no doy más", "me duele", "me parte el alma",
-    "tengo ganas de llorar", "me quiero ir a dormir y no despertar",
-    "todo me supera", "no puedo mas", "no puedo más",
-
-    // Abreviaciones
-    "toy mal", "re mal", "malardo", "sad", "kms", "rip me",
-
-    // Inglés
-    "sad", "very sad", "depressed", "depression", "down",
-    "feeling down", "broken", "heartbroken", "lonely",
-    "i feel bad", "i feel awful", "i can't anymore",
-    "i can't do this", "i'm tired of everything",
-
-    // Emojis
-    "😢", "😭", "😞", "😔", "☹️", "🙁", "😿", "💔", "🥀"
-  ],
-
-  joy: [
-    // Español neutro
-    "feliz", "felicidad", "contento", "contenta", "bien", "re bien",
-    "genial", "excelente", "increible", "increíble", "espectacular",
-    "buenisimo", "buenísimo", "joya", "hermoso", "hermosa",
-
-    // Risa
-    "jaja", "jajaja", "jajaj", "jeje", "jejeje", "jsjs", "jijiji",
-    "ajaj", "xd", "xD", "XD", "lol", "lmao", "rofl",
-
-    // Argentina
-    "me cago de risa", "me muero de risa", "estoy chocho",
-    "una masa", "un golazo", "de diez", "10/10",
-    "que lindo", "que piola", "piola", "re piola",
-    "alta alegria", "alta alegría", "me encanta",
-    "me hizo el dia", "me hizo el día",
-
-    // Inglés
-    "happy", "very happy", "so happy", "excited",
-    "awesome", "amazing", "great", "nice",
-    "this is great", "i love this", "so good",
-
-    // Emojis
-    "😂", "🤣", "😄", "😃", "😁", "😆", "😊",
-    "🥳", "🎉", "🎊", "😹", "✨"
-  ],
-
-  anger: [
-    // Español neutro
-    "odio", "odiar", "bronca", "enojo", "enojado", "enojada",
-    "furia", "rabia", "caliente", "molesto", "molesta",
-    "hartó", "harto", "hasta las bolas",
-
-    // Insultos Argentina
-    "mierda", "puta", "puto", "carajo", "concha", "la concha",
-    "la puta madre", "la re puta madre", "forro", "pelotudo",
-    "pelotuda", "boludo", "boluda", "idiota", "imbecil",
-    "imbécil", "gil", "salame", "mogolico", "mogólico",
-    "sorete", "choto", "verga", "pija",
-
-    // Frases
-    "me rompe las bolas", "me rompe los huevos",
-    "me saca", "me saca mal", "me da bronca",
-    "estoy re caliente", "me tiene podrido",
-    "me tiene podrida", "estoy hasta las pelotas",
-    "no me banques", "no me banco esto",
-
-    // Abreviaciones
-    "wtf", "omg", "ffs", "stfu", "af",
-
-    // Inglés
-    "angry", "mad", "furious", "pissed",
-    "i hate this", "this is bullshit",
-    "fuck", "fucking", "shit",
-    "i'm done", "i'm sick of this",
-
-    // Emojis
-    "🤬", "😡", "😠", "👿", "💢", "🔥"
-  ]
+  love: ["amor", "te amo", "te quiero", "❤️", "😍", "beso"],
+  sadness: ["triste", "mal", "llorar", "depre", "😢", "😭"],
+  joy: ["jaja", "jaj", "jeje", "feliz", "bien", "genial", "buenisimo", "😂", "😄"],
+  anger: ["odio", "mierda", "puta", "carajo", "concha", "enojo", "🤬", "😡"],
 };
-
 
 const emotionColors = {
   love: { from: "#FF77B7", to: "#D81B60", glow: "rgba(255,120,180,.45)" },
@@ -136,25 +23,14 @@ const emotionColors = {
 
 const emotionPriority = ["love", "sadness", "joy", "anger"];
 
-const uid = () => `${Date.now()}-${Math.random()}`;
-
-const escapeRegExp = (str) =>
-  str.replace(/[.*+?^${}()|[\]\\]/g, "$&");
-
 function detectEmotion(text) {
   const t = text.toLowerCase();
   const emotionCounts = {};
 
   for (const [emotion, keys] of Object.entries(emotionKeywords)) {
     emotionCounts[emotion] = keys.reduce((acc, k) => {
-      try {
-        const safeKey = escapeRegExp(k.toLowerCase());
-        const matches = (t.match(new RegExp(safeKey, 'g')) || []).length;
-        return acc + matches;
-      } catch (error) {
-        console.error("Error matching emotion keyword:", k, error);
-        return acc;
-      }
+      const matches = (t.match(new RegExp(k, 'g')) || []).length;
+      return acc + matches;
     }, 0);
   }
 
@@ -190,6 +66,7 @@ const generateBubbleParticles = (count = 15) => {
 
 const generateBubbleContourPositions = (count = 80, width = 200, height = 80, borderRadius = 24) => {
   const positions = [];
+  
   const straightWidth = width - 2 * borderRadius;
   const straightHeight = height - 2 * borderRadius;
   const cornerArcLength = (Math.PI / 2) * borderRadius;
@@ -257,6 +134,9 @@ const generateBubbleContourPositions = (count = 80, width = 200, height = 80, bo
   return positions;
 };
 
+const uid = () => `${Date.now()}-${Math.random()}`;
+
+
 export default function Chat() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -264,21 +144,17 @@ export default function Chat() {
   const [active, setActive] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [text, setText] = useState("");
-  const [localMessages, setLocalMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  const [chatTheme, setChatTheme] = useState("black");
   const [typingParticles, setTypingParticles] = useState([]);
   const [smallParticles, setSmallParticles] = useState([]);
-  
-  const [ghostTyping, setGhostTyping] = useState(false);
-  const [ghostPulse, setGhostPulse] = useState(0);
-  const [ghostParticles, setGhostParticles] = useState([]);
-  
-  const messagesEndRef = useRef(null);
+  const [visibleBubbles, setVisibleBubbles] = useState(new Set());
+  const [activeBubbles, setActiveBubbles] = useState(new Set());
+  const visibilityTimers = useRef({});
   const lastTypeTime = useRef(Date.now());
   const [typingSpeed, setTypingSpeed] = useState(0);
   const [pulse, setPulse] = useState(0);
-  const [error, setError] = useState(null);
-
-  console.log('🔵 Chat component rendering', { user, view, active });
 
   const baseEmotion = {
     from: "#667EEA",
@@ -311,8 +187,8 @@ export default function Chat() {
       const { data } = await api.post(`/chat/start/${username}`);
       return data;
     },
-    onSuccess: (data, username) => {
-      setActive(data.id);
+    onSuccess: ({ id }) => {
+      setActive(id);
       const friend = friends?.find((f) => f.user.username === username);
       if (friend) setActiveUser(friend.user);
       setView("chat");
@@ -322,41 +198,20 @@ export default function Chat() {
 
   if (!user) {
     return (
-      <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-neutral-950 flex items-center justify-center">
+      <div className="w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-white/60">Cargando...</div>
       </div>
     );
   }
-  
-  useEffect(() => {
-    if (messages) {
-      setLocalMessages(messages.map(m => ({ 
-        ...m, 
-        id: m.id,
-        text: m.content,
-        sender: m.sender?.id,
-        isFormed: true, 
-        particles: null, 
-        bubbleParticles: generateBubbleParticles(15), 
-        animating: false, 
-        floating: [] 
-      })));
-    }
-  }, [messages]);
-
-  const last7MessageIds = new Set(localMessages.length > 0 ? localMessages.slice(-7).map(m => m.id) : []);
 
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
     queryFn: async () => {
       try {
-        console.log('📡 Fetching conversations...');
         const { data } = await api.get("/chat/conversations");
-        console.log('✅ Conversations fetched:', data);
         return data || [];
       } catch (error) {
-        console.error('❌ Error fetching conversations:', error);
-        setError('Error al cargar conversaciones');
+        console.error("Error fetching conversations:", error);
         return [];
       }
     },
@@ -367,13 +222,10 @@ export default function Chat() {
     queryKey: ["friends"],
     queryFn: async () => {
       try {
-        console.log('📡 Fetching friends...');
         const { data } = await api.get("/friends");
-        console.log('✅ Friends fetched:', data);
         return data || [];
       } catch (error) {
-        console.error('❌ Error fetching friends:', error);
-        setError('Error al cargar amigos');
+        console.error("Error fetching friends:", error);
         return [];
       }
     },
@@ -384,18 +236,17 @@ export default function Chat() {
     queryKey: ["messages", active],
     queryFn: async () => {
       try {
-        console.log(`📡 Fetching messages for chat ${active}...`);
         const { data } = await api.get(`/chat/${active}/messages`);
-        console.log('✅ Messages fetched:', data);
         return data || [];
       } catch (error) {
-        console.error('❌ Error fetching messages:', error);
-        setError('Error al cargar mensajes');
+        console.error("Error fetching messages:", error);
         return [];
       }
     },
     refetchInterval: 5000,
   });
+
+  const [localMessages, setLocalMessages] = useState([]);
 
   const combinedList = (() => {
     const acceptedFriends = friends?.filter((f) => f.status === "ACCEPTED") || [];
@@ -408,7 +259,7 @@ export default function Chat() {
         return other && !friendUsernames.has(other.username);
       }
     ) || [];
-    
+
     return [
       ...conversationsList.map((c) => ({ type: "conversation", data: c })),
       ...acceptedFriends.filter((f) => !conversationsList.some((c) => {
@@ -427,75 +278,71 @@ export default function Chat() {
     });
   })();
 
-   
-   useEffect(() => {
-     if (view !== "chat") return;
-    
-    const startGhostTyping = () => {
-      setGhostTyping(true);
-      const duration = 3000 + Math.random() * 5000;
-      
-      setTimeout(() => {
-        setGhostTyping(false);
-        setGhostParticles([]);
-        const pause = 5000 + Math.random() * 10000;
-        setTimeout(startGhostTyping, pause);
-      }, duration);
+  useEffect(() => {
+    if (messages) {
+      setLocalMessages(messages.map(m => ({ ...m, isFormed: true, particles: null, bubbleParticles: null, animating: false, floating: [] })));
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        const bubbleId = entry.target.dataset.bubbleId;
+        
+        if (entry.isIntersecting) {
+          if (visibilityTimers.current[bubbleId]) {
+            clearTimeout(visibilityTimers.current[bubbleId]);
+          }
+          
+          visibilityTimers.current[bubbleId] = setTimeout(() => {
+            setVisibleBubbles((prev) => {
+              const newSet = new Set(prev);
+              newSet.add(bubbleId);
+              return newSet;
+            });
+          }, 250);
+        } else {
+          if (visibilityTimers.current[bubbleId]) {
+            clearTimeout(visibilityTimers.current[bubbleId]);
+            delete visibilityTimers.current[bubbleId];
+          }
+          
+          setVisibleBubbles((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(bubbleId);
+            return newSet;
+          });
+        }
+      });
     };
 
-    const initialTimer = setTimeout(startGhostTyping, 2000);
-    return () => clearTimeout(initialTimer);
-  }, [view]);
+    const observer = new IntersectionObserver(observerCallback, {
+      threshold: 0.1,
+      rootMargin: "50px",
+    });
 
-  useEffect(() => {
-    if (!ghostTyping) {
-      setGhostPulse(0);
-      return;
-    }
+    const bubbleElements = document.querySelectorAll("[data-bubble-id]");
+    bubbleElements.forEach((el) => observer.observe(el));
 
-    const interval = setInterval(() => {
-      setGhostPulse((p) => {
-        const newPulse = Math.sin(Date.now() / 200) * 0.5 + 0.5;
-        return newPulse;
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [ghostTyping]);
-
-  useEffect(() => {
-    if (!ghostTyping) return;
-
-    const interval = setInterval(() => {
-      const newParticles = Array.from({ length: 2 }).map(() => {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 30;
-        
-        return {
-          id: uid(),
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
-          size: Math.random() * 1.5 + 0.8,
-        };
-      });
-
-      setGhostParticles((prev) => [...prev.slice(-20), ...newParticles]);
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, [ghostTyping]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    return () => {
+      observer.disconnect();
+      Object.values(visibilityTimers.current).forEach(clearTimeout);
+    };
   }, [localMessages]);
 
   useEffect(() => {
-    if (typingParticles.length > 0) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+    const visibleArray = Array.from(visibleBubbles);
+    
+    if (visibleArray.length <= 7) {
+      setActiveBubbles(new Set(visibleArray));
+    } else {
+      const messageIds = localMessages.map(m => m.id);
+      const sortedVisible = visibleArray.sort((a, b) => {
+        return messageIds.indexOf(b) - messageIds.indexOf(a);
+      });
+      setActiveBubbles(new Set(sortedVisible.slice(0, 7)));
     }
-  }, [typingParticles]);
+  }, [visibleBubbles, localMessages]);
 
   useEffect(() => {
     if (!text) return;
@@ -605,6 +452,14 @@ export default function Chat() {
     );
   }, [activeEmotion, emotionIntensity]);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [localMessages]);
+
   const send = useMutation({
     mutationFn: async () => {
       if (!text.trim()) return;
@@ -613,118 +468,99 @@ export default function Chat() {
       await api.post(`/chat/to/${targetUsername}`, { content: text });
     },
     onSuccess: () => {
-      const id = uid();
-      const messageText = text;
-      const floating = typingParticles;
-      const msgEmotion = activeEmotion ? activeEmotion.emotion : null;
-      const bubbleParticles = generateBubbleParticles(15);
+  const id = uid();
+  const messageText = text;
+  const floating = typingParticles;
+  const msgEmotion = activeEmotion ? activeEmotion.emotion : null;
+  const bubbleParticles = generateBubbleParticles(15);
 
-      setLocalMessages((prev) => [
-        ...prev,
-        {
-          id,
-          text: messageText,
-          content: messageText,
-          sender: user.id,
-          createdAt: new Date().toISOString(),
-          isFormed: true,
-          animating: true,
-          floating,
-          emotion: msgEmotion,
-          bubbleParticles,
-        },
-      ]);
-
-      setText("");
-      setTypingParticles([]);
-
-      setTimeout(() => {
-        setLocalMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === id
-              ? { ...msg, animating: false, floating: [] }
-              : msg
-          )
-        );
-      }, 1100);
-
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["messages", active] });
-        queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      }, 1200);
+  setLocalMessages((prev) => [
+    ...prev,
+    {
+      id,
+      content: messageText,
+      sender: { id: user.id, username: user.username },
+      createdAt: new Date().toISOString(),
+      isFormed: true,
+      animating: true,
+      floating,
+      emotion: msgEmotion,
+      bubbleParticles,
+      reactions: [],
+      read: false,
     },
+  ]);
+
+  setText("");
+  setTypingParticles([]);
+
+  setTimeout(() => {
+    setLocalMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === id
+          ? { ...msg, animating: false, floating: [] }
+          : msg
+      )
+    );
+  }, 1100);
+
+  setTimeout(() => {
+    queryClient.invalidateQueries({ queryKey: ["messages", active] });
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  }, 1200);
+}
+
   });
 
-  const handleSend = () => {
+  const handleSend = (e) => {
+    e.preventDefault();
     if (text.trim()) {
       send.mutate();
     }
   };
 
-  return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-zinc-900 to-neutral-950 text-white relative overflow-hidden">
-      {error && (
-        <div className="absolute top-0 left-0 right-0 z-50 bg-red-600 text-white p-4 text-center">
-          ⚠️ {error}
-        </div>
-      )}
-      {view === "chat" && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div 
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
-                               radial-gradient(circle at 75% 75%, white 1px, transparent 1px)`,
-              backgroundSize: '50px 50px',
-            }}
-          />
-          
-          <motion.div
-            className="absolute inset-0"
-            animate={{
-              opacity: ghostTyping ? 0.08 + ghostPulse * 0.05 : 0,
-            }}
-            transition={{ duration: 0.3 }}
-            style={{
-              background: `radial-gradient(circle at 30% 50%, ${baseEmotion.glow}, transparent 60%)`,
-            }}
-          />
-          
-          {ghostTyping && (
-            <div className="absolute left-[15%] top-[45%]">
-              {ghostParticles.map((p) => (
-                <motion.div
-                  key={p.id}
-                  className="absolute rounded-full"
-                  style={{
-                    width: p.size,
-                    height: p.size,
-                    background: `linear-gradient(135deg, ${baseEmotion.from}, ${baseEmotion.to})`,
-                    boxShadow: `0 0 ${8 + ghostPulse * 6}px ${baseEmotion.glow}`,
-                  }}
-                  initial={{
-                    x: 0,
-                    y: 0,
-                    opacity: 0.6,
-                    scale: 0.8,
-                  }}
-                  animate={{
-                    x: p.x,
-                    y: p.y,
-                    opacity: 0,
-                    scale: 0.3,
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    ease: "easeOut",
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+  const addReaction = (messageId, emoji) => {
+    setLocalMessages(prev => prev.map(msg => {
+      if (msg.id === messageId) {
+        const existingReaction = msg.reactions?.find(r => r.emoji === emoji);
+        if (existingReaction) {
+          return {
+            ...msg,
+            reactions: msg.reactions.map(r => 
+              r.emoji === emoji ? { ...r, count: r.count + 1 } : r
+            )
+          };
+        } else {
+          return {
+            ...msg,
+            reactions: [...(msg.reactions || []), { emoji, count: 1 }]
+          };
+        }
+      }
+      return msg;
+    }));
+  };
 
+  return (
+    <div 
+      className="w-full h-[100dvh] flex flex-col relative overflow-hidden"
+      style={{ 
+        paddingTop: 'env(safe-area-inset-top)', 
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        backgroundImage: chatTheme === "black" 
+          ? `url(/background%20black.jpg)` 
+          : `url(/background%20white.jpg)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {chatTheme === "black" && (
+        <div className="absolute inset-0 bg-black/30" />
+      )}
+      {chatTheme === "white" && (
+        <div className="absolute inset-0 bg-white/30" />
+      )}
       <AnimatePresence mode="wait">
         {view === "list" && (
           <motion.div
@@ -735,13 +571,23 @@ export default function Chat() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="w-full h-full flex flex-col"
           >
-             <div className="p-4 border-b border-white/5 backdrop-blur-xl relative z-10 bg-black/20">
-               <h2 className="text-xl font-semibold text-white">Chats</h2>
-             </div>
+            <motion.div 
+              className="relative backdrop-blur-2xl bg-white/10 border-b border-white/10 p-4"
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 blur-xl" />
+              <h2 className="relative text-xl font-semibold text-white">Chats</h2>
+            </motion.div>
 
-             <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {combinedList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-white/60">
+                <motion.div 
+                  className="flex flex-col items-center justify-center h-full text-white/60"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
                   <div className="w-20 h-20 mb-4 rounded-full bg-white/10 flex items-center justify-center">
                     <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -749,7 +595,7 @@ export default function Chat() {
                   </div>
                   <p className="text-sm">No tienes chats aún</p>
                   <p className="text-xs mt-1">Añade amigos para empezar</p>
-                </div>
+                </motion.div>
               ) : (
                 combinedList.map((item, idx) => {
                   const isConversation = item.type === "conversation";
@@ -757,7 +603,7 @@ export default function Chat() {
                     ? (item.data.participants?.find((p) => p.id !== user.id) || item.data.participants?.[0])
                     : item.data.user;
                   const lastMessage = isConversation ? item.data.lastMessage : null;
-                  
+
                   return (
                     <motion.button
                       key={idx}
@@ -770,7 +616,19 @@ export default function Chat() {
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
-                        <Avatar user={userData} size={48} />
+                        <motion.div 
+                          className="relative"
+                          animate={{ 
+                            boxShadow: [
+                              '0 0 20px rgba(168, 85, 247, 0.3)',
+                              '0 0 30px rgba(168, 85, 247, 0.5)',
+                              '0 0 20px rgba(168, 85, 247, 0.3)'
+                            ]
+                          }}
+                          transition={{ duration: 3, repeat: Infinity }}
+                        >
+                          <Avatar user={userData} size={48} />
+                        </motion.div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="font-semibold text-white truncate">{userData?.name}</div>
@@ -796,86 +654,128 @@ export default function Chat() {
                 })
               )}
             </div>
+          </motion.div>
+        )}
 
-            <div className="p-4 border-t border-white/5 backdrop-blur-xl flex gap-3 relative z-10 bg-black/20">
-              <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Escribí algo…"
-                className="flex-1 bg-white/5 rounded-3xl px-5 py-3 outline-none placeholder:text-slate-500 text-slate-100 focus:bg-white/8 transition-colors"
-              />
-              <button
-                onClick={handleSend}
-                className="px-5 py-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20"
-              >
-                ➤
-              </button>
-            </div>
-           </motion.div>
-         )}
-         
-         {view === "chat" && activeUser && (
-           <motion.div
-             key="chat"
-             initial={{ x: 300, opacity: 0 }}
-             animate={{ x: 0, opacity: 1 }}
-             exit={{ x: 300, opacity: 0 }}
-             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-             className="w-full h-full flex flex-col"
-           >
-             <div className="p-4 border-b border-white/5 backdrop-blur-xl flex items-center justify-between relative z-10 bg-black/20">
-               <div className="flex items-center gap-4">
-                 <motion.button
-                   onClick={goBack}
-                   className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                   whileHover={{ scale: 1.1 }}
-                   whileTap={{ scale: 0.9 }}
-                 >
-                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                   </svg>
+        {view === "chat" && activeUser && (
+          <motion.div
+            key="chat"
+            initial={{ x: 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 300, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="w-full h-full flex flex-col"
+          >
+            <motion.div 
+              className={`relative backdrop-blur-2xl border-b p-4 ${chatTheme === 'black' ? 'bg-white/10 border-white/10' : 'bg-black/5 border-black/10'}`}
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              <div className={`absolute inset-0 blur-xl ${chatTheme === 'black' ? 'bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20' : 'bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10'}`} />
+              <div className="relative flex items-center gap-4">
+                <motion.button
+                  onClick={goBack}
+                  className={`p-2 rounded-full transition-colors ${chatTheme === 'black' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                  whileHover={{ scale:1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </motion.button>
+                <motion.button
+                  onClick={() => setChatTheme(chatTheme === "black" ? "white" : "black")}
+                  className={`p-2 rounded-full transition-colors ${chatTheme === 'black' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                  whileHover={{ scale:1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                </motion.button>
+                <motion.div 
+                  className="relative"
+                  animate={{ 
+                    boxShadow: [
+                      '0 0 20px rgba(219, 39, 119, 0.4)',
+                      '0 0 40px rgba(219, 39, 119, 0.6)',
+                      '0 0 20px rgba(219, 39, 119, 0.4)'
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 p-0.5">
+                    <Avatar user={activeUser} size={46} />
+                  </div>
+                  <motion.div 
+                    className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-slate-900"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.div>
+                <div className="flex-1">
+                  <h3 className={`font-semibold text-lg ${chatTheme === 'black' ? 'text-white' : 'text-black'}`}>{activeUser.name}</h3>
+                  <motion.p 
+                    className={`text-xs ${chatTheme === 'black' ? 'text-green-400' : 'text-green-600'}`}
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    ● En línea
+                  </motion.p>
+                </div>
+                <motion.button 
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </motion.button>
+                <motion.button 
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </motion.button>
+                <motion.button 
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
                  </motion.button>
-                 <Avatar user={activeUser} size={48} />
-                 <div className="flex-1">
-                   <h3 className="font-semibold text-lg text-slate-100">{activeUser.name}</h3>
-                   <motion.span 
-                     className="text-xs flex items-center gap-1.5 text-slate-400"
-                     animate={{
-                       opacity: [0.7, 1, 0.7],
-                     }}
-                     transition={{
-                       duration: 1.5,
-                       repeat: Infinity,
-                     }}
-                   >
-                     <span className="text-emerald-400">●</span>
-                     <span>En línea</span>
-                   </motion.span>
-                 </div>
                </div>
-             </div>
-             
+             </motion.div>
+
              <div className="flex-1 overflow-y-auto p-6 space-y-4 relative scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                <AnimatePresence>
-                 {localMessages.map((msg) => {
-                   const isMe = msg.sender === user.id;
+                 {localMessages.map((message) => {
+                   const isMe = message.sender?.id === user.id;
                    const msgEmotion =
-                     msg.emotion && emotionColors[msg.emotion]
-                       ? emotionColors[msg.emotion]
+                     message.emotion && emotionColors[message.emotion]
+                       ? emotionColors[message.emotion]
                        : baseEmotion;
-                   
+
                    return (
-                     <motion.div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                     <motion.div 
+                       key={message.id}
+                       className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                       data-bubble-id={message.id}
+                     >
                        <div
                          className="relative max-w-xs"
-                         style={{ minHeight: msg.animating ? 90 : "auto" }}
-                         data-bubble-id={msg.id}
+                         style={{ minHeight: message.animating ? 90 : "auto" }}
                        >
-                         {msg.animating &&
-                           msg.floating.map((p) => {
+                         {message.animating &&
+                           message.floating.map((p) => {
                              const c = p.emotional ? msgEmotion : baseEmotion;
-                             
                              return (
                                <motion.div
                                  key={p.id}
@@ -907,7 +807,7 @@ export default function Chat() {
                                />
                              );
                            })}
-                         
+
                          <motion.div
                            initial={{
                              opacity: 0,
@@ -920,18 +820,20 @@ export default function Chat() {
                              filter: "blur(0px)",
                            }}
                            transition={{ duration: 0.45 }}
-                           className="relative z-10 p-4 rounded-3xl backdrop-blur-xl border overflow-hidden"
-                            style={{
-                              background: `bg-white/10`,
-                              borderColor: `border-white/20`,
-                              boxShadow: `0 10px 36px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.2)`,
-                            }}
+                           className={`relative z-10 p-4 rounded-3xl backdrop-blur-xl border overflow-hidden ${isMe ? 'text-white' : 'text-gray-900'}`}
+                           style={{
+                             background: isMe
+                               ? `linear-gradient(135deg, ${msgEmotion.from}18, ${msgEmotion.to}28)`
+                               : `linear-gradient(135deg, ${msgEmotion.from}28, ${msgEmotion.to}38)`,
+                             borderColor: `${msgEmotion.from}50`,
+                             boxShadow: `0 10px 36px ${msgEmotion.glow}, inset 0 1px 2px ${msgEmotion.from}30`,
+                           }}
                          >
-                            {last7MessageIds.has(msg.id) && (
+                           {activeBubbles.has(message.id) && (
                              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                               {msg.bubbleParticles && msg.bubbleParticles.map((p) => (
+                               {message.bubbleParticles && message.bubbleParticles.map((p) => (
                                  <motion.div
-                                   key={p.id}
+                                   key={`static-${p.id}`}
                                    className="absolute rounded-full"
                                    style={{
                                      width: p.size,
@@ -956,129 +858,282 @@ export default function Chat() {
                                ))}
                              </div>
                            )}
-                           
-                           <span className="relative z-10 text-slate-50 drop-shadow-sm">
-                             {msg.text}
+
+                           <span className="relative z-10 drop-shadow-sm">
+                             {message.content}
                            </span>
+
+                           <div className="flex items-center justify-end gap-2 mt-2">
+                             <span className={`text-xs opacity-70 ${isMe ? 'text-white' : 'text-gray-600'}`}>
+                               {new Date(message.createdAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                             </span>
+                             {isMe && (
+                               <motion.div
+                                 initial={{ scale: 0 }}
+                                 animate={{ scale: 1 }}
+                                 transition={{ delay: 0.2 }}
+                               >
+                                 {message.read ? (
+                                   <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                   </svg>
+                                 ) : (
+                                   <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                   </svg>
+                                 )}
+                               </motion.div>
+                             )}
+                           </div>
+
+                           {message.reactions?.length > 0 && (
+                             <motion.div 
+                               className="absolute -bottom-3 right-4 flex gap-1"
+                               initial={{ scale: 0 }}
+                               animate={{ scale: 1 }}
+                               transition={{ type: 'spring', stiffness: 300 }}
+                             >
+                               {message.reactions.map((reaction, idx) => (
+                                 <motion.div
+                                   key={idx}
+                                   className="bg-slate-800/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 border border-white/20"
+                                   whileHover={{ scale: 1.2 }}
+                                   whileTap={{ scale: 0.9 }}
+                                 >
+                                   <span className="text-sm">{reaction.emoji}</span>
+                                   <span className={`text-xs ${chatTheme === 'black' ? 'text-white/80' : 'text-black/80'}`}>{reaction.count}</span>
+                                 </motion.div>
+                               ))}
+                             </motion.div>
+                           )}
                          </motion.div>
                        </div>
                      </motion.div>
                    );
-                  })}
-                </AnimatePresence>
-                
-                {typingParticles.length > 0 && (
-                  <div className="flex justify-end pointer-events-none">
-                    <div className="relative" style={{ width: 200, height: 80 }}>
-                      <div 
-                        className="absolute rounded-3xl"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          left: '50%',
-                          top: '50%',
-                          transform: 'translate(-50%, -50%)',
-                        }}
-                      >
-                        {typingParticles.map((p) => {
-                          const c = p.emotional ? emotion : baseEmotion;
-                          
-                          return (
-                            <motion.div
-                              key={p.id}
-                              className="absolute rounded-full"
-                              style={{
-                                width: p.size,
-                                height: p.size,
-                                background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                                boxShadow: `0 0 ${14 + intensity * 12}px ${c.glow}`,
-                                left: "50%",
-                                top: "50%",
-                                willChange: "transform",
-                              }}
-                              initial={{
-                                x: p.fromX,
-                                y: p.fromY,
-                                opacity: 0,
-                                scale: 0.3,
-                              }}
-                              animate={{
-                                x: [p.orbitX + p.noiseX, p.orbitX - p.noiseX],
-                                y: [p.orbitY - p.noiseY, p.orbitY + p.noiseY],
-                                opacity: 1,
-                                scale: 1.2,
-                              }}
-                              transition={{
-                                duration: p.speed,
-                                delay: p.delay,
-                                ease: "easeInOut",
-                                repeat: Infinity,
-                                repeatType: "reverse",
-                              }}
-                            />
-                          );
-                        })}
-                        
-                        {smallParticles.map((p) => {
-                          const c = p.emotional ? emotion : baseEmotion;
-                          
-                          return (
-                            <motion.div
-                              key={p.id}
-                              className="absolute rounded-full"
-                              style={{
-                                width: p.size,
-                                height: p.size,
-                                background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
-                                left: "50%",
-                                top: "50%",
-                                willChange: "transform",
-                              }}
-                              initial={{
-                                x: 0,
-                                y: 0,
-                                opacity: 1,
-                                scale: 1,
-                              }}
-                              animate={{
-                                x: p.x,
-                                y: p.y,
-                                opacity: 0,
-                                scale: 0.3,
-                              }}
-                              transition={{
-                                duration: 0.6,
-                                ease: "easeOut",
-                              }}
-                            />
-                          );
-                        })}
+                 })}
+               </AnimatePresence>
+
+              <AnimatePresence>
+                {isTyping && (
+                  <motion.div
+                    className="flex justify-start"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                  >
+                    <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-4 border border-white/10">
+                      <div className="flex gap-2">
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            className="w-2 h-2 bg-white rounded-full"
+                            animate={{
+                              y: [0, -10, 0],
+                              opacity: [0.4, 1, 0.4]
+                            }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              delay: i * 0.2
+                            }}
+                          />
+                        ))}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-                
-                <div ref={messagesEndRef} />
+               </AnimatePresence>
+
+               <div ref={messagesEndRef} />
+
+               {typingParticles.length > 0 && (
+                 <div className="flex justify-end pointer-events-none">
+                   <div className="relative" style={{ width: 200, height: 80 }}>
+                     <div 
+                       className="absolute rounded-3xl"
+                       style={{
+                         width: '100%',
+                         height: '100%',
+                         left: '50%',
+                         top: '50%',
+                         transform: 'translate(-50%, -50%)',
+                       }}
+                     >
+                       {typingParticles.map((p) => {
+                         const c = p.emotional ? emotion : baseEmotion;
+
+                         return (
+                           <motion.div
+                             key={p.id}
+                             className="absolute rounded-full"
+                             style={{
+                               width: p.size,
+                               height: p.size,
+                               background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                               boxShadow: `0 0 ${14 + intensity * 12}px ${c.glow}`,
+                               left: "50%",
+                               top: "50%",
+                               willChange: "transform",
+                             }}
+                             initial={{
+                               x: p.fromX,
+                               y: p.fromY,
+                               opacity: 0,
+                               scale: 0.3,
+                             }}
+                             animate={{
+                               x: [p.orbitX + p.noiseX, p.orbitX - p.noiseX],
+                               y: [p.orbitY - p.noiseY, p.orbitY + p.noiseY],
+                               opacity: 1,
+                               scale: 1.2,
+                             }}
+                             transition={{
+                               duration: p.speed,
+                               delay: p.delay,
+                               ease: "easeInOut",
+                               repeat: Infinity,
+                               repeatType: "reverse",
+                             }}
+                           />
+                         );
+                       })}
+                      
+                      {smallParticles.map((p) => {
+                        const c = p.emotional ? emotion : baseEmotion;
+
+                        return (
+                          <motion.div
+                            key={p.id}
+                            className="absolute rounded-full"
+                            style={{
+                              width: p.size,
+                              height: p.size,
+                              background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
+                              left: "50%",
+                              top: "50%",
+                              willChange: "transform",
+                            }}
+                            initial={{
+                              x: 0,
+                              y: 0,
+                              opacity: 1,
+                              scale: 1,
+                            }}
+                            animate={{
+                              x: p.x,
+                              y: p.y,
+                              opacity: 0,
+                              scale: 0.3,
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              ease: "easeOut",
+                            }}
+                          />
+                        );
+                      })}
+                     </div>
+                   </div>
+                 </div>
+               )}
              </div>
-             
-             <div className="p-4 border-t border-white/5 backdrop-blur-xl flex gap-3 relative z-10 bg-black/20">
-               <input
-                 value={text}
-                 onChange={(e) => setText(e.target.value)}
-                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                 placeholder="Escribí algo…"
-                 className="flex-1 bg-white/5 rounded-3xl px-5 py-3 outline-none placeholder:text-slate-500 text-slate-100 focus:bg-white/8 transition-colors"
-               />
-               <button
-                 onClick={handleSend}
-                 className="px-5 py-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20"
-               >
-                 ➤
-               </button>
-             </div>
-           </motion.div>
-         )}
-       </AnimatePresence>
+
+             <motion.div 
+               className={`relative backdrop-blur-2xl border-t p-4 ${chatTheme === 'black' ? 'bg-white/10 border-white/10' : 'bg-black/5 border-black/10'}`}
+               initial={{ y: 100, opacity: 0 }}
+               animate={{ y: 0, opacity: 1 }}
+               transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
+             >
+               <div className={`absolute inset-0 blur-xl ${chatTheme === 'black' ? 'bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-purple-500/10' : 'bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5'}`} />
+               <div className="relative flex items-end gap-3">
+                 <motion.button
+                   className={`p-2 rounded-full transition-colors mb-2 ${chatTheme === 'black' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                   whileHover={{ scale: 1.1, rotate: 15 }}
+                   whileTap={{ scale: 0.9 }}
+                 >
+                   <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                   </svg>
+                 </motion.button>
+                 <motion.button
+                   className={`p-2 rounded-full transition-colors mb-2 ${chatTheme === 'black' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                   whileHover={{ scale: 1.1 }}
+                   whileTap={{ scale: 0.9 }}
+                 >
+                   <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                   </svg>
+                 </motion.button>
+                 <div className="flex-1 relative">
+                   <motion.div
+                     className={`absolute inset-0 rounded-3xl blur-lg ${chatTheme === 'black' ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20' : 'bg-gradient-to-r from-blue-500/10 to-purple-500/10'}`}
+                     animate={{
+                       opacity: text ? [0.3, 0.6, 0.3] : 0.3
+                     }}
+                     transition={{ duration: 2, repeat: Infinity }}
+                   />
+                   <form onSubmit={handleSend}>
+                     <input
+                       type="text"
+                       value={text}
+                       onChange={(e) => setText(e.target.value)}
+                       placeholder="Escribe un mensaje..."
+                       className={`relative w-full backdrop-blur-xl rounded-3xl px-6 py-3 border focus:outline-none transition-all ${chatTheme === 'black' ? 'bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-purple-400/50' : 'bg-white/60 text-black placeholder-black/50 border-black/20 focus:border-purple-400/50'}`}
+                     />
+                   </form>
+                   <motion.button
+                     className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full transition-colors ${chatTheme === 'black' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                     whileHover={{ scale: 1.1 }}
+                     whileTap={{ scale: 0.9 }}
+                   >
+                     <svg className={`w-5 h-5 ${chatTheme === 'black' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                     </svg>
+                   </motion.button>
+                 </div>
+                 <AnimatePresence mode="wait">
+                   {text ? (
+                     <motion.button
+                       key="send"
+                       onClick={handleSend}
+                       className="p-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-2"
+                       initial={{ scale: 0, rotate: -180 }}
+                       animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      style={{
+                        boxShadow: '0 0 30px rgba(168, 85, 247, 0.5)'
+                      }}
+                    >
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      key="mic"
+                      className="p-4 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 mb-2"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      style={{
+                        boxShadow: '0 0 30px rgba(59, 130, 246, 0.5)'
+                      }}
+                    >
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      </svg>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
