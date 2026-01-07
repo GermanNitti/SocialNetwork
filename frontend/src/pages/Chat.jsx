@@ -136,6 +136,8 @@ const emotionColors = {
 
 const emotionPriority = ["love", "sadness", "joy", "anger"];
 
+const uid = () => `${Date.now()}-${Math.random()}`;
+
 const escapeRegExp = (str) =>
   str.replace(/[.*+?^${}()|[\]\\]/g, "$&");
 
@@ -254,8 +256,6 @@ const generateBubbleContourPositions = (count = 80, width = 200, height = 80, bo
   
   return positions;
 };
-
-const uid = () => `${Date.now()}-${Math.random()}`;
 
 export default function Chat() {
   const { user } = useAuth();
