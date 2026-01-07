@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../api/client";
@@ -171,7 +171,7 @@ function detectEmotion(text) {
   return dominantEmotion ? { emotion: dominantEmotion, intensity: Math.min(maxCount / 3, 1) } : null;
 }
 
-const generateBubbleParticles = (count = 15) => {
+const generateBubbleParticles = (count = 8) => {
   return Array.from({ length: count }).map((_, i) => {
     const angle = Math.random() * Math.PI * 2;
     const radius = Math.random() * 50;
@@ -188,7 +188,7 @@ const generateBubbleParticles = (count = 15) => {
   });
 };
 
-const generateBubbleContourPositions = (count = 80, width = 200, height = 80, borderRadius = 24) => {
+const generateBubbleContourPositions = (count = 40, width = 200, height = 80, borderRadius = 24) => {
   const positions = [];
   const straightWidth = width - 2 * borderRadius;
   const straightHeight = height - 2 * borderRadius;
@@ -286,7 +286,7 @@ export default function Chat() {
     glow: "rgba(102,126,234,.35)",
   };
 
-  const activeEmotion = detectEmotion(text);
+  const activeEmotion = useMemo(() => detectEmotion(text), [text]);
   const emotion =
     activeEmotion && emotionColors[activeEmotion.emotion]
       ? emotionColors[activeEmotion.emotion]
@@ -424,32 +424,32 @@ export default function Chat() {
           sender: m.sender?.id,
           isFormed: true, 
           particles: null, 
-          bubbleParticles: generateBubbleParticles(15), 
+          bubbleParticles: generateBubbleParticles(8), 
           animating: false, 
           floating: [] 
         })));
       }
     }, [messages]);
 
-   
+    
    useEffect(() => {
      if (view !== "chat") return;
     
-    const startGhostTyping = () => {
-      setGhostTyping(true);
-      const duration = 3000 + Math.random() * 5000;
-      
-      setTimeout(() => {
-        setGhostTyping(false);
-        setGhostParticles([]);
-        const pause = 5000 + Math.random() * 10000;
-        setTimeout(startGhostTyping, pause);
-      }, duration);
-    };
+     const startGhostTyping = () => {
+       setGhostTyping(true);
+       const duration = 3000 + Math.random() * 5000;
+       
+       setTimeout(() => {
+         setGhostTyping(false);
+         setGhostParticles([]);
+         const pause = 5000 + Math.random() * 10000;
+         setTimeout(startGhostTyping, pause);
+       }, duration);
+     };
 
-    const initialTimer = setTimeout(startGhostTyping, 2000);
-    return () => clearTimeout(initialTimer);
-  }, [view]);
+     const initialTimer = setTimeout(startGhostTyping, 2000);
+     return () => clearTimeout(initialTimer);
+   }, [view]);
 
   useEffect(() => {
     if (!ghostTyping) {
@@ -459,10 +459,10 @@ export default function Chat() {
 
     const interval = setInterval(() => {
       setGhostPulse((p) => {
-        const newPulse = Math.sin(Date.now() / 200) * 0.5 + 0.5;
+        const newPulse = Math.sin(Date.now() / 400) * 0.5 + 0.5;
         return newPulse;
       });
-    }, 50);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [ghostTyping]);
@@ -471,7 +471,7 @@ export default function Chat() {
     if (!ghostTyping) return;
 
     const interval = setInterval(() => {
-      const newParticles = Array.from({ length: 2 }).map(() => {
+      const newParticles = Array.from({ length: 1 }).map(() => {
         const angle = Math.random() * Math.PI * 2;
         const radius = Math.random() * 30;
         
@@ -483,23 +483,15 @@ export default function Chat() {
         };
       });
 
-      setGhostParticles((prev) => [...prev.slice(-20), ...newParticles]);
-    }, 150);
+      setGhostParticles((prev) => [...prev.slice(-15), ...newParticles]);
+    }, 400);
 
     return () => clearInterval(interval);
   }, [ghostTyping]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [localMessages]);
-
-  useEffect(() => {
-    if (typingParticles.length > 0) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }
-  }, [typingParticles]);
+  }, [localMessages.length]);
 
   useEffect(() => {
     if (!text) return;
@@ -517,7 +509,7 @@ export default function Chat() {
     if (pulse <= 0) return;
     const t = setTimeout(() => {
       setPulse((p) => clamp(p - 0.04, 0, 1));
-    }, 16);
+    }, 100);
     return () => clearTimeout(t);
   }, [pulse]);
 
@@ -543,7 +535,7 @@ export default function Chat() {
       const bubbleHeight = 80;
       const borderRadius = 24;
       
-      const contourPositions = generateBubbleContourPositions(80, bubbleWidth, bubbleHeight, borderRadius);
+      const contourPositions = generateBubbleContourPositions(40, bubbleWidth, bubbleHeight, borderRadius);
 
       contourPositions.forEach((pos, i) => {
         const explosionDistance = 80 + Math.random() * 40;
@@ -575,39 +567,31 @@ export default function Chat() {
 
       return add;
     });
-  }, [text]);
+  }, [text, emotionIntensity, activeEmotion]);
+
+  const hasGeneratedSmallParticles = useRef(false);
 
   useEffect(() => {
-    if (!text) return;
+    if (!text) {
+      hasGeneratedSmallParticles.current = false;
+      return;
+    }
 
-    const newSmall = Array.from({ length: 3 }).map(() => ({
-      id: uid(),
-      x: (Math.random() - 0.5) * 35,
-      y: (Math.random() - 0.5) * 30,
-      size: Math.random() * 1 + 0.5,
-      emotional: Math.random() < emotionIntensity && activeEmotion,
-    }));
-
-    setSmallParticles((prev) => [...prev.slice(-30), ...newSmall]);
-  }, [text.length]);
-
-  useEffect(() => {
-    if (!text || typingParticles.length === 0) return;
-
-    setTypingParticles((prev) =>
-      prev.map((p) => ({
-        ...p,
+    if (!hasGeneratedSmallParticles.current) {
+      const newSmall = Array.from({ length: 3 }).map(() => ({
+        id: uid(),
+        x: (Math.random() - 0.5) * 35,
+        y: (Math.random() - 0.5) * 30,
+        size: Math.random() * 1 + 0.5,
         emotional: Math.random() < emotionIntensity && activeEmotion,
-      }))
-    );
-    
-    setSmallParticles((prev) =>
-      prev.map((p) => ({
-        ...p,
-        emotional: Math.random() < emotionIntensity && activeEmotion,
-      }))
-    );
-  }, [activeEmotion, emotionIntensity]);
+      }));
+
+      setSmallParticles((prev) => [...prev.slice(-30), ...newSmall]);
+      hasGeneratedSmallParticles.current = true;
+    }
+  }, [text, emotionIntensity, activeEmotion]);
+
+
 
   const send = useMutation({
     mutationFn: async () => {
@@ -621,7 +605,7 @@ export default function Chat() {
       const messageText = text;
       const floating = typingParticles;
       const msgEmotion = activeEmotion ? activeEmotion.emotion : null;
-      const bubbleParticles = generateBubbleParticles(15);
+      const bubbleParticles = generateBubbleParticles(8);
 
       setLocalMessages((prev) => [
         ...prev,
