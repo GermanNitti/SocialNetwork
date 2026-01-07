@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Avatar({ user, size = 48, className = "", emotionColor = null }) {
   const mediaBase = API_BASE_URL.replace(/\/api$/, "");
+  
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
@@ -11,6 +12,7 @@ export default function Avatar({ user, size = 48, className = "", emotionColor =
     }
     return `${mediaBase}/${imagePath}`;
   };
+
   const imgSrc = user?.avatar ? getImageUrl(user.avatar) : null;
   const initials = user?.name ? user.name.charAt(0).toUpperCase() : "?";
   const { open } = useLightbox();
@@ -32,7 +34,10 @@ export default function Avatar({ user, size = 48, className = "", emotionColor =
   const ringSize = size + 10;
 
   return (
-    <div className={`relative inline-flex items-center justify-center ${className}`} style={{ width: ringSize, height: ringSize }}>
+    <div 
+      className={`relative inline-flex items-center justify-center ${className}`} 
+      style={{ width: ringSize, height: ringSize }}
+    >
       {/* Spinner exterior */}
       <div
         className="absolute inset-0 rounded-full animate-spin"
@@ -43,6 +48,7 @@ export default function Avatar({ user, size = 48, className = "", emotionColor =
           animationDuration: "2.8s",
         }}
       />
+      
       {/* Halo interior */}
       <div
         className="absolute inset-0 rounded-full"
@@ -52,6 +58,7 @@ export default function Avatar({ user, size = 48, className = "", emotionColor =
           transform: "scale(0.88)",
         }}
       />
+      
       {/* Avatar */}
       <motion.div
         whileHover={{ scale: 1.02 }}
