@@ -21,6 +21,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import UserSearch from "./components/UserSearch";
 import ToastProvider from "./context/ToastContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
   const { user, loading } = useAuth();
@@ -129,7 +130,9 @@ function App() {
               path="/chat"
               element={
                 <ProtectedRoute>
-                  <Chat />
+                  <ErrorBoundary>
+                    <Chat />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />

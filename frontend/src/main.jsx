@@ -11,6 +11,28 @@ import { LightboxProvider } from "./context/LightboxContext.jsx";
 
 const queryClient = new QueryClient();
 
+window.addEventListener('error', (event) => {
+  console.group('🚨 GLOBAL ERROR - Uncaught error:');
+  console.error('Message:', event.message);
+  console.error('File:', event.filename);
+  console.error('Line:', event.lineno);
+  console.error('Column:', event.colno);
+  console.error('Error object:', event.error);
+  console.groupEnd();
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.group('🚨 GLOBAL ERROR - Unhandled promise rejection:');
+  console.error('Reason:', event.reason);
+  console.error('Promise:', event.promise);
+  console.groupEnd();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  console.log('✅ App loaded successfully');
+  console.log('📄 Current URL:', window.location.href);
+});
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

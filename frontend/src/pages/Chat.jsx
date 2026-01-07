@@ -276,6 +276,9 @@ export default function Chat() {
   const lastTypeTime = useRef(Date.now());
   const [typingSpeed, setTypingSpeed] = useState(0);
   const [pulse, setPulse] = useState(0);
+  const [error, setError] = useState(null);
+
+  console.log('🔵 Chat component rendering', { user, view, active });
 
   const baseEmotion = {
     from: "#667EEA",
@@ -347,10 +350,13 @@ export default function Chat() {
     queryKey: ["conversations"],
     queryFn: async () => {
       try {
+        console.log('📡 Fetching conversations...');
         const { data } = await api.get("/chat/conversations");
+        console.log('✅ Conversations fetched:', data);
         return data || [];
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.error('❌ Error fetching conversations:', error);
+        setError('Error al cargar conversaciones');
         return [];
       }
     },
@@ -361,10 +367,13 @@ export default function Chat() {
     queryKey: ["friends"],
     queryFn: async () => {
       try {
+        console.log('📡 Fetching friends...');
         const { data } = await api.get("/friends");
+        console.log('✅ Friends fetched:', data);
         return data || [];
       } catch (error) {
-        console.error("Error fetching friends:", error);
+        console.error('❌ Error fetching friends:', error);
+        setError('Error al cargar amigos');
         return [];
       }
     },
@@ -375,10 +384,13 @@ export default function Chat() {
     queryKey: ["messages", active],
     queryFn: async () => {
       try {
+        console.log(`📡 Fetching messages for chat ${active}...`);
         const { data } = await api.get(`/chat/${active}/messages`);
+        console.log('✅ Messages fetched:', data);
         return data || [];
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error('❌ Error fetching messages:', error);
+        setError('Error al cargar mensajes');
         return [];
       }
     },
@@ -651,6 +663,11 @@ export default function Chat() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-zinc-900 to-neutral-950 text-white relative overflow-hidden">
+      {error && (
+        <div className="absolute top-0 left-0 right-0 z-50 bg-red-600 text-white p-4 text-center">
+          ⚠️ {error}
+        </div>
+      )}
       {view === "chat" && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div 
