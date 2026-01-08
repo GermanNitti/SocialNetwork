@@ -34,11 +34,11 @@ export default function AppIntro() {
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950"
         >
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full flex items-center justify-center bg-black">
             <video
               ref={videoRef}
               src={`${import.meta.env.BASE_URL}VideoIntro.mp4`}
-              className="w-full h-full object-cover"
+              className="max-w-full max-h-full object-contain"
               autoPlay
               playsInline
               onEnded={handleVideoEnd}

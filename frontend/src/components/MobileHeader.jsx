@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import MacanudosLogo from "./MacanudosAnimatedLogo";
 import NotificationBell from "./NotificationBell";
+import MessageNotifications from "./MessageNotifications";
 import FriendRequests from "./FriendRequests";
 import Avatar from "./Avatar";
 import { useAuth } from "../context/AuthContext";
@@ -64,6 +65,7 @@ export default function MobileHeader() {
           </motion.div>
         </div>
         <div className="flex items-center gap-2">
+          <MessageNotifications />
           <FriendRequests iconOnly />
           <NotificationBell iconOnly />
           <ThemeToggle iconOnly />

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function MacanudosAnimatedLogo({ className = "", size = 128, showText = true }) {
+export default function MacanudosAnimatedLogo({ className = "", size = 128, showText = false }) {
   return (
     <div className={`inline-flex items-center gap-2 ${className}`}>
       <img

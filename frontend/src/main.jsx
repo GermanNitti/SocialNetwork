@@ -10,6 +10,7 @@ import { PreferencesProvider } from "./context/PreferencesContext.jsx";
 import { LightboxProvider } from "./context/LightboxContext.jsx";
 import { registerSW } from 'virtual:pwa-register';
 import AppIntro from "./components/AppIntro.jsx";
+import PermissionsModal from "./components/PermissionsModal.jsx";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ createRoot(document.getElementById("root")).render(
                 <App />
               </BrowserRouter>
               <AppIntro />
+              <PermissionsModal />
             </LightboxProvider>
           </PreferencesProvider>
         </ThemeProvider>

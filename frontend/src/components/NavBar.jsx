@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Avatar from "./Avatar";
 import MacanudosLogo from "./MacanudosAnimatedLogo";
+import MessageNotifications from "./MessageNotifications";
 import UserSearch from "./UserSearch";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
@@ -94,6 +95,7 @@ export default function NavBar() {
             <div className="hidden md:block w-[200px]">
               <UserSearch />
             </div>
+            <MessageNotifications />
             <motion.button
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.02 }}

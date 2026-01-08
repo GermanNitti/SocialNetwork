@@ -13,6 +13,7 @@ export default defineConfig({
         name: 'Macanudos',
         short_name: 'Macanudos',
         description: 'Tu red social favorita',
+        filename: 'Macanudos.apk',
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
