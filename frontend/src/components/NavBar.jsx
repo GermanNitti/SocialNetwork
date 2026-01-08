@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Avatar from "./Avatar";
-import MacanudosLogo from "./MacanudosLogo";
+import MacanudosLogo from "./MacanudosAnimatedLogo";
 import UserSearch from "./UserSearch";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
@@ -36,7 +36,7 @@ export default function NavBar() {
     }
   };
 
-  const showTestButton = EVENT_CONFIG.developmentMode && EVENT_CONFIG.allowTestMode && eventToTest && !testEvent;
+  const showTestButton = false;
 
   if (!user) return null;
 

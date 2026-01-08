@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import MacanudosLogo from "./MacanudosLogo";
+import MacanudosLogo from "./MacanudosAnimatedLogo";
 import NotificationBell from "./NotificationBell";
 import FriendRequests from "./FriendRequests";
 import Avatar from "./Avatar";
@@ -33,7 +33,7 @@ export default function MobileHeader() {
     }
   };
 
-  const showTestButton = EVENT_CONFIG.developmentMode && eventToTest && !testEvent;
+  const showTestButton = false;
 
   if (!user) return null;
 
