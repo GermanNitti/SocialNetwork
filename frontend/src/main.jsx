@@ -8,8 +8,26 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { PreferencesProvider } from "./context/PreferencesContext.jsx";
 import { LightboxProvider } from "./context/LightboxContext.jsx";
+import { registerSW } from 'virtual:pwa-register';
 
 const queryClient = new QueryClient();
+
+if ('serviceWorker' in navigator) {
+  registerSW({
+    onNeedRefresh() {
+      console.log('⚡ Nueva versión disponible, recarga para actualizar');
+    },
+    onOfflineReady() {
+      console.log('✅ App lista para funcionar offline');
+    },
+    onRegistered(registration) {
+      console.log('✅ Service Worker registrado:', registration);
+    },
+    onRegisterError(error) {
+      console.error('❌ Error registrando Service Worker:', error);
+    }
+  });
+}
 
 window.addEventListener('error', (event) => {
   console.group('🚨 GLOBAL ERROR - Uncaught error:');
