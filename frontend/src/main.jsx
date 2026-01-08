@@ -9,6 +9,7 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { PreferencesProvider } from "./context/PreferencesContext.jsx";
 import { LightboxProvider } from "./context/LightboxContext.jsx";
 import { registerSW } from 'virtual:pwa-register';
+import AppIntro from "./components/AppIntro.jsx";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ createRoot(document.getElementById("root")).render(
               <BrowserRouter>
                 <App />
               </BrowserRouter>
+              <AppIntro />
             </LightboxProvider>
           </PreferencesProvider>
         </ThemeProvider>

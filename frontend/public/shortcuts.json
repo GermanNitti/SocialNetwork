@@ -5,21 +5,21 @@
       "short_name": "Feed",
       "description": "Ver tus posts",
       "url": "/feed",
-      "icons": [{ "src": "/logoestatico.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/MacanudosLogoMobil.png", "sizes": "192x192" }]
     },
     {
       "name": "Ir a Chat",
       "short_name": "Chat",
       "description": "Abrir tus chats",
       "url": "/chat",
-      "icons": [{ "src": "/logoestatico.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/MacanudosLogoMobil.png", "sizes": "192x192" }]
     },
     {
       "name": "Ir a Perfil",
       "short_name": "Perfil",
       "description": "Ver tu perfil",
       "url": "/profile/me",
-      "icons": [{ "src": "/logoestatico.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/MacanudosLogoMobil.png", "sizes": "192x192" }]
     }
   ]
 }
