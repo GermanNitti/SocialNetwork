@@ -650,7 +650,11 @@ export default function Chat() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-zinc-900 to-neutral-950 text-white relative overflow-hidden">
+    <div 
+      className="h-screen flex flex-col bg-cover bg-center bg-no-repeat text-white relative overflow-hidden"
+      style={{ backgroundImage: `url(${import.meta.env.BASE_URL}background-black.jpg)` }}
+    >
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] pointer-events-none" />
       {error && (
         <div className="absolute top-0 left-0 right-0 z-50 bg-red-600 text-white p-4 text-center">
           ⚠️ {error}

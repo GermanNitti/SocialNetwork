@@ -47,8 +47,10 @@ export default function ChatModal({ targetUsername, targetName, targetAvatar, on
           initial={{ opacity: 0, y: "100%" }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: "100%" }}
-          className="h-full bg-white dark:bg-slate-900 flex flex-col"
+          className="h-full bg-cover bg-center bg-no-repeat flex flex-col relative"
+          style={{ backgroundImage: `url(${import.meta.env.BASE_URL}background-black.jpg)` }}
         >
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] pointer-events-none" />
           <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between z-10">
             <div className="flex items-center gap-3">
               {targetAvatar ? (
