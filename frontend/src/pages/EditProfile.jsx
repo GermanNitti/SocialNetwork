@@ -243,7 +243,7 @@ export default function EditProfile() {
       {/* Sección de información básica */}
       <div className="mb-8 space-y-6">
         <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-2">Información básica</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form id="profile-form" className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
@@ -303,67 +303,8 @@ export default function EditProfile() {
               {form.bio.length}/500 caracteres
             </div>
           </div>
-      <form id="profile-form" className="space-y-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Nombre completo
-            </label>
-            <input
-              id="name"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              required
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/50 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all"
-              placeholder="Tu nombre"
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="username" className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-              </svg>
-              @username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={form.username}
-              onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
-              required
-              pattern="[a-zA-Z0-9_]+"
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/50 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all"
-              placeholder="nombre_de_usuario"
-            />
-            <p className="text-xs text-slate-500 dark:text-slate-400">Solo letras, números y guiones bajos</p>
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <label htmlFor="bio" className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Biografía
-          </label>
-          <textarea
-            id="bio"
-            value={form.bio}
-            onChange={(e) => setForm((prev) => ({ ...prev, bio: e.target.value }))}
-            rows={4}
-            maxLength={500}
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/50 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all resize-none"
-            placeholder="Cuéntanos sobre ti, tus intereses, lo que te apasiona..."
-          />
-          <div className="text-xs text-slate-500 dark:text-slate-400 text-right">
-            {form.bio.length}/500 caracteres
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
 
       {/* Botones de acción */}
       <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-200 dark:border-slate-700">
@@ -384,18 +325,5 @@ export default function EditProfile() {
         </button>
       </div>
     </div>
-      {user?.avatar && (
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
-          Avatar actual: {getImageUrl(user.avatar)}
-        </p>
-      )}
-    </div>
   );
 }
-
-
-
-
-
-
-
