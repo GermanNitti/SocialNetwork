@@ -67,9 +67,9 @@ export default function NavBar() {
                    <PlayIcon />
                  </motion.button>
                )}
-              <Link to="/feed" className="flex items-center gap-2">
-                <MacanudosLogo showText size={90} />
-              </Link>
+                <Link to="/feed" className="flex items-center gap-2">
+                  <MacanudosLogo showText={false} size={90} />
+                </Link>
             </div>
           </motion.div>
 
