@@ -7,21 +7,21 @@ const STORAGE_KEY = "reels-mode";
 export function ReelsModeProvider({ children }) {
   const [mode, setMode] = useState(() => {
     const stored = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    return stored && stored !== "CAOS" ? stored : "CERCA";
+    return stored && stored !== "CAOS" ? stored : "DESCUBRIR";
   });
-  const [prevMode, setPrevMode] = useState("CERCA");
+  const [prevMode, setPrevMode] = useState("DESCUBRIR");
   const [chaosEndsAt, setChaosEndsAt] = useState(null);
   const chaosTimerRef = useRef(null);
 
   const updateMode = useCallback((nextMode) => {
     if (nextMode === "CAOS") {
-      setPrevMode((m) => (m === "CAOS" ? "CERCA" : m));
+      setPrevMode((m) => (m === "CAOS" ? "DESCUBRIR" : m));
       setMode("CAOS");
       const expires = Date.now() + CHAOS_DURATION_MS;
       setChaosEndsAt(expires);
       if (chaosTimerRef.current) clearTimeout(chaosTimerRef.current);
       chaosTimerRef.current = setTimeout(() => {
-        setMode((m) => (m === "CAOS" ? prevMode : m));
+        setMode((m) => (m === "CAOS" ? "DESCUBRIR" : m));
         setChaosEndsAt(null);
       }, CHAOS_DURATION_MS);
     } else {

@@ -96,9 +96,7 @@ function App() {
           </>
         )}
       <div className={`${isChatPage ? 'h-screen overflow-hidden' : 'max-w-7xl mx-auto px-0 md:px-4 py-3 md:py-6'}`}>
-        {user && !user.hasCompletedOnboarding ? (
-          <OnboardingWizard />
-        ) : (
+        {
           <Routes>
             <Route path="/login" element={user ? <Navigate to="/feed" /> : <Login />} />
             <Route path="/register" element={user ? <Navigate to="/feed" /> : <Register />} />
@@ -179,8 +177,7 @@ function App() {
             <Route path="/" element={<Navigate to="/feed" />} />
             <Route path="*" element={<Navigate to="/feed" />} />
           </Routes>
-        )}
-      </div>
+        </div>
       <Lightbox />
       {user && !isChatPage && (
         <MobileBottomNav activeTab={resolveTab()} onChange={handleTabChange} />

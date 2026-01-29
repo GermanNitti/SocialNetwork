@@ -11,7 +11,7 @@ import PullToRefresh from "../components/PullToRefresh";
 import { useToast } from "../context/ToastContext";
 
 export default function Feed() {
-  const [mode, setMode] = useState("forYou");
+  const [mode, setMode] = useState("global");
   const queryClient = useQueryClient();
   const toast = useToast();
  
