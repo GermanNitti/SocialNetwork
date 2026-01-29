@@ -30,12 +30,9 @@ function App() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const resolveTab = () => {
-    if (location.pathname.startsWith("/chat")) return "chat";
-    if (location.pathname.startsWith("/shop")) return "shop";
     if (location.pathname.startsWith("/squads")) return "squads";
-    if (location.pathname.startsWith("/feedback")) return "ideas";
     if (location.pathname.startsWith("/profile")) return "profile";
-    if (location.pathname.includes("search")) return "search";
+    if (location.hash === "#composer") return "create";
     return "home";
   };
 
@@ -45,24 +42,17 @@ function App() {
         navigate("/feed");
         setMobileSearchOpen(false);
         break;
-      case "chat":
-        navigate("/chat");
-        setMobileSearchOpen(false);
+      case "search":
+        setMobileSearchOpen(true);
         break;
-      case "shop":
-        navigate("/shop");
+      case "create":
+        // Para crear post, scrollea hasta el composer
+        navigate("/feed#composer");
         setMobileSearchOpen(false);
         break;
       case "squads":
         navigate("/squads");
         setMobileSearchOpen(false);
-        break;
-      case "ideas":
-        navigate("/feedback");
-        setMobileSearchOpen(false);
-        break;
-      case "search":
-        setMobileSearchOpen(true);
         break;
       case "profile":
         if (user?.username) navigate(`/profile/${user.username}`);

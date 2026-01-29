@@ -60,7 +60,7 @@ export default function MobileHeader() {
             whileTap={{ scale: 0.98 }}
           >
             <Link to="/feed" className="flex items-center gap-2">
-              <MacanudosLogo showText size={80} />
+              <MacanudosLogo size={60} />
             </Link>
           </motion.div>
         </div>
