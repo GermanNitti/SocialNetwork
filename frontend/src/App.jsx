@@ -95,8 +95,7 @@ function App() {
             {!isChatPage && <MobileHeader />}
           </>
         )}
-      <div className={`${isChatPage ? 'h-screen overflow-hidden' : 'max-w-7xl mx-auto px-0 md:px-4 py-3 md:py-6'}`}>
-        {
+        <div className={`${isChatPage ? 'h-screen overflow-hidden' : 'max-w-7xl mx-auto px-0 md:px-4 py-3 md:py-6'}`}>
           <Routes>
             <Route path="/login" element={user ? <Navigate to="/feed" /> : <Login />} />
             <Route path="/register" element={user ? <Navigate to="/feed" /> : <Register />} />
@@ -178,28 +177,28 @@ function App() {
             <Route path="*" element={<Navigate to="/feed" />} />
           </Routes>
         </div>
-      <Lightbox />
-      {user && !isChatPage && (
-        <MobileBottomNav activeTab={resolveTab()} onChange={handleTabChange} />
-      )}
-       {user && mobileSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-sm md:hidden">
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-3 text-slate-100">
-              <span className="font-semibold">Buscar personas</span>
-              <button
-                onClick={() => setMobileSearchOpen(false)}
-                className="px-3 py-1 rounded-full bg-slate-800 text-sm"
-              >
-                Cerrar
-              </button>
-            </div>
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 shadow-lg animate-[fadeIn_0.2s_ease]">
-              <UserSearch />
+        <Lightbox />
+        {user && !isChatPage && (
+          <MobileBottomNav activeTab={resolveTab()} onChange={handleTabChange} />
+        )}
+        {user && mobileSearchOpen && (
+          <div className="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-sm md:hidden">
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-3 text-slate-100">
+                <span className="font-semibold">Buscar personas</span>
+                <button
+                  onClick={() => setMobileSearchOpen(false)}
+                  className="px-3 py-1 rounded-full bg-slate-800 text-sm"
+                >
+                  Cerrar
+                </button>
+              </div>
+              <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 shadow-lg animate-[fadeIn_0.2s_ease]">
+                <UserSearch />
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </ToastProvider>
   );
