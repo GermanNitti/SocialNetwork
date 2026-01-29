@@ -1,0 +1,4 @@
+2026/01/09-14:03:37.749 51a8 Creating DB C:\Users\T460\Documents\SocialNetwork\whatsapp-groq-bot\.wwebjs_auth\session-saverio-bot\Default\shared_proto_db since it was missing.
+2026/01/09-14:03:37.773 51a8 Reusing MANIFEST C:\Users\T460\Documents\SocialNetwork\whatsapp-groq-bot\.wwebjs_auth\session-saverio-bot\Default\shared_proto_db/MANIFEST-000001
+2026/01/09-14:03:37.776 51a8 Recovering log #3
+2026/01/09-14:03:37.777 51a8 Reusing old log C:\Users\T460\Documents\SocialNetwork\whatsapp-groq-bot\.wwebjs_auth\session-saverio-bot\Default\shared_proto_db/000003.log 

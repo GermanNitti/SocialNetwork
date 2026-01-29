@@ -1,0 +1,4 @@
+2026/01/09-14:03:37.155 1cd0 Creating DB C:\Users\T460\Documents\SocialNetwork\whatsapp-groq-bot\.wwebjs_auth\session-saverio-bot\Default\Sync Data\LevelDB since it was missing.
+2026/01/09-14:03:37.311 1cd0 Reusing MANIFEST C:\Users\T460\Documents\SocialNetwork\whatsapp-groq-bot\.wwebjs_auth\session-saverio-bot\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/01/09-14:03:37.312 1cd0 Recovering log #3
+2026/01/09-14:03:37.313 1cd0 Reusing old log C:\Users\T460\Documents\SocialNetwork\whatsapp-groq-bot\.wwebjs_auth\session-saverio-bot\Default\Sync Data\LevelDB/000003.log 
