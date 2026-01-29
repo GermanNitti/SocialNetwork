@@ -19,8 +19,9 @@ const PlayIcon = () => (
 );
 
 export default function MobileHeader() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [testEvent, setTestEvent] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const activeEvent = getActiveEvent();
   const testModeEvent = getTestModeEvent();
@@ -43,6 +44,13 @@ export default function MobileHeader() {
       {testEvent && EventComponent && <EventComponent onComplete={() => setTestEvent(false)} />}
 
       <header className="sticky top-0 z-40 flex items-center justify-between glass border-b border-slate-200/60 dark:border-slate-800/60 bg-white/90 dark:bg-slate-950/95 px-3 py-2 md:hidden backdrop-blur-md shadow-sm text-slate-900 dark:text-slate-50">
+        {/* Overlay para cerrar menú */}
+        {showUserMenu && (
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setShowUserMenu(false)}
+          />
+        )}
         <div className="flex items-center gap-2">
           {showTestButton && (
             <motion.button
@@ -69,14 +77,60 @@ export default function MobileHeader() {
           <FriendRequests iconOnly />
           <NotificationBell iconOnly />
           <ThemeToggle iconOnly />
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Link to={`/profile/${user.username}`}>
-              <Avatar user={user} size={32} />
-            </Link>
-          </motion.div>
+          <div className="relative">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="relative"
+              >
+                <Avatar user={user} size={32} />
+              </button>
+            </motion.div>
+            
+            {/* Menú desplegable */}
+            {showUserMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden"
+              >
+                <Link
+                  to={`/profile/${user.username}`}
+                  onClick={() => setShowUserMenu(false)}
+                  className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                >
+                  Ver mi perfil
+                </Link>
+                <Link
+                  to="/profile/edit"
+                  onClick={() => setShowUserMenu(false)}
+                  className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800"
+                >
+                  Editar perfil
+                </Link>
+                <Link
+                  to="/settings"
+                  onClick={() => setShowUserMenu(false)}
+                  className="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800"
+                >
+                  Configuración
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setShowUserMenu(false);
+                  }}
+                  className="block w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-slate-100 dark:border-slate-800"
+                >
+                  Cerrar sesión
+                </button>
+              </motion.div>
+            )}
+          </div>
         </div>
       </header>
     </>

@@ -330,7 +330,7 @@ export default function Profile() {
             <Avatar
               user={profile}
               size={72}
-              className="border border-slate-200 dark:border-slate-700 -mt-10 bg-white"
+              className="border-4 border-white dark:border-slate-900 -mt-10"
               emotionColor={profile?.currentEmotionColor || null}
             />
             <div className="flex-1 space-y-1">
