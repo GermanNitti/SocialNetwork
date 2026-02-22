@@ -1,3 +1,18 @@
+# Social Network Platform
+
+A full-stack social network built to explore system design, data modeling,
+and real-world interaction flows beyond toy examples.
+
+This project focuses on **architecture, workflows, and trade-offs**
+in a feature-complete social platform.
+
+## Why
+
+Most social networks optimize for engagement and growth.
+This project explores the technical and architectural implications
+of building a social platform focused on functionality, control,
+and clear interaction flows.
+
 # Social Network (Node + Express + React + Prisma + PostgreSQL)
 
 Red social simple con: registro/login JWT + bcrypt, subida de avatar con multer, posts con imagen, comentarios, reacciones personalizadas, menciones @, amistades con solicitud y relación, notificaciones, chat 1:1, personalización de UI por usuario, modo oscuro y lightbox para imágenes (frontend en React + Vite + Tailwind + React Query + React Router + Framer Motion).
